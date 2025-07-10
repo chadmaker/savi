@@ -3,7 +3,6 @@
 import type React from "react"
 import { useState, useCallback, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -18,19 +17,7 @@ import {
   CheckCircle,
   AlertCircle,
   ExternalLink,
-  Menu,
-  Search,
-  ChevronDown,
   Star,
-  User,
-  Database,
-  Users,
-  BarChart3,
-  UserCircle,
-  FileBarChart,
-  Folder,
-  Plus,
-  MoreHorizontal,
   Info,
   HelpCircle,
 } from "lucide-react"
@@ -102,7 +89,7 @@ export default function SAVIWorkspace() {
   const datasets = [
     {
       id: 1,
-      title: "U.S. Census American Community Survey",
+      title: "American Community Survey",
       extent: "Central Indiana",
       reportingArea: "County",
       updated: "2023",
@@ -111,7 +98,7 @@ export default function SAVIWorkspace() {
     },
     {
       id: 2,
-      title: "My SAVI Uploads - Community Centers Near Schools",
+      title: "Community Centers Near Schools",
       extent: "Central Indiana",
       reportingArea: "County",
       updated: "2025",
@@ -120,7 +107,7 @@ export default function SAVIWorkspace() {
     },
     {
       id: 3,
-      title: "Indiana Department of Education - Educational Attainment",
+      title: "Educational Attainment Data",
       extent: "Central Indiana",
       reportingArea: "County",
       updated: "2023",
@@ -129,7 +116,7 @@ export default function SAVIWorkspace() {
     },
     {
       id: 4,
-      title: "United Way of Indiana - Educational Success",
+      title: "Educational Success Metrics",
       extent: "Central Indiana",
       reportingArea: "County",
       updated: "2023",
@@ -359,7 +346,7 @@ export default function SAVIWorkspace() {
           <Button
             onClick={downloadTemplate}
             variant="outline"
-            className="w-full border-blue-300 text-blue-700 hover:bg-blue-100"
+            className="w-full border-blue-300 text-blue-700 hover:bg-blue-100 bg-transparent"
           >
             <Download className="w-4 h-4 mr-2" />
             Download Sample CSV
@@ -1047,171 +1034,131 @@ export default function SAVIWorkspace() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* SAVI Header */}
+      {/* SAVI PRO Header */}
       <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Menu className="w-5 h-5 text-gray-600" />
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">S</span>
-                </div>
-                <span className="font-bold text-xl">SAVI</span>
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center gap-8 py-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
+                <span className="text-white font-bold text-sm">S</span>
               </div>
+              <span className="font-bold text-xl text-gray-900">SAVI PRO</span>
             </div>
 
-            <div className="flex-1 max-w-md mx-8">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input placeholder="Search with SAVI AI" className="pl-10 bg-gray-50 border-gray-200" />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-gray-700">My SAVI</span>
-              <ChevronDown className="w-4 h-4 text-gray-600" />
-            </div>
+            <nav className="flex items-center gap-8">
+              <a
+                href="#"
+                className="text-gray-600 hover:text-gray-900 py-4 border-b-2 border-transparent hover:border-blue-600"
+              >
+                Projects
+              </a>
+              <a
+                href="#"
+                className="text-gray-600 hover:text-gray-900 py-4 border-b-2 border-transparent hover:border-blue-600"
+              >
+                Communities
+              </a>
+              <a
+                href="#"
+                className="text-gray-600 hover:text-gray-900 py-4 border-b-2 border-transparent hover:border-blue-600"
+              >
+                Indicators
+              </a>
+              <a href="#" className="text-blue-600 font-medium py-4 border-b-2 border-blue-600">
+                Data Upload
+              </a>
+              <a
+                href="#"
+                className="text-gray-600 hover:text-gray-900 py-4 border-b-2 border-transparent hover:border-blue-600"
+              >
+                Visualizations
+              </a>
+            </nav>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex">
-        {/* Sidebar */}
-        <div className="w-64 bg-white border-r min-h-screen">
-          <div className="p-4">
-            <h2 className="font-bold text-lg mb-6">My SAVI</h2>
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">Saved Datasets</h1>
 
-            <nav className="space-y-1">
-              <div className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                <Star className="w-4 h-4" />
-                <span className="text-sm">Starred</span>
-              </div>
-              <div className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                <User className="w-4 h-4" />
-                <span className="text-sm">User Account</span>
-              </div>
-
-              <div className="pt-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-medium text-sm">Workspace</span>
-                  <Badge variant="secondary" className="text-xs">
-                    PRO
-                  </Badge>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center border border-gray-300 rounded-lg">
+              <button className="p-2 bg-gray-900 text-white rounded-l-lg">
+                <div className="w-4 h-4 grid grid-cols-2 gap-0.5">
+                  <div className="bg-current rounded-sm"></div>
+                  <div className="bg-current rounded-sm"></div>
+                  <div className="bg-current rounded-sm"></div>
+                  <div className="bg-current rounded-sm"></div>
                 </div>
-
-                <div className="space-y-1 ml-2">
-                  <div className="flex items-center gap-3 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg">
-                    <Database className="w-4 h-4" />
-                    <span className="text-sm">Datasets</span>
-                  </div>
-                  <div className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                    <Users className="w-4 h-4" />
-                    <span className="text-sm">Communities</span>
-                  </div>
-                  <div className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                    <BarChart3 className="w-4 h-4" />
-                    <span className="text-sm">Visualizations</span>
-                  </div>
-                  <div className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                    <UserCircle className="w-4 h-4" />
-                    <span className="text-sm">Profiles</span>
-                  </div>
-                  <div className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                    <FileBarChart className="w-4 h-4" />
-                    <span className="text-sm">Reports</span>
-                  </div>
-
-                  <div className="pt-2">
-                    <div className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">
-                      <Folder className="w-4 h-4" />
-                      <span className="text-sm">Projects</span>
-                    </div>
-                    <div className="ml-6 space-y-1 text-xs text-gray-600">
-                      <div className="py-1">July Grant Proposal</div>
-                      <div className="py-1">City Council Report</div>
-                    </div>
-                    <div className="flex items-center gap-2 px-3 py-2 text-blue-600 hover:bg-blue-50 rounded-lg cursor-pointer">
-                      <Plus className="w-3 h-3" />
-                      <span className="text-sm">New</span>
-                    </div>
-                  </div>
+              </button>
+              <button className="p-2 text-gray-600 hover:bg-gray-50 rounded-r-lg">
+                <div className="w-4 h-4 flex flex-col gap-1">
+                  <div className="h-0.5 bg-current rounded"></div>
+                  <div className="h-0.5 bg-current rounded"></div>
+                  <div className="h-0.5 bg-current rounded"></div>
                 </div>
-              </div>
-            </nav>
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex-1 p-6">
-          <div className="flex items-center gap-3 mb-6">
-            <Database className="w-6 h-6 text-gray-600" />
-            <h1 className="text-2xl font-bold">Datasets</h1>
-          </div>
-
-          {/* Filter Bar */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <Select defaultValue="all">
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="All types" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All types</SelectItem>
-                  <SelectItem value="census">Census</SelectItem>
-                  <SelectItem value="education">Education</SelectItem>
-                  <SelectItem value="uploads">My uploads</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Button variant="ghost" size="sm" className="text-gray-600">
-                <Star className="w-4 h-4 mr-2" />
-                Starred
-              </Button>
-
-              <Button variant="ghost" size="sm" className="text-gray-600">
-                <Upload className="w-4 h-4 mr-2" />
-                My uploads
-              </Button>
+              </button>
             </div>
+
+            <Button className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300">
+              <Star className="w-4 h-4 mr-2 fill-current" />
+              Starred
+            </Button>
 
             <Button onClick={() => setShowUploadModal(true)} className="bg-blue-600 hover:bg-blue-700">
               <Upload className="w-4 h-4 mr-2" />
               Upload data
             </Button>
           </div>
+        </div>
 
-          {/* Dataset List */}
-          <div className="space-y-4">
-            {datasets.map((dataset) => (
-              <div key={dataset.id} className="bg-white rounded-lg border p-4 flex items-center gap-4">
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-xl">
-                  {dataset.icon}
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium text-blue-600 mb-1">{dataset.title}</h3>
-                  <div className="flex items-center gap-6 text-sm text-gray-600">
-                    <div>
-                      <span className="font-medium">Extent:</span> {dataset.extent}
-                    </div>
-                    <div>
-                      <span className="font-medium">Reporting area:</span> {dataset.reportingArea}
-                    </div>
-                    <div>
-                      <span className="font-medium">Updated:</span> {dataset.updated}
-                    </div>
-                    <div>
-                      <span className="font-medium">Data from</span> {dataset.dataFrom}
-                    </div>
-                  </div>
-                </div>
-                <Button variant="ghost" size="sm">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
+        {/* Dataset Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {datasets.map((dataset) => (
+            <div
+              key={dataset.id}
+              className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="font-semibold text-gray-900 text-lg leading-tight">{dataset.title}</h3>
+                <button className="text-gray-400 hover:text-yellow-500">
+                  <Star className="w-5 h-5" />
+                </button>
               </div>
-            ))}
-          </div>
+
+              <div className="mb-4">
+                <Badge
+                  variant="secondary"
+                  className={`
+                    ${dataset.id === 1 ? "bg-green-100 text-green-800" : ""}
+                    ${dataset.id === 2 ? "bg-blue-100 text-blue-800" : ""}
+                    ${dataset.id === 3 ? "bg-purple-100 text-purple-800" : ""}
+                    ${dataset.id === 4 ? "bg-orange-100 text-orange-800" : ""}
+                  `}
+                >
+                  {dataset.id === 1
+                    ? "Census"
+                    : dataset.id === 2
+                      ? "My Uploads"
+                      : dataset.id === 3
+                        ? "Education"
+                        : "Community"}
+                </Badge>
+              </div>
+
+              <div className="flex items-center text-sm text-gray-600 mb-6">
+                <span>
+                  📊 {dataset.dataFrom}-{dataset.updated}
+                </span>
+              </div>
+
+              <Button variant="outline" className="w-full bg-transparent">
+                Select
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -1234,7 +1181,12 @@ export default function SAVIWorkspace() {
 
             {currentStep < 4 && (
               <div className="flex justify-between pt-6 border-t border-gray-200">
-                <Button variant="outline" onClick={prevStep} disabled={currentStep === 1} className="px-8 py-3">
+                <Button
+                  variant="outline"
+                  onClick={prevStep}
+                  disabled={currentStep === 1}
+                  className="px-8 py-3 bg-transparent"
+                >
                   Previous
                 </Button>
                 <Button onClick={nextStep} disabled={!canProceed()} className="bg-blue-600 hover:bg-blue-700 px-8 py-3">
