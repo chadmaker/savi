@@ -133,11 +133,65 @@ export function CreateProjectModal({ open, onClose, onCreateProject, editData }:
             </div>
           </div>
 
-          {/* Project Visibility */}
+          {/* Related Categories - Combined Section */}
+          <div>
+            <Label className="text-base font-medium">Related Categories</Label>
+
+            {/* Populations Subsection */}
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Populations</h4>
+              <p className="text-sm text-gray-600 mb-3">Select populations relevant to your project</p>
+              <div className="flex flex-wrap gap-2">
+                {populationOptions.map((population) => (
+                  <Button
+                    key={population}
+                    type="button"
+                    variant={selectedPopulations.includes(population) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePopulationToggle(population)}
+                    className={`${
+                      selectedPopulations.includes(population)
+                        ? "bg-green-600 hover:bg-green-700 text-white"
+                        : "hover:bg-green-50 hover:border-green-300"
+                    }`}
+                  >
+                    {population}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Topics Subsection */}
+            <div className="mt-6">
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Topics</h4>
+              <p className="text-sm text-gray-600 mb-3">Select topics relevant to your project</p>
+              <div className="flex flex-wrap gap-2">
+                {topicOptions.map((topic) => (
+                  <Button
+                    key={topic}
+                    type="button"
+                    variant={selectedTopics.includes(topic) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleTopicToggle(topic)}
+                    className={`${
+                      selectedTopics.includes(topic)
+                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                        : "hover:bg-blue-50 hover:border-blue-300"
+                    }`}
+                  >
+                    {topic}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Project Visibility - Moved below related categories */}
           <div>
             <Label className="text-base font-medium">Project Visibility</Label>
             <RadioGroup value={visibility} onValueChange={(value: any) => setVisibility(value)} className="mt-3">
-              <div className="space-y-3">
+              {/* Horizontal layout for visibility options */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
                   <RadioGroupItem value="private" id="private" className="mt-1" />
                   <div className="flex-1">
@@ -184,54 +238,6 @@ export function CreateProjectModal({ open, onClose, onCreateProject, editData }:
                 </div>
               </div>
             </RadioGroup>
-          </div>
-
-          {/* Related Populations - Toggle Buttons Only */}
-          <div>
-            <Label className="text-base font-medium">Related Populations (Optional)</Label>
-            <p className="text-sm text-gray-600 mt-1 mb-3">Select populations relevant to your project</p>
-            <div className="flex flex-wrap gap-2">
-              {populationOptions.map((population) => (
-                <Button
-                  key={population}
-                  type="button"
-                  variant={selectedPopulations.includes(population) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handlePopulationToggle(population)}
-                  className={`${
-                    selectedPopulations.includes(population)
-                      ? "bg-green-600 hover:bg-green-700 text-white"
-                      : "hover:bg-green-50 hover:border-green-300"
-                  }`}
-                >
-                  {population}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* Related Topics - Toggle Buttons Only */}
-          <div>
-            <Label className="text-base font-medium">Related Topics (Optional)</Label>
-            <p className="text-sm text-gray-600 mt-1 mb-3">Select topics relevant to your project</p>
-            <div className="flex flex-wrap gap-2">
-              {topicOptions.map((topic) => (
-                <Button
-                  key={topic}
-                  type="button"
-                  variant={selectedTopics.includes(topic) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleTopicToggle(topic)}
-                  className={`${
-                    selectedTopics.includes(topic)
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
-                      : "hover:bg-blue-50 hover:border-blue-300"
-                  }`}
-                >
-                  {topic}
-                </Button>
-              ))}
-            </div>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4 border-t">
