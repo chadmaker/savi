@@ -65,39 +65,8 @@ export function ProjectWorkspace({
       {/* Header */}
       <header className="border-b border-gray-200 bg-white">
         <div className="px-6">
-          {/* Top row with logo and tabs */}
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white font-bold">
-                  S
-                </div>
-                <span className="text-xl font-semibold text-gray-900">SAVI PRO</span>
-              </div>
-
-              {/* Global Navigation Tabs - moved right of logo */}
-              <nav className="flex space-x-8">
-                <button className="border-b-2 border-blue-500 py-4 px-1 text-sm font-medium text-blue-600">
-                  Projects
-                </button>
-                <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                  Communities
-                </button>
-                <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                  Indicators
-                </button>
-                <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                  Data Upload
-                </button>
-                <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                  Visualizations
-                </button>
-              </nav>
-            </div>
-          </div>
-
-          {/* Second row with Back and Project Name */}
-          <div className="flex items-center space-x-4 py-3 border-t border-gray-100">
+          {/* Single row with Back, Project Name, and Edit */}
+          <div className="flex items-center space-x-4 py-4">
             <Button variant="ghost" size="sm" onClick={onBackToDashboard}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
