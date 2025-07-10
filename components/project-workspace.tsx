@@ -65,56 +65,95 @@ export function ProjectWorkspace({
       {/* Header */}
       <header className="border-b border-gray-200 bg-white">
         <div className="px-6">
-          {/* Single row with Back, Project Name, and Edit */}
-          <div className="flex items-center space-x-4 py-4">
-            <Button variant="ghost" size="sm" onClick={onBackToDashboard}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <h1 className="text-2xl font-semibold text-gray-900">{projectName}</h1>
-            <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
-              <Edit className="h-4 w-4 mr-1" />
-              Edit
-            </Button>
+          {/* Top row with logo and navigation tabs */}
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center space-x-8">
+              <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white font-bold">S</div>
+              <span className="text-xl font-semibold text-gray-900">SAVI PRO</span>
+            </div>
+
+            {/* Global Navigation Tabs */}
+            <nav className="flex space-x-8">
+              <button className="border-b-2 border-blue-500 py-4 px-1 text-sm font-medium text-blue-600">
+                Projects
+              </button>
+              <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                Communities
+              </button>
+              <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                Indicators
+              </button>
+              <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                Data Upload
+              </button>
+              <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                Visualizations
+              </button>
+            </nav>
           </div>
+        </div>
+
+        {/* Second row with Back, Project Name, and Edit */}
+        <div className="flex items-center space-x-4 py-3 border-t border-gray-100">
+          <Button variant="ghost" size="sm" onClick={onBackToDashboard}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+          <h1 className="text-2xl font-semibold text-gray-900">{projectName}</h1>
+          <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
+            <Edit className="h-4 w-4 mr-1" />
+            Edit
+          </Button>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 p-6">
         <div className="mx-auto max-w-7xl">
-          {/* Project Details Panel */}
+          {/* Project Details Panel - Horizontal Layout */}
           <Card className="mb-8">
             <CardContent className="p-6">
-              <div className="space-y-4">
-                {projectData?.description && <p className="text-gray-600">{projectData.description}</p>}
-
-                {projectData?.createdDate && (
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    <span>Created {new Date(projectData.createdDate).toLocaleDateString()}</span>
+              <div className="grid grid-cols-12 gap-6 items-start">
+                {/* Left column - New label and created date */}
+                <div className="col-span-2">
+                  <div className="space-y-4">
+                    <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+                      New
+                    </Badge>
+                    {projectData?.createdDate && (
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        <span>Created {new Date(projectData.createdDate).toLocaleDateString()}</span>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
 
-                {(projectData?.relatedTopics?.length || projectData?.relatedPopulations?.length) && (
-                  <div className="space-y-3">
-                    {Array.isArray(projectData?.relatedTopics) && projectData.relatedTopics.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Related Topics</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {projectData.relatedTopics.map((topic) => (
+                {/* Middle columns - Related Topics and Populations */}
+                <div className="col-span-8">
+                  <div className="grid grid-cols-2 gap-8">
+                    {/* Related Topics */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">Related Topics</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {Array.isArray(projectData?.relatedTopics) && projectData.relatedTopics.length > 0 ? (
+                          projectData.relatedTopics.map((topic) => (
                             <Badge key={topic} variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
                               {topic}
                             </Badge>
-                          ))}
-                        </div>
+                          ))
+                        ) : (
+                          <span className="text-sm text-gray-400">No topics selected</span>
+                        )}
                       </div>
-                    )}
-                    {Array.isArray(projectData?.relatedPopulations) && projectData.relatedPopulations.length > 0 && (
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-700 mb-2">Related Populations</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {projectData.relatedPopulations.map((population) => (
+                    </div>
+
+                    {/* Related Populations */}
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">Related Populations</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {Array.isArray(projectData?.relatedPopulations) && projectData.relatedPopulations.length > 0 ? (
+                          projectData.relatedPopulations.map((population) => (
                             <Badge
                               key={population}
                               variant="outline"
@@ -122,98 +161,76 @@ export function ProjectWorkspace({
                             >
                               {population}
                             </Badge>
-                          ))}
-                        </div>
+                          ))
+                        ) : (
+                          <span className="text-sm text-gray-400">No populations selected</span>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
-                )}
+                </div>
+
+                {/* Right column - Description if available */}
+                <div className="col-span-2">
+                  {projectData?.description && <p className="text-sm text-gray-600">{projectData.description}</p>}
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Action Strip */}
-          <div className="flex items-center space-x-4 mb-8">
-            <Button onClick={() => setShowCommunityModal(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Community
-            </Button>
-            <Button onClick={() => setShowIndicatorsModal(true)} className="bg-green-600 hover:bg-green-700 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Indicators
-            </Button>
-            <Button onClick={() => setShowUploadModal(true)} className="bg-purple-600 hover:bg-purple-700 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Upload Data
-            </Button>
-            <Button onClick={onStartVisualization} className="bg-indigo-600 hover:bg-indigo-700 text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Visualization
-            </Button>
-          </div>
+          {/* Primary Action Tiles - Four Equal Tiles */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-blue-200"
+              onClick={() => setShowCommunityModal(true)}
+            >
+              <CardContent className="p-8 text-center">
+                <div className="rounded-full bg-blue-100 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Map className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add Community</h3>
+                <p className="text-gray-600">Choose geographic areas to analyze</p>
+              </CardContent>
+            </Card>
 
-          {/* Build Your Project Heading */}
-          <div className="text-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Build Your Project</h2>
-            <p className="text-gray-600 mb-8">
-              Start building your project by adding one or more Communities. Then you can select Indicators (and upload
-              your data) to create charts, maps and reports.
-            </p>
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-green-200"
+              onClick={() => setShowIndicatorsModal(true)}
+            >
+              <CardContent className="p-8 text-center">
+                <div className="rounded-full bg-green-100 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <BarChart3 className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add Indicators</h3>
+                <p className="text-gray-600">Choose data points to visualize</p>
+              </CardContent>
+            </Card>
 
-            {/* Primary Action Tiles - Four Equal Tiles */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <Card
-                className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-blue-200"
-                onClick={() => setShowCommunityModal(true)}
-              >
-                <CardContent className="p-8 text-center">
-                  <div className="rounded-full bg-blue-100 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <Map className="h-8 w-8 text-blue-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Add Community</h3>
-                  <p className="text-gray-600">Choose geographic areas to analyze</p>
-                </CardContent>
-              </Card>
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-purple-200"
+              onClick={() => setShowUploadModal(true)}
+            >
+              <CardContent className="p-8 text-center">
+                <div className="rounded-full bg-purple-100 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Upload className="h-8 w-8 text-purple-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Data</h3>
+                <p className="text-gray-600">Import your own datasets</p>
+              </CardContent>
+            </Card>
 
-              <Card
-                className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-green-200"
-                onClick={() => setShowIndicatorsModal(true)}
-              >
-                <CardContent className="p-8 text-center">
-                  <div className="rounded-full bg-green-100 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <BarChart3 className="h-8 w-8 text-green-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Add Indicators</h3>
-                  <p className="text-gray-600">Choose data points to visualize</p>
-                </CardContent>
-              </Card>
-
-              <Card
-                className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-purple-200"
-                onClick={() => setShowUploadModal(true)}
-              >
-                <CardContent className="p-8 text-center">
-                  <div className="rounded-full bg-purple-100 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <Upload className="h-8 w-8 text-purple-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Data</h3>
-                  <p className="text-gray-600">Import your own datasets</p>
-                </CardContent>
-              </Card>
-
-              <Card
-                className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-indigo-200"
-                onClick={onStartVisualization}
-              >
-                <CardContent className="p-8 text-center">
-                  <div className="rounded-full bg-indigo-100 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                    <Eye className="h-8 w-8 text-indigo-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Add Visualization</h3>
-                  <p className="text-gray-600">Create charts, maps and reports</p>
-                </CardContent>
-              </Card>
-            </div>
+            <Card
+              className="hover:shadow-lg transition-shadow cursor-pointer border-2 hover:border-indigo-200"
+              onClick={onStartVisualization}
+            >
+              <CardContent className="p-8 text-center">
+                <div className="rounded-full bg-indigo-100 p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Eye className="h-8 w-8 text-indigo-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add Visualization</h3>
+                <p className="text-gray-600">Create charts, maps and reports</p>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Communities Section */}
@@ -221,6 +238,13 @@ export function ProjectWorkspace({
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Communities</h3>
               <div className="flex items-center space-x-2">
+                <Button
+                  onClick={() => setShowCommunityModal(true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Community
+                </Button>
                 <div className="flex items-center border rounded-md">
                   <Button
                     variant={viewMode === "card" ? "default" : "ghost"}
@@ -249,6 +273,7 @@ export function ProjectWorkspace({
               </div>
             </div>
 
+            {/* Rest of the communities section remains the same */}
             {savedCommunities.length > 0 ? (
               viewMode === "card" ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -357,10 +382,40 @@ export function ProjectWorkspace({
               </div>
             </div>
 
-            <div className="text-center py-12 text-gray-500 border rounded-lg">
-              <BarChart3 className="h-8 w-8 mx-auto mb-3 text-gray-300" />
-              <p>No indicators added yet. Add data indicators to analyze your communities.</p>
-            </div>
+            {savedIndicators.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {savedIndicators.map((indicator) => (
+                  <Card key={indicator.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <h4 className="font-medium text-gray-900">{indicator.name}</h4>
+                          <Badge variant="secondary" className="mt-1">
+                            {indicator.category}
+                          </Badge>
+                        </div>
+                        <Button variant="ghost" size="sm">
+                          <Star
+                            className={`h-4 w-4 ${indicator.starred ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`}
+                          />
+                        </Button>
+                      </div>
+                      <div className="flex items-center justify-between mt-4">
+                        <span className="text-sm text-gray-500">Time Range: {indicator.timeRange}</span>
+                        <Button variant="outline" size="sm">
+                          Use
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-gray-500 border rounded-lg">
+                <BarChart3 className="h-8 w-8 mx-auto mb-3 text-gray-300" />
+                <p>No indicators added yet. Add data indicators to analyze your communities.</p>
+              </div>
+            )}
           </div>
 
           {/* Charts Section */}
