@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Map, BarChart3, Upload, Eye, Calendar, List, LayoutGrid, Star, Edit, Plus } from 'lucide-react'
+import { ArrowLeft, Map, BarChart3, Upload, Eye, Calendar, List, LayoutGrid, Star, Edit, Plus } from "lucide-react"
 import { SelectCommunityModal } from "./modals/select-community-modal"
 import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
 import { DataUploadModal } from "./modals/data-upload-modal"
@@ -64,31 +64,49 @@ export function ProjectWorkspace({
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="border-b border-gray-200 bg-white">
-        <div className="flex h-16 items-center justify-between px-6">
-          <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white font-bold">S</div>
-              <span className="text-xl font-semibold text-gray-900">SAVI PRO</span>
+        <div className="px-6">
+          {/* Top row with logo and tabs */}
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center space-x-8">
+              <div className="flex items-center space-x-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white font-bold">
+                  S
+                </div>
+                <span className="text-xl font-semibold text-gray-900">SAVI PRO</span>
+              </div>
+
+              {/* Global Navigation Tabs - moved right of logo */}
+              <nav className="flex space-x-8">
+                <button className="border-b-2 border-blue-500 py-4 px-1 text-sm font-medium text-blue-600">
+                  Projects
+                </button>
+                <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                  Communities
+                </button>
+                <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                  Indicators
+                </button>
+                <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                  Data Upload
+                </button>
+                <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                  Visualizations
+                </button>
+              </nav>
             </div>
-            
-            {/* Global Navigation Tabs */}
-            <nav className="flex space-x-8">
-              <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                Projects
-              </button>
-              <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                Communities
-              </button>
-              <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                Indicators
-              </button>
-              <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                Data Upload
-              </button>
-              <button className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-                Visualizations
-              </button>
-            </nav>
+          </div>
+
+          {/* Second row with Back and Project Name */}
+          <div className="flex items-center space-x-4 py-3 border-t border-gray-100">
+            <Button variant="ghost" size="sm" onClick={onBackToDashboard}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-2xl font-semibold text-gray-900">{projectName}</h1>
+            <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
           </div>
         </div>
       </header>
@@ -96,31 +114,12 @@ export function ProjectWorkspace({
       {/* Main Content */}
       <main className="flex-1 p-6">
         <div className="mx-auto max-w-7xl">
-          {/* Back Navigation */}
-          <div className="mb-4">
-            <Button variant="ghost" size="sm" onClick={onBackToDashboard}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-          </div>
-
-          {/* Project Name & Edit Button */}
-          <div className="flex items-center space-x-3 mb-6">
-            <h1 className="text-2xl font-semibold text-gray-900">{projectName}</h1>
-            <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
-              <Edit className="h-4 w-4 mr-1" />
-              Edit
-            </Button>
-          </div>
-
           {/* Project Details Panel */}
           <Card className="mb-8">
             <CardContent className="p-6">
               <div className="space-y-4">
-                {projectData?.description && (
-                  <p className="text-gray-600">{projectData.description}</p>
-                )}
-                
+                {projectData?.description && <p className="text-gray-600">{projectData.description}</p>}
+
                 {projectData?.createdDate && (
                   <div className="flex items-center text-sm text-gray-500">
                     <Calendar className="h-4 w-4 mr-1" />
@@ -188,8 +187,8 @@ export function ProjectWorkspace({
           <div className="text-center mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Build Your Project</h2>
             <p className="text-gray-600 mb-8">
-              Start building your project by adding one or more Communities. Then you can select Indicators (and
-              upload your data) to create charts, maps and reports.
+              Start building your project by adding one or more Communities. Then you can select Indicators (and upload
+              your data) to create charts, maps and reports.
             </p>
 
             {/* Primary Action Tiles - Four Equal Tiles */}
