@@ -80,10 +80,11 @@ export default function SAVIWorkspace() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const steps = [
-    { number: 1, title: "Upload", description: "Download & Upload CSV" },
-    { number: 2, title: "Configure", description: "Map fields and set types" },
-    { number: 3, title: "Review", description: "Review data and settings" },
-    { number: 4, title: "Complete", description: "Confirmation & Map Display" },
+    { number: 1, title: "Upload", description: "Upload your CSV file" },
+    { number: 2, title: "Configure", description: "Map fields and data types" },
+    { number: 3, title: "Review", description: "Review your data for accuracy" },
+    { number: 4, title: "Settings", description: "Terms & privacy settings" },
+    { number: 5, title: "Confirmation", description: "Upload summary" },
   ]
 
   const datasets = [
@@ -234,14 +235,16 @@ export default function SAVIWorkspace() {
       case 2:
         return fieldMapping.street && fieldMapping.city && fieldMapping.state && fieldMapping.zip
       case 3:
-        return uploadedData && uploadedData.errors.length === 0 && termsAccepted
+        return uploadedData && uploadedData.errors.length === 0
+      case 4:
+        return termsAccepted
       default:
         return true
     }
   }
 
   const nextStep = () => {
-    if (canProceed() && currentStep < 4) {
+    if (canProceed() && currentStep < 5) {
       setCurrentStep(currentStep + 1)
     }
   }
@@ -683,13 +686,13 @@ export default function SAVIWorkspace() {
   const renderStep3 = () => (
     <div className="space-y-8">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Review Data & Privacy Settings</h3>
-        <p className="text-gray-600">Review your data and configure privacy settings.</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Review Data</h3>
+        <p className="text-gray-600">Review your data for accuracy</p>
       </div>
 
       {uploadedData && (
         <div className="space-y-8">
-          {/* Validation Status at Top */}
+          {/* Validation Status */}
           {uploadedData.errors.length > 0 ? (
             <div className="bg-red-50 border border-red-200 rounded-lg p-6">
               <div className="flex items-center justify-between">
@@ -754,7 +757,7 @@ export default function SAVIWorkspace() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {uploadedData.rows.slice(0, 5).map((row, rowIndex) => (
+                    {uploadedData.rows.slice(0, 10).map((row, rowIndex) => (
                       <TableRow key={rowIndex} className="hover:bg-gray-50">
                         <TableCell className="font-medium text-gray-900">{rowIndex + 1}</TableCell>
                         {row.map((cell, cellIndex) => {
@@ -794,125 +797,7 @@ export default function SAVIWorkspace() {
                 </Table>
               </div>
             </div>
-            <p className="text-sm text-gray-500">Showing first 5 rows of {uploadedData.rows.length} total rows</p>
-          </div>
-
-          {/* Separator Line */}
-          <div className="border-t border-gray-200"></div>
-
-          {/* Terms & Privacy Settings */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Left Column - Terms */}
-            <div className="space-y-6">
-              <h4 className="font-semibold text-gray-900">Terms & Conditions</h4>
-
-              <div className="flex items-start space-x-3">
-                <Checkbox
-                  id="terms"
-                  checked={termsAccepted}
-                  onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-                  className="mt-1"
-                />
-                <div className="space-y-2">
-                  <Label htmlFor="terms" className="text-sm font-semibold text-gray-900 leading-none cursor-pointer">
-                    I agree to the Terms and Conditions
-                  </Label>
-                  <p className="text-sm text-gray-600">
-                    By checking this box, you agree to our{" "}
-                    <a href="#" className="text-blue-600 hover:underline inline-flex items-center gap-1">
-                      Terms of Service
-                      <ExternalLink className="w-3 h-3" />
-                    </a>{" "}
-                    and{" "}
-                    <a href="#" className="text-blue-600 hover:underline inline-flex items-center gap-1">
-                      Privacy Policy
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                <div className="flex items-start gap-3">
-                  <Info className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <div>
-                    <h5 className="font-semibold text-blue-900">Data Security</h5>
-                    <p className="text-sm text-blue-800 mt-1">
-                      All uploaded data is encrypted and stored securely. You can change visibility settings or delete
-                      your data at any time.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column - Privacy Settings */}
-            <div className="space-y-6">
-              <h4 className="font-semibold text-gray-900">Data Visibility</h4>
-
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                  <input
-                    type="radio"
-                    id="private"
-                    name="visibility"
-                    value="private"
-                    checked={dataVisibility === "private"}
-                    onChange={(e) => setDataVisibility(e.target.value as "private")}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor="private" className="font-semibold text-gray-900 cursor-pointer">
-                      Private
-                    </Label>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Only you can view and access this data. Recommended for sensitive information.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                  <input
-                    type="radio"
-                    id="sharable"
-                    name="visibility"
-                    value="sharable"
-                    checked={dataVisibility === "sharable"}
-                    onChange={(e) => setDataVisibility(e.target.value as "sharable")}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor="sharable" className="font-semibold text-gray-900 cursor-pointer">
-                      Sharable
-                    </Label>
-                    <p className="text-sm text-gray-600 mt-1">
-                      You can share this data with specific people, but it won't be indexed or discoverable by other
-                      SAVI users.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                  <input
-                    type="radio"
-                    id="public"
-                    name="visibility"
-                    value="public"
-                    checked={dataVisibility === "public"}
-                    onChange={(e) => setDataVisibility(e.target.value as "public")}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor="public" className="font-semibold text-gray-900 cursor-pointer">
-                      Public
-                    </Label>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Data will be visible to other SAVI users and may be used for research purposes.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <p className="text-sm text-gray-500">Showing first 10 rows of {uploadedData.rows.length} total rows</p>
           </div>
         </div>
       )}
@@ -920,113 +805,246 @@ export default function SAVIWorkspace() {
   )
 
   const renderStep4 = () => (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      {/* Left Column - Success Confirmation */}
-      <div className="space-y-8">
-        <div className="text-center space-y-6">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-            <CheckCircle className="w-10 h-10 text-green-600" />
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Terms & Privacy Settings</h3>
+        <p className="text-gray-600">Accept the SAVI Terms & assign visibility settings.</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Left Column - Data Visibility */}
+        <div className="space-y-6">
+          <h4 className="font-semibold text-gray-900">Data Visibility</h4>
+
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+              <input
+                type="radio"
+                id="private"
+                name="visibility"
+                value="private"
+                checked={dataVisibility === "private"}
+                onChange={(e) => setDataVisibility(e.target.value as "private")}
+                className="w-4 h-4 text-blue-600"
+              />
+              <div className="flex-1">
+                <Label htmlFor="private" className="font-semibold text-gray-900 cursor-pointer">
+                  Private
+                </Label>
+                <p className="text-sm text-gray-600 mt-1">
+                  Only you can view and access this data. Recommended for sensitive information.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+              <input
+                type="radio"
+                id="sharable"
+                name="visibility"
+                value="sharable"
+                checked={dataVisibility === "sharable"}
+                onChange={(e) => setDataVisibility(e.target.value as "sharable")}
+                className="w-4 h-4 text-blue-600"
+              />
+              <div className="flex-1">
+                <Label htmlFor="sharable" className="font-semibold text-gray-900 cursor-pointer">
+                  Sharable
+                </Label>
+                <p className="text-sm text-gray-600 mt-1">
+                  You can share this data with specific people, but it won't be indexed or discoverable by other SAVI
+                  users.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+              <input
+                type="radio"
+                id="public"
+                name="visibility"
+                value="public"
+                checked={dataVisibility === "public"}
+                onChange={(e) => setDataVisibility(e.target.value as "public")}
+                className="w-4 h-4 text-blue-600"
+              />
+              <div className="flex-1">
+                <Label htmlFor="public" className="font-semibold text-gray-900 cursor-pointer">
+                  Public
+                </Label>
+                <p className="text-sm text-gray-600 mt-1">
+                  Data will be visible to other SAVI users and may be used for research purposes.
+                </p>
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* Right Column - Terms & Conditions */}
+        <div className="space-y-6">
+          <h4 className="font-semibold text-gray-900">Terms & Conditions</h4>
+
+          <div className="flex items-start space-x-3">
+            <Checkbox
+              id="terms"
+              checked={termsAccepted}
+              onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+              className="mt-1"
+            />
+            <div className="space-y-2">
+              <Label htmlFor="terms" className="text-sm font-semibold text-gray-900 leading-none cursor-pointer">
+                I agree to the Terms and Conditions
+              </Label>
+              <p className="text-sm text-gray-600">
+                By checking this box, you agree to our{" "}
+                <a href="#" className="text-blue-600 hover:underline inline-flex items-center gap-1">
+                  Terms of Service
+                  <ExternalLink className="w-3 h-3" />
+                </a>{" "}
+                and{" "}
+                <a href="#" className="text-blue-600 hover:underline inline-flex items-center gap-1">
+                  Privacy Policy
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <div className="flex items-start gap-3">
+              <Info className="w-5 h-5 text-blue-600 mt-0.5" />
+              <div>
+                <h5 className="font-semibold text-blue-900">Data Security</h5>
+                <p className="text-sm text-blue-800 mt-1">
+                  All uploaded data is encrypted and stored securely. You can change visibility settings or delete your
+                  data at any time.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderStep5 = () => (
+    <div className="space-y-8">
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Upload Summary</h3>
+        <p className="text-gray-600">Data validation passed! Your data looks good and is ready for processing.</p>
+      </div>
+
+      <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+        <div className="flex items-center gap-3 text-green-800">
+          <CheckCircle className="w-6 h-6" />
           <div>
-            <h3 className="text-2xl font-bold text-gray-900">Upload Complete!</h3>
-            <p className="text-gray-600 mt-3">
+            <div className="font-semibold">Upload Complete!</div>
+            <div className="text-sm text-green-700 mt-1">
               Your data has been successfully processed and is ready to view on the map.
-            </p>
-          </div>
-        </div>
-
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-          <h4 className="font-semibold text-gray-900 mb-4">Summary</h4>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <div className="text-sm text-gray-600">Records Processed</div>
-              <div className="text-2xl font-bold text-blue-600">{uploadedData?.rows.length || 0}</div>
             </div>
-            <div>
-              <div className="text-sm text-gray-600">Data Visibility</div>
-              <div className="text-2xl font-bold text-blue-600 capitalize">{dataVisibility}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <h4 className="font-semibold text-gray-900">Field Mappings</h4>
-          <div className="space-y-3">
-            {Object.entries(fieldMapping)
-              .filter(([_, value]) => value)
-              .map(([key, value]) => (
-                <div key={key} className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-sm text-gray-600 capitalize">{key}:</span>
-                  <span className="text-sm font-semibold text-gray-900">{value}</span>
-                </div>
-              ))}
           </div>
         </div>
       </div>
 
-      {/* Right Column - Interactive Map */}
-      <div className="space-y-6">
-        <h4 className="font-semibold text-gray-900">Indianapolis Metro Area - Your Data</h4>
-        <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-          <div className="relative bg-gray-100" style={{ height: "400px" }}>
-            {/* Simulated map background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-blue-100">
-              <div className="absolute inset-0 opacity-20">
-                <svg width="100%" height="100%" viewBox="0 0 400 400">
-                  {/* Simulated roads */}
-                  <path d="M0,200 L400,200" stroke="#666" strokeWidth="2" />
-                  <path d="M200,0 L200,400" stroke="#666" strokeWidth="2" />
-                  <path d="M100,100 L300,300" stroke="#666" strokeWidth="1" />
-                  <path d="M300,100 L100,300" stroke="#666" strokeWidth="1" />
-                </svg>
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Left Column - Summary Stats */}
+        <div className="space-y-6">
+          <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="text-2xl font-bold text-blue-600">{uploadedData?.rows.length || 0}</div>
+              <div className="text-sm text-blue-800">Records</div>
             </div>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="text-2xl font-bold text-green-600">Private</div>
+              <div className="text-sm text-green-800">Visibility</div>
+            </div>
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+              <div className="text-2xl font-bold text-purple-600">Indianapolis</div>
+              <div className="text-sm text-purple-800">Location</div>
+            </div>
+          </div>
 
-            {/* Data points */}
-            {mapData.map((point, index) => (
-              <TooltipProvider key={point.id}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div
-                      className="absolute w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-125 transition-transform"
-                      style={{
-                        left: `${20 + index * 15}%`,
-                        top: `${30 + (index % 3) * 20}%`,
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <div className="text-sm">
-                      <div className="font-semibold">{point.address}</div>
-                      <div>Population: {point.population.toLocaleString()}</div>
-                    </div>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ))}
-
-            {/* Map labels */}
-            <div className="absolute top-4 left-4 bg-white px-3 py-1 rounded shadow text-sm font-semibold">
-              Indianapolis
-            </div>
-            <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded shadow text-sm font-semibold">Carmel</div>
-            <div className="absolute bottom-4 left-4 bg-white px-3 py-1 rounded shadow text-sm font-semibold">
-              Greenwood
-            </div>
-            <div className="absolute bottom-4 right-4 bg-white px-3 py-1 rounded shadow text-sm font-semibold">
-              Fishers
+          <div className="space-y-4">
+            <h4 className="font-semibold text-gray-900">Field Mappings</h4>
+            <div className="space-y-3">
+              {Object.entries(fieldMapping)
+                .filter(([_, value]) => value)
+                .map(([key, value]) => (
+                  <div key={key} className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-sm text-gray-600 capitalize">{key}:</span>
+                    <span className="text-sm font-semibold text-gray-900">{value}</span>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-            <span className="text-gray-600">Your Data Points ({mapData.length})</span>
+        {/* Right Column - Map */}
+        <div className="space-y-4">
+          <h4 className="font-semibold text-gray-900">Indianapolis Metro Area</h4>
+          <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+            <div className="relative bg-gray-100" style={{ height: "400px" }}>
+              {/* Simulated map background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-blue-100">
+                <div className="absolute inset-0 opacity-20">
+                  <svg width="100%" height="100%" viewBox="0 0 400 400">
+                    {/* Simulated roads */}
+                    <path d="M0,200 L400,200" stroke="#666" strokeWidth="2" />
+                    <path d="M200,0 L200,400" stroke="#666" strokeWidth="2" />
+                    <path d="M100,100 L300,300" stroke="#666" strokeWidth="1" />
+                    <path d="M300,100 L100,300" stroke="#666" strokeWidth="1" />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Data points */}
+              {mapData.map((point, index) => (
+                <TooltipProvider key={point.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className="absolute w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-125 transition-transform"
+                        style={{
+                          left: `${20 + index * 15}%`,
+                          top: `${30 + (index % 3) * 20}%`,
+                        }}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="text-sm">
+                        <div className="font-semibold">{point.address}</div>
+                        <div>Population: {point.population.toLocaleString()}</div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+
+              {/* Map labels */}
+              <div className="absolute top-4 left-4 bg-white px-3 py-1 rounded shadow text-sm font-semibold">
+                Indianapolis
+              </div>
+              <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded shadow text-sm font-semibold">
+                Carmel
+              </div>
+              <div className="absolute bottom-4 left-4 bg-white px-3 py-1 rounded shadow text-sm font-semibold">
+                Greenwood
+              </div>
+              <div className="absolute bottom-4 right-4 bg-white px-3 py-1 rounded shadow text-sm font-semibold">
+                Fishers
+              </div>
+            </div>
           </div>
-          <Badge variant="secondary" className="bg-gray-100 text-gray-700">
-            Interactive Map
-          </Badge>
+
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
+              <span className="text-gray-600">Your Data Points ({mapData.length})</span>
+            </div>
+            <Badge variant="secondary" className="bg-gray-100 text-gray-700">
+              Interactive Map
+            </Badge>
+          </div>
         </div>
       </div>
     </div>
@@ -1177,9 +1195,10 @@ export default function SAVIWorkspace() {
               {currentStep === 2 && renderStep2()}
               {currentStep === 3 && renderStep3()}
               {currentStep === 4 && renderStep4()}
+              {currentStep === 5 && renderStep5()}
             </div>
 
-            {currentStep < 4 && (
+            {currentStep < 5 && (
               <div className="flex justify-between pt-6 border-t border-gray-200">
                 <Button
                   variant="outline"
@@ -1190,15 +1209,15 @@ export default function SAVIWorkspace() {
                   Previous
                 </Button>
                 <Button onClick={nextStep} disabled={!canProceed()} className="bg-blue-600 hover:bg-blue-700 px-8 py-3">
-                  {currentStep === 3 ? "Complete Upload" : "Next Step"}
+                  {currentStep === 4 ? "Complete Upload" : "Next Step"}
                 </Button>
               </div>
             )}
 
-            {currentStep === 4 && (
+            {currentStep === 5 && (
               <div className="flex justify-center pt-6 border-t border-gray-200">
                 <Button onClick={handleCloseModal} className="bg-blue-600 hover:bg-blue-700 px-12 py-3">
-                  Close
+                  Done
                 </Button>
               </div>
             )}
