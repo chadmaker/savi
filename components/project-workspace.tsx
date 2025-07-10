@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Map, BarChart3, Upload, Eye, Calendar, List, LayoutGrid, Star, Edit, Plus } from "lucide-react"
+import { ArrowLeft, Map, BarChart3, Upload, Eye, Calendar, List, LayoutGrid, Star, Edit } from "lucide-react"
 import { SelectCommunityModal } from "./modals/select-community-modal"
 import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
 import { DataUploadModal } from "./modals/data-upload-modal"
@@ -67,12 +67,12 @@ export function ProjectWorkspace({
         <div className="px-6">
           {/* Top row with logo and navigation tabs */}
           <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-2">
               <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white font-bold">S</div>
               <span className="text-xl font-semibold text-gray-900">SAVI PRO</span>
             </div>
 
-            {/* Global Navigation Tabs */}
+            {/* Global Navigation Tabs - moved to right */}
             <nav className="flex space-x-8">
               <button className="border-b-2 border-blue-500 py-4 px-1 text-sm font-medium text-blue-600">
                 Projects
@@ -91,19 +91,19 @@ export function ProjectWorkspace({
               </button>
             </nav>
           </div>
-        </div>
 
-        {/* Second row with Back, Project Name, and Edit */}
-        <div className="flex items-center space-x-4 py-3 border-t border-gray-100">
-          <Button variant="ghost" size="sm" onClick={onBackToDashboard}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-2xl font-semibold text-gray-900">{projectName}</h1>
-          <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
-            <Edit className="h-4 w-4 mr-1" />
-            Edit
-          </Button>
+          {/* Second row with Back, Project Name, and Edit */}
+          <div className="flex items-center space-x-4 py-3 px-6 border-t border-gray-100">
+            <Button variant="ghost" size="sm" onClick={onBackToDashboard}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-2xl font-semibold text-gray-900">{projectName}</h1>
+            <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -238,13 +238,6 @@ export function ProjectWorkspace({
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Communities</h3>
               <div className="flex items-center space-x-2">
-                <Button
-                  onClick={() => setShowCommunityModal(true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Community
-                </Button>
                 <div className="flex items-center border rounded-md">
                   <Button
                     variant={viewMode === "card" ? "default" : "ghost"}
@@ -487,19 +480,6 @@ export function ProjectWorkspace({
                 <p>No charts created yet. Start visualization to create charts.</p>
               </div>
             )}
-          </div>
-
-          {/* Start Visualization */}
-          <div className="text-center">
-            <Button
-              onClick={onStartVisualization}
-              disabled={!canStartVisualization}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white"
-              size="lg"
-            >
-              <Eye className="h-5 w-5 mr-2" />
-              Start Visualization
-            </Button>
           </div>
         </div>
       </main>
