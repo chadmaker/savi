@@ -80,11 +80,11 @@ export default function SAVIWorkspace() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const steps = [
-    { number: 1, title: "Upload", description: "Upload your CSV file" },
-    { number: 2, title: "Configure", description: "Map fields and data types" },
-    { number: 3, title: "Review", description: "Review your data for accuracy" },
-    { number: 4, title: "Settings", description: "Terms & privacy settings" },
-    { number: 5, title: "Confirmation", description: "Upload summary" },
+    { number: 1, title: "Upload" },
+    { number: 2, title: "Configure" },
+    { number: 3, title: "Review" },
+    { number: 4, title: "Settings" },
+    { number: 5, title: "Confirmation" },
   ]
 
   const datasets = [
@@ -270,6 +270,23 @@ export default function SAVIWorkspace() {
     resetModal()
   }
 
+  const getStepTitle = () => {
+    switch (currentStep) {
+      case 1:
+        return "Upload your CSV file"
+      case 2:
+        return "Map fields and data types"
+      case 3:
+        return "Review your data for accuracy"
+      case 4:
+        return "Terms & privacy settings"
+      case 5:
+        return "Upload summary"
+      default:
+        return ""
+    }
+  }
+
   const renderStepIndicator = () => (
     <div className="flex items-center justify-center mb-10">
       <div className="flex items-center space-x-8">
@@ -291,7 +308,6 @@ export default function SAVIWorkspace() {
                 >
                   {step.title}
                 </div>
-                <div className="text-xs text-gray-500 mt-1">{step.description}</div>
               </div>
             </div>
             {index < steps.length - 1 && (
@@ -305,123 +321,110 @@ export default function SAVIWorkspace() {
 
   const renderStep1 = () => (
     <div className="space-y-8">
-      {/* Download CSV Template Section */}
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Download CSV Template</h3>
-          <p className="text-gray-600">
-            Start by downloading our sample CSV template to see the expected format for your data.
-          </p>
-        </div>
+      <h1 className="text-2xl font-bold text-gray-900">{getStepTitle()}</h1>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h4 className="font-semibold text-gray-900 mb-4">Template includes these fields:</h4>
-          <div className="grid grid-cols-2 gap-3 text-sm text-gray-700 mb-6">
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-              Street Address
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-              City
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-              State
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-              ZIP Code
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-              Year
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-              Population
-            </div>
-            <div className="flex items-center">
-              <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-              Category
-            </div>
+      <div className="grid grid-cols-10 gap-8">
+        {/* Left Column - Upload CSV (70% width) */}
+        <div className="col-span-7 space-y-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Upload CSV</h2>
+            <p className="text-gray-600">Drag and drop your CSV file or click to browse and select it.</p>
           </div>
-          <Button
-            onClick={downloadTemplate}
-            variant="outline"
-            className="w-full border-blue-300 text-blue-700 hover:bg-blue-100 bg-transparent"
+
+          <div
+            className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors"
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+            onDragEnter={(e) => e.preventDefault()}
           >
-            <Download className="w-4 h-4 mr-2" />
-            Download Sample CSV
-          </Button>
-        </div>
+            <FileText className="w-16 h-16 mx-auto text-gray-400 mb-6" />
+            <p className="text-lg font-semibold text-gray-900 mb-2">Drag and drop your CSV file here</p>
+            <p className="text-gray-600 mb-6">or</p>
+            <Button
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="px-8 py-3 text-base"
+            >
+              {isUploading ? "Processing..." : "Browse Files"}
+            </Button>
+            <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileSelect} className="hidden" />
+            <p className="text-sm text-gray-500 mt-6">Supported format: CSV files only</p>
+          </div>
 
-        <p className="text-sm text-gray-500">
-          Once downloaded, you can modify the template with your own data while keeping the same structure.
-        </p>
-      </div>
-
-      {/* Separator Line */}
-      <div className="border-t border-gray-200"></div>
-
-      {/* Upload CSV Section */}
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload CSV</h3>
-          <p className="text-gray-600">Drag and drop your CSV file or click to browse and select it.</p>
-        </div>
-
-        <div
-          className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors"
-          onDrop={handleDrop}
-          onDragOver={(e) => e.preventDefault()}
-          onDragEnter={(e) => e.preventDefault()}
-        >
-          <FileText className="w-16 h-16 mx-auto text-gray-400 mb-6" />
-          <p className="text-lg font-semibold text-gray-900 mb-2">Drag and drop your CSV file here</p>
-          <p className="text-gray-600 mb-6">or</p>
-          <Button
-            variant="outline"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isUploading}
-            className="px-8 py-3 text-base"
-          >
-            {isUploading ? "Processing..." : "Browse Files"}
-          </Button>
-          <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileSelect} className="hidden" />
-          <p className="text-sm text-gray-500 mt-6">Supported format: CSV files only</p>
-        </div>
-
-        {uploadedData && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-            <div className="flex items-center gap-3 text-green-800">
-              <CheckCircle className="w-6 h-6" />
-              <div>
-                <div className="font-semibold">File uploaded successfully!</div>
-                <div className="text-sm text-green-700 mt-1">
-                  Found {uploadedData.headers.length} columns and {uploadedData.rows.length} rows
+          {uploadedData && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+              <div className="flex items-center gap-3 text-green-800">
+                <CheckCircle className="w-6 h-6" />
+                <div>
+                  <div className="font-semibold">File uploaded successfully!</div>
+                  <div className="text-sm text-green-700 mt-1">
+                    Found {uploadedData.headers.length} columns and {uploadedData.rows.length} rows
+                  </div>
                 </div>
               </div>
             </div>
+          )}
+        </div>
+
+        {/* Right Column - Download Template (30% width) */}
+        <div className="col-span-3 space-y-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">Download Template</h2>
+            <p className="text-gray-600 text-sm">
+              Start by downloading our sample CSV template to see the expected format for your data.
+            </p>
           </div>
-        )}
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 className="font-semibold text-gray-900 mb-3 text-sm">Template includes:</h4>
+            <div className="space-y-2 text-xs text-gray-700 mb-4">
+              <div className="flex items-center">
+                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
+                Street Address
+              </div>
+              <div className="flex items-center">
+                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
+                City, State, ZIP
+              </div>
+              <div className="flex items-center">
+                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
+                Year, Population
+              </div>
+              <div className="flex items-center">
+                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
+                Category
+              </div>
+            </div>
+            <Button
+              onClick={downloadTemplate}
+              variant="outline"
+              size="sm"
+              className="w-full border-blue-300 text-blue-700 hover:bg-blue-100 bg-transparent text-xs"
+            >
+              <Download className="w-3 h-3 mr-2" />
+              Download CSV
+            </Button>
+          </div>
+
+          <p className="text-xs text-gray-500">
+            Once downloaded, you can modify the template with your own data while keeping the same structure.
+          </p>
+        </div>
       </div>
     </div>
   )
 
   const renderStep2 = () => (
     <div className="space-y-8">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Configure Data Fields & Types</h3>
-        <p className="text-gray-600">Map your CSV columns to required fields and set data types.</p>
-      </div>
+      <h1 className="text-2xl font-bold text-gray-900">{getStepTitle()}</h1>
 
       {uploadedData && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Left Column - Required Fields */}
-          <div className="space-y-6">
+        <div className="space-y-8">
+          {/* Required Fields Table */}
+          <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <h4 className="font-semibold text-gray-900">Required Fields</h4>
+              <h2 className="text-lg font-semibold text-gray-900">Required Fields</h2>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
@@ -434,97 +437,156 @@ export default function SAVIWorkspace() {
               </TooltipProvider>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <Label className="text-sm font-semibold text-gray-900">
-                  Street Address <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={fieldMapping.street || ""}
-                  onValueChange={(value) => setFieldMapping({ ...fieldMapping, street: value })}
-                >
-                  <SelectTrigger className="mt-2 border-gray-300">
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {uploadedData.headers.map((header) => (
-                      <SelectItem key={header} value={header}>
-                        {header}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="font-semibold text-gray-900 w-1/3">Label</TableHead>
+                    <TableHead className="font-semibold text-gray-900 w-1/3">Column Select</TableHead>
+                    <TableHead className="font-semibold text-gray-900 w-1/3">Data Type</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      Street Address <span className="text-red-500">*</span>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={fieldMapping.street || ""}
+                        onValueChange={(value) => setFieldMapping({ ...fieldMapping, street: value })}
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select column" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {uploadedData.headers.map((header) => (
+                            <SelectItem key={header} value={header}>
+                              {header}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select disabled value="geographic">
+                        <SelectTrigger className="border-gray-300 bg-gray-50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="geographic">Geographic</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
 
-              <div>
-                <Label className="text-sm font-semibold text-gray-900">
-                  City <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={fieldMapping.city || ""}
-                  onValueChange={(value) => setFieldMapping({ ...fieldMapping, city: value })}
-                >
-                  <SelectTrigger className="mt-2 border-gray-300">
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {uploadedData.headers.map((header) => (
-                      <SelectItem key={header} value={header}>
-                        {header}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      City <span className="text-red-500">*</span>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={fieldMapping.city || ""}
+                        onValueChange={(value) => setFieldMapping({ ...fieldMapping, city: value })}
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select column" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {uploadedData.headers.map((header) => (
+                            <SelectItem key={header} value={header}>
+                              {header}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select disabled value="geographic">
+                        <SelectTrigger className="border-gray-300 bg-gray-50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="geographic">Geographic</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
 
-              <div>
-                <Label className="text-sm font-semibold text-gray-900">
-                  State <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={fieldMapping.state || ""}
-                  onValueChange={(value) => setFieldMapping({ ...fieldMapping, state: value })}
-                >
-                  <SelectTrigger className="mt-2 border-gray-300">
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {uploadedData.headers.map((header) => (
-                      <SelectItem key={header} value={header}>
-                        {header}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      State <span className="text-red-500">*</span>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={fieldMapping.state || ""}
+                        onValueChange={(value) => setFieldMapping({ ...fieldMapping, state: value })}
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select column" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {uploadedData.headers.map((header) => (
+                            <SelectItem key={header} value={header}>
+                              {header}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select disabled value="geographic">
+                        <SelectTrigger className="border-gray-300 bg-gray-50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="geographic">Geographic</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
 
-              <div>
-                <Label className="text-sm font-semibold text-gray-900">
-                  ZIP Code <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={fieldMapping.zip || ""}
-                  onValueChange={(value) => setFieldMapping({ ...fieldMapping, zip: value })}
-                >
-                  <SelectTrigger className="mt-2 border-gray-300">
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {uploadedData.headers.map((header) => (
-                      <SelectItem key={header} value={header}>
-                        {header}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                  <TableRow>
+                    <TableCell className="font-medium">
+                      ZIP Code <span className="text-red-500">*</span>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={fieldMapping.zip || ""}
+                        onValueChange={(value) => setFieldMapping({ ...fieldMapping, zip: value })}
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select column" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {uploadedData.headers.map((header) => (
+                            <SelectItem key={header} value={header}>
+                              {header}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select disabled value="geographic">
+                        <SelectTrigger className="border-gray-300 bg-gray-50">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="geographic">Geographic</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </div>
           </div>
 
-          {/* Right Column - Optional Fields */}
-          <div className="space-y-6">
+          {/* Optional Fields Table */}
+          <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <h4 className="font-semibold text-gray-900">Optional Fields</h4>
+              <h2 className="text-lg font-semibold text-gray-900">Optional Fields</h2>
               <span className="text-sm text-gray-500">(optional)</span>
               <TooltipProvider>
                 <Tooltip>
@@ -538,146 +600,168 @@ export default function SAVIWorkspace() {
               </TooltipProvider>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <Label className="text-sm font-semibold text-gray-900">Year</Label>
-                <Select
-                  value={fieldMapping.year || ""}
-                  onValueChange={(value) => setFieldMapping({ ...fieldMapping, year: value === "none" ? "" : value })}
-                >
-                  <SelectTrigger className="mt-2 border-gray-300">
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {uploadedData.headers.map((header) => (
-                      <SelectItem key={header} value={header}>
-                        {header}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {fieldMapping.year && (
-                  <Select
-                    value={dataTypes[fieldMapping.year]?.type || ""}
-                    onValueChange={(value: "numeric" | "categorical" | "geographic") =>
-                      setDataTypes({
-                        ...dataTypes,
-                        [fieldMapping.year]: { type: value },
-                      })
-                    }
-                  >
-                    <SelectTrigger className="mt-2 border-gray-300">
-                      <SelectValue placeholder="Data type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="numeric">Numeric</SelectItem>
-                      <SelectItem value="categorical">Categorical</SelectItem>
-                      <SelectItem value="geographic">Geographic</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
+            <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="font-semibold text-gray-900 w-1/3">Label</TableHead>
+                    <TableHead className="font-semibold text-gray-900 w-1/3">Column Select</TableHead>
+                    <TableHead className="font-semibold text-gray-900 w-1/3">Data Type</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">Year</TableCell>
+                    <TableCell>
+                      <Select
+                        value={fieldMapping.year || ""}
+                        onValueChange={(value) =>
+                          setFieldMapping({ ...fieldMapping, year: value === "none" ? "" : value })
+                        }
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select column" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {uploadedData.headers.map((header) => (
+                            <SelectItem key={header} value={header}>
+                              {header}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={dataTypes[fieldMapping.year]?.type || ""}
+                        onValueChange={(value: "numeric" | "categorical" | "geographic") =>
+                          setDataTypes({
+                            ...dataTypes,
+                            [fieldMapping.year]: { type: value },
+                          })
+                        }
+                        disabled={!fieldMapping.year}
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="numeric">Numeric</SelectItem>
+                          <SelectItem value="categorical">Categorical</SelectItem>
+                          <SelectItem value="geographic">Geographic</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
 
-              <div>
-                <Label className="text-sm font-semibold text-gray-900">Population</Label>
-                <Select
-                  value={fieldMapping.population || ""}
-                  onValueChange={(value) =>
-                    setFieldMapping({ ...fieldMapping, population: value === "none" ? "" : value })
-                  }
-                >
-                  <SelectTrigger className="mt-2 border-gray-300">
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {uploadedData.headers.map((header) => (
-                      <SelectItem key={header} value={header}>
-                        {header}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {fieldMapping.population && (
-                  <Select
-                    value={dataTypes[fieldMapping.population]?.type || ""}
-                    onValueChange={(value: "numeric" | "categorical" | "geographic") =>
-                      setDataTypes({
-                        ...dataTypes,
-                        [fieldMapping.population]: { type: value },
-                      })
-                    }
-                  >
-                    <SelectTrigger className="mt-2 border-gray-300">
-                      <SelectValue placeholder="Data type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="numeric">Numeric</SelectItem>
-                      <SelectItem value="categorical">Categorical</SelectItem>
-                      <SelectItem value="geographic">Geographic</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
+                  <TableRow>
+                    <TableCell className="font-medium">Population</TableCell>
+                    <TableCell>
+                      <Select
+                        value={fieldMapping.population || ""}
+                        onValueChange={(value) =>
+                          setFieldMapping({ ...fieldMapping, population: value === "none" ? "" : value })
+                        }
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select column" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {uploadedData.headers.map((header) => (
+                            <SelectItem key={header} value={header}>
+                              {header}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={dataTypes[fieldMapping.population]?.type || ""}
+                        onValueChange={(value: "numeric" | "categorical" | "geographic") =>
+                          setDataTypes({
+                            ...dataTypes,
+                            [fieldMapping.population]: { type: value },
+                          })
+                        }
+                        disabled={!fieldMapping.population}
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="numeric">Numeric</SelectItem>
+                          <SelectItem value="categorical">Categorical</SelectItem>
+                          <SelectItem value="geographic">Geographic</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
 
-              <div>
-                <Label className="text-sm font-semibold text-gray-900">Category</Label>
-                <Select
-                  value={fieldMapping.category || ""}
-                  onValueChange={(value) =>
-                    setFieldMapping({ ...fieldMapping, category: value === "none" ? "" : value })
-                  }
-                >
-                  <SelectTrigger className="mt-2 border-gray-300">
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {uploadedData.headers.map((header) => (
-                      <SelectItem key={header} value={header}>
-                        {header}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {fieldMapping.category && (
-                  <Select
-                    value={dataTypes[fieldMapping.category]?.type || ""}
-                    onValueChange={(value: "numeric" | "categorical" | "geographic") =>
-                      setDataTypes({
-                        ...dataTypes,
-                        [fieldMapping.category]: { type: value },
-                      })
-                    }
-                  >
-                    <SelectTrigger className="mt-2 border-gray-300">
-                      <SelectValue placeholder="Data type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="numeric">Numeric</SelectItem>
-                      <SelectItem value="categorical">Categorical</SelectItem>
-                      <SelectItem value="geographic">Geographic</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
+                  <TableRow>
+                    <TableCell className="font-medium">Category</TableCell>
+                    <TableCell>
+                      <Select
+                        value={fieldMapping.category || ""}
+                        onValueChange={(value) =>
+                          setFieldMapping({ ...fieldMapping, category: value === "none" ? "" : value })
+                        }
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select column" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {uploadedData.headers.map((header) => (
+                            <SelectItem key={header} value={header}>
+                              {header}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell>
+                      <Select
+                        value={dataTypes[fieldMapping.category]?.type || ""}
+                        onValueChange={(value: "numeric" | "categorical" | "geographic") =>
+                          setDataTypes({
+                            ...dataTypes,
+                            [fieldMapping.category]: { type: value },
+                          })
+                        }
+                        disabled={!fieldMapping.category}
+                      >
+                        <SelectTrigger className="border-gray-300">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="numeric">Numeric</SelectItem>
+                          <SelectItem value="categorical">Categorical</SelectItem>
+                          <SelectItem value="geographic">Geographic</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </div>
           </div>
-        </div>
-      )}
 
-      {uploadedData && uploadedData.errors.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <div className="flex items-center gap-3 text-red-800">
-            <AlertCircle className="w-6 h-6" />
-            <div>
-              <div className="font-semibold">Validation Issues Found</div>
-              <div className="text-sm text-red-700 mt-1">
-                {uploadedData.errors.length} validation errors detected in your data.
+          {uploadedData.errors.length > 0 && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+              <div className="flex items-center gap-3 text-red-800">
+                <AlertCircle className="w-6 h-6" />
+                <div>
+                  <div className="font-semibold">Validation Issues Found</div>
+                  <div className="text-sm text-red-700 mt-1">
+                    {uploadedData.errors.length} validation errors detected in your data.
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
@@ -685,10 +769,7 @@ export default function SAVIWorkspace() {
 
   const renderStep3 = () => (
     <div className="space-y-8">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Review Data</h3>
-        <p className="text-gray-600">Review your data for accuracy</p>
-      </div>
+      <h1 className="text-2xl font-bold text-gray-900">{getStepTitle()}</h1>
 
       {uploadedData && (
         <div className="space-y-8">
@@ -742,7 +823,7 @@ export default function SAVIWorkspace() {
 
           {/* Data Preview */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900">Data Preview</h4>
+            <h2 className="text-lg font-semibold text-gray-900">Data Preview</h2>
             <div className="border border-gray-200 rounded-lg overflow-hidden">
               <div className="max-h-64 overflow-auto">
                 <Table>
@@ -806,15 +887,12 @@ export default function SAVIWorkspace() {
 
   const renderStep4 = () => (
     <div className="space-y-8">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Terms & Privacy Settings</h3>
-        <p className="text-gray-600">Accept the SAVI Terms & assign visibility settings.</p>
-      </div>
+      <h1 className="text-2xl font-bold text-gray-900">{getStepTitle()}</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Left Column - Data Visibility */}
         <div className="space-y-6">
-          <h4 className="font-semibold text-gray-900">Data Visibility</h4>
+          <h2 className="text-lg font-semibold text-gray-900">Data Visibility</h2>
 
           <div className="space-y-4">
             <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
@@ -882,7 +960,7 @@ export default function SAVIWorkspace() {
 
         {/* Right Column - Terms & Conditions */}
         <div className="space-y-6">
-          <h4 className="font-semibold text-gray-900">Terms & Conditions</h4>
+          <h2 className="text-lg font-semibold text-gray-900">Terms & Conditions</h2>
 
           <div className="flex items-start space-x-3">
             <Checkbox
@@ -929,10 +1007,7 @@ export default function SAVIWorkspace() {
 
   const renderStep5 = () => (
     <div className="space-y-8">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Upload Summary</h3>
-        <p className="text-gray-600">Data validation passed! Your data looks good and is ready for processing.</p>
-      </div>
+      <h1 className="text-2xl font-bold text-gray-900">{getStepTitle()}</h1>
 
       <div className="bg-green-50 border border-green-200 rounded-lg p-6">
         <div className="flex items-center gap-3 text-green-800">
@@ -965,7 +1040,7 @@ export default function SAVIWorkspace() {
           </div>
 
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900">Field Mappings</h4>
+            <h2 className="text-lg font-semibold text-gray-900">Field Mappings</h2>
             <div className="space-y-3">
               {Object.entries(fieldMapping)
                 .filter(([_, value]) => value)
@@ -981,7 +1056,7 @@ export default function SAVIWorkspace() {
 
         {/* Right Column - Map */}
         <div className="space-y-4">
-          <h4 className="font-semibold text-gray-900">Indianapolis Metro Area</h4>
+          <h2 className="text-lg font-semibold text-gray-900">Indianapolis Metro Area</h2>
           <div className="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
             <div className="relative bg-gray-100" style={{ height: "400px" }}>
               {/* Simulated map background */}
