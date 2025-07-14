@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Map, BarChart3, Upload, Eye, List, LayoutGrid, Star, Edit, Lock, Link, ArrowLeft } from "lucide-react"
+import { Map, BarChart3, Upload, Eye, List, LayoutGrid, Star, Edit, Lock, Users, Link, ArrowLeft } from "lucide-react"
 import { SelectCommunityModal } from "./modals/select-community-modal"
 import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
 import { DataUploadModal } from "./modals/data-upload-modal"
@@ -72,7 +72,7 @@ export function ProjectWorkspace({
       case "unlisted":
         return <Link className="h-4 w-4 text-gray-500" />
       case "community":
-        return <Link className="h-4 w-4 text-gray-500" />
+        return <Users className="h-4 w-4 text-gray-500" />
       default:
         return <Lock className="h-4 w-4 text-gray-500" />
     }
@@ -111,7 +111,7 @@ export function ProjectWorkspace({
 
   return (
     <div className="min-h-screen bg-white">
-      <main className="flex-1">
+      <main className="flex-1 p-6">
         <div className="mx-auto max-w-7xl">
           {/* Project Header */}
           <div className="flex items-center justify-between mb-4">
@@ -119,7 +119,7 @@ export function ProjectWorkspace({
               <ArrowLeft className="h-4 w-4 mr-2" />
               All projects
             </Button>
-            <h1 className="text-2xl font-semibold text-gray-900 text-center flex-grow">{projectName}</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 text-center flex-grow mx-4">{projectName}</h1>
             <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
               <Edit className="h-4 w-4 mr-1" />
               Edit
@@ -128,26 +128,33 @@ export function ProjectWorkspace({
 
           {/* Shaded Project Details Area */}
           <div className="bg-gray-100 rounded-lg p-4 mb-8">
-            <div className="flex items-center space-x-6">
-              {projectData?.createdDate && (
-                <div className="text-sm">
-                  <span className="font-medium text-gray-600">Created: </span>
-                  <span className="text-gray-800">{new Date(projectData.createdDate).toLocaleDateString()}</span>
-                </div>
-              )}
-              {projectData?.lastModified && (
-                <div className="text-sm">
-                  <span className="font-medium text-gray-600">Updated: </span>
-                  <span className="text-gray-800">{new Date(projectData.lastModified).toLocaleDateString()}</span>
-                </div>
-              )}
-              {projectData?.visibility && (
-                <div className="text-sm flex items-center">
-                  <span className="font-medium text-gray-600 mr-2">Visibility: </span>
-                  <div className="flex items-center text-gray-800">
-                    {getVisibilityIcon(projectData.visibility)}
-                    <span className="ml-2">{getVisibilityLabel(projectData.visibility)}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+              <div className="flex items-center space-x-6 col-span-full lg:col-span-3">
+                {projectData?.createdDate && (
+                  <div className="text-sm">
+                    <span className="font-medium text-gray-600">Created: </span>
+                    <span className="text-gray-800">{new Date(projectData.createdDate).toLocaleDateString()}</span>
                   </div>
+                )}
+                {projectData?.lastModified && (
+                  <div className="text-sm">
+                    <span className="font-medium text-gray-600">Updated: </span>
+                    <span className="text-gray-800">{new Date(projectData.lastModified).toLocaleDateString()}</span>
+                  </div>
+                )}
+                {projectData?.visibility && (
+                  <div className="text-sm flex items-center">
+                    <span className="font-medium text-gray-600 mr-2">Visibility: </span>
+                    <div className="flex items-center text-gray-800">
+                      {getVisibilityIcon(projectData.visibility)}
+                      <span className="ml-2">{getVisibilityLabel(projectData.visibility)}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+              {projectData?.description && (
+                <div className="text-sm col-span-full mt-2">
+                  <p className="text-gray-800">{projectData.description}</p>
                 </div>
               )}
             </div>
@@ -212,17 +219,24 @@ export function ProjectWorkspace({
               </div>
             ) : (
               <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">{/* Table content here */}</table>
-                <div className="p-4 bg-gray-50">
-                  <Button
-                    variant="outline"
-                    className="w-full border-dashed border-blue-300 text-blue-600 bg-white hover:bg-blue-50"
-                    onClick={() => setShowCommunityModal(true)}
-                  >
-                    <Map className="h-4 w-4 mr-2" />
-                    Add Community
-                  </Button>
-                </div>
+                <table className="w-full">
+                  <tbody>
+                    {filteredCommunities.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="p-4">
+                          <Button
+                            variant="outline"
+                            className="w-full border-dashed border-blue-300 text-blue-600 bg-white hover:bg-blue-50"
+                            onClick={() => setShowCommunityModal(true)}
+                          >
+                            <Map className="h-4 w-4 mr-2" />
+                            Add Community
+                          </Button>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
@@ -286,17 +300,24 @@ export function ProjectWorkspace({
               </div>
             ) : (
               <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">{/* Table content here */}</table>
-                <div className="p-4 bg-gray-50">
-                  <Button
-                    variant="outline"
-                    className="w-full border-dashed border-green-300 text-green-600 bg-white hover:bg-green-50"
-                    onClick={() => setShowIndicatorsModal(true)}
-                  >
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Add Indicator
-                  </Button>
-                </div>
+                <table className="w-full">
+                  <tbody>
+                    {filteredIndicators.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="p-4">
+                          <Button
+                            variant="outline"
+                            className="w-full border-dashed border-green-300 text-green-600 bg-white hover:bg-green-50"
+                            onClick={() => setShowIndicatorsModal(true)}
+                          >
+                            <BarChart3 className="h-4 w-4 mr-2" />
+                            Add Indicator
+                          </Button>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
@@ -360,17 +381,24 @@ export function ProjectWorkspace({
               </div>
             ) : (
               <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">{/* Table content here */}</table>
-                <div className="p-4 bg-gray-50">
-                  <Button
-                    variant="outline"
-                    className="w-full border-dashed border-purple-300 text-purple-600 bg-white hover:bg-purple-50"
-                    onClick={() => setShowUploadModal(true)}
-                  >
-                    <Upload className="h-4 w-4 mr-2" />
-                    Upload Data
-                  </Button>
-                </div>
+                <table className="w-full">
+                  <tbody>
+                    {filteredUploads.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="p-4">
+                          <Button
+                            variant="outline"
+                            className="w-full border-dashed border-purple-300 text-purple-600 bg-white hover:bg-purple-50"
+                            onClick={() => setShowUploadModal(true)}
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Upload Data
+                          </Button>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
@@ -445,17 +473,24 @@ export function ProjectWorkspace({
               </div>
             ) : (
               <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">{/* Table content here */}</table>
-                <div className="p-4 bg-gray-50">
-                  <Button
-                    variant="outline"
-                    className="w-full border-dashed border-indigo-300 text-indigo-600 bg-white hover:bg-indigo-50"
-                    onClick={onStartVisualization}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    Add Visualization
-                  </Button>
-                </div>
+                <table className="w-full">
+                  <tbody>
+                    {filteredVisualizations.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="p-4">
+                          <Button
+                            variant="outline"
+                            className="w-full border-dashed border-indigo-300 text-indigo-600 bg-white hover:bg-indigo-50"
+                            onClick={onStartVisualization}
+                          >
+                            <Eye className="h-4 w-4 mr-2" />
+                            Add Visualization
+                          </Button>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
