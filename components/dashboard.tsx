@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ProjectWorkspace } from "./ProjectWorkspace"
+import { ProjectWorkspace } from "./project-workspace"
 
 interface ProjectData {
   id?: number
