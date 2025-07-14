@@ -326,13 +326,13 @@ export default function SAVIWorkspace() {
       <div className="grid grid-cols-10 gap-8">
         {/* Left Column - Download Template (40% width) */}
         <div className="col-span-4">
-          <div className="bg-[#F7F9FC] rounded-lg p-4 space-y-6">
+          <div className="bg-[#F7F9FC] rounded-lg p-4 space-y-6 h-full">
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-2">Start with a Template</h2>
               <p className="text-gray-600 text-sm">Use this template to see the expected format for your data.</p>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="border border-gray-200 rounded-lg p-4">
               <h4 className="font-semibold text-gray-900 mb-3 text-sm">Template includes:</h4>
               <div className="space-y-2 text-xs text-gray-700 mb-4">
                 <div className="flex items-center">
@@ -371,7 +371,7 @@ export default function SAVIWorkspace() {
 
         {/* Right Column - Upload CSV (60% width) */}
         <div className="col-span-6">
-          <div className="bg-[#F7F9FC] rounded-lg p-4 space-y-6">
+          <div className="rounded-lg p-4 space-y-6">
             <div>
               <h2 className="text-lg font-semibold text-gray-900 mb-2">Upload CSV</h2>
               <p className="text-gray-600">Drag and drop your CSV file or click to browse and select it.</p>
