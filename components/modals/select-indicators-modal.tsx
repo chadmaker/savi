@@ -9,20 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Search,
-  Filter,
-  Star,
-  Plus,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Calendar,
-  Check,
-  Info,
-  ChevronRight,
-} from "lucide-react"
+import { Search, Filter, Star, Plus, TrendingUp, TrendingDown, Minus, Check, Info, ChevronRight } from "lucide-react"
 import { sampleIndicators as initialIndicators, type Indicator } from "@/data/indicators"
+import { cn } from "@/lib/utils"
 
 interface SelectIndicatorsModalProps {
   open: boolean
@@ -97,13 +86,18 @@ export function SelectIndicatorsModal({
     setActiveFilters({ populations: [], topics: [], reportingLevels: [], sources: [] })
   }
 
+  const handleCategoryClick = (category: string) => {
+    setSearchTerm(category)
+  }
+
   const filteredIndicators = useMemo(() => {
     return indicators.filter((indicator) => {
       const searchLower = searchTerm.toLowerCase()
       const matchesSearch =
         searchTerm === "" ||
         indicator.name.toLowerCase().includes(searchLower) ||
-        indicator.description.toLowerCase().includes(searchLower)
+        indicator.description.toLowerCase().includes(searchLower) ||
+        indicator.categories.some((c) => c.toLowerCase().includes(searchLower))
 
       const matchesFilters =
         (activeFilters.populations.length === 0 ||
@@ -170,65 +164,108 @@ export function SelectIndicatorsModal({
     indicator,
     onSelect,
     onStarToggle,
+    onCategoryClick,
     isSelected,
     selectedCommunity,
   }: {
     indicator: Indicator
     onSelect: (id: string) => void
     onStarToggle: (id: string) => void
+    onCategoryClick: (category: string) => void
     isSelected: boolean
     selectedCommunity: string
-  }) => (
-    <div className="border rounded-lg p-4 flex items-start justify-between space-x-4 hover:bg-gray-50">
-      <div className="flex items-start space-x-4 flex-1">
-        <Button variant="ghost" size="icon" className="h-8 w-8 -ml-2" onClick={() => onStarToggle(indicator.id)}>
-          <Star className={`h-5 w-5 ${indicator.starred ? "text-yellow-400 fill-current" : "text-gray-400"}`} />
-        </Button>
-        <div className="flex-1">
-          <h4 className="font-semibold">{indicator.name}</h4>
-          <div className="flex items-center space-x-4 text-xs text-gray-500 my-1">
-            <Badge variant="secondary">{indicator.source}</Badge>
-            <span className="flex items-center">
-              <Calendar className="h-3 w-3 mr-1" /> {indicator.years}
-            </span>
+  }) => {
+    const [isMetaVisible, setIsMetaVisible] = useState(false)
+
+    return (
+      <div className="border rounded-lg p-4 flex flex-col space-y-4 hover:bg-gray-50">
+        <div className="flex items-start justify-between space-x-4">
+          <div className="flex items-start space-x-4 flex-1">
+            <Button variant="ghost" size="icon" className="h-8 w-8 -ml-2" onClick={() => onStarToggle(indicator.id)}>
+              <Star className={`h-5 w-5 ${indicator.starred ? "text-yellow-400 fill-current" : "text-gray-400"}`} />
+            </Button>
+            <div className="flex-1">
+              <h4 className="font-semibold">{indicator.name}</h4>
+              <div className="text-sm text-gray-600 flex items-center flex-wrap mt-1">
+                {indicator.categories.map((cat, i) => (
+                  <span key={i} className="flex items-center">
+                    <button
+                      onClick={() => onCategoryClick(cat)}
+                      className="hover:underline text-blue-600 hover:text-blue-800"
+                    >
+                      {cat}
+                    </button>
+                    {i < indicator.categories.length - 1 && <ChevronRight className="h-4 w-4 mx-1 text-gray-400" />}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-1 my-2">
-            <Badge variant="secondary">{indicator.topic}</Badge>
-            {indicator.populations.map((p) => (
-              <Badge key={p} variant="secondary">
-                {p}
-              </Badge>
-            ))}
-          </div>
-          <div className="text-sm text-gray-600 flex items-center flex-wrap">
-            {indicator.categories.map((cat, i) => (
-              <span key={i} className="flex items-center">
-                {cat}
-                {i < indicator.categories.length - 1 && <ChevronRight className="h-4 w-4 mx-1 text-gray-400" />}
-              </span>
-            ))}
+          <div className="flex flex-col items-end space-y-2">
+            <div className="flex items-center space-x-1">
+              <Button
+                variant={isSelected ? "default" : "outline"}
+                size="sm"
+                onClick={() => onSelect(indicator.id)}
+                className="w-28"
+              >
+                {isSelected ? <Check className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
+                {isSelected ? "Selected" : "Select"}
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => setIsMetaVisible(!isMetaVisible)}>
+                <Info className={cn("h-4 w-4", isMetaVisible ? "text-blue-600" : "text-gray-500")} />
+              </Button>
+            </div>
+            <div className="h-5">{selectedCommunity !== "all" && <TrendIcon trend={indicator.trend} />}</div>
           </div>
         </div>
+        {isMetaVisible && (
+          <div className="pl-12 pr-4 pt-4 border-t">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h5 className="font-semibold text-sm mb-2">Topic</h5>
+                <Badge variant="secondary">{indicator.topic}</Badge>
+              </div>
+              <div>
+                <h5 className="font-semibold text-sm mb-2">Populations</h5>
+                <div className="flex flex-wrap gap-1">
+                  {indicator.populations.length > 0 ? (
+                    indicator.populations.map((p) => (
+                      <Badge key={p} variant="secondary">
+                        {p}
+                      </Badge>
+                    ))
+                  ) : (
+                    <span className="text-sm text-gray-500">N/A</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 pt-4 border-t">
+              <div className="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <span className="font-semibold">Source: </span>
+                  <span>{indicator.source}</span>
+                </div>
+                <div>
+                  <span className="font-semibold">Availability: </span>
+                  <span>{indicator.years}</span>
+                </div>
+                <div>
+                  <span className="font-semibold">Reporting Level: </span>
+                  <span>{indicator.reportingArea}</span>
+                </div>
+                <div>
+                  <span className="font-semibold">Last Updated: </span>
+                  <span>{new Date(indicator.lastUpdated).toLocaleDateString()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      <div className="flex flex-col items-end space-y-2">
-        <div className="flex items-center space-x-1">
-          <Button
-            variant={isSelected ? "default" : "outline"}
-            size="sm"
-            onClick={() => onSelect(indicator.id)}
-            className="w-28"
-          >
-            {isSelected ? <Check className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
-            {isSelected ? "Selected" : "Select"}
-          </Button>
-          <Button variant="ghost" size="icon">
-            <Info className="h-4 w-4 text-gray-500" />
-          </Button>
-        </div>
-        <div className="h-5">{selectedCommunity !== "all" && <TrendIcon trend={indicator.trend} />}</div>
-      </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -411,6 +448,7 @@ export function SelectIndicatorsModal({
                     indicator={indicator}
                     onSelect={handleSelectIndicator}
                     onStarToggle={handleToggleStar}
+                    onCategoryClick={handleCategoryClick}
                     isSelected={selected.includes(indicator.id)}
                     selectedCommunity={selectedCommunity}
                   />
@@ -424,6 +462,7 @@ export function SelectIndicatorsModal({
                       indicator={indicator}
                       onSelect={handleSelectIndicator}
                       onStarToggle={handleToggleStar}
+                      onCategoryClick={handleCategoryClick}
                       isSelected={selected.includes(indicator.id)}
                       selectedCommunity={selectedCommunity}
                     />
