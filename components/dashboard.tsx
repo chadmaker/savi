@@ -83,8 +83,8 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200 bg-white px-6">
+    <div className="min-h-screen bg-white max-w-[1440px] mx-auto px-20">
+      <header className="border-b border-gray-200 bg-white">
         {/* Top Row */}
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
@@ -149,7 +149,7 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 p-6">
+      <main className="flex-1 py-6">
         <div>
           {currentScreen === "dashboard" && (
             <>
