@@ -1,7 +1,8 @@
 export interface Indicator {
   id: string
-  name: string
-  description: string
+  name: string // This will now hold the long description
+  description: string // This will now hold the short name
+  categories: string[] // For breadcrumbs
   source: "U.S. Census" | "CDC" | "Indiana DOE" | "EPA" | "Indiana DOH" | "BLS"
   lastUpdated: string
   years: string
@@ -15,8 +16,9 @@ export interface Indicator {
 export const sampleIndicators: Indicator[] = [
   {
     id: "1",
-    name: "Child Poverty Rate",
-    description: "Population Under Age 18 Living in Poverty as % of Pop Under 18",
+    name: "Population Under Age 18 Living in Poverty as % of Pop Under 18",
+    description: "Child Poverty Rate",
+    categories: ["Income", "Poverty", "Living in Poverty", "Children"],
     source: "U.S. Census",
     lastUpdated: "2023-11-01",
     years: "2010-2023",
@@ -28,8 +30,9 @@ export const sampleIndicators: Indicator[] = [
   },
   {
     id: "2",
-    name: "Diabetes Prevalence",
-    description: "Diabetes Rate Among Population 18 Years and Over",
+    name: "Diabetes Rate Among Population 18 Years and Over",
+    description: "Diabetes Prevalence",
+    categories: ["Health", "Chronic Conditions", "Diabetes"],
     source: "CDC",
     lastUpdated: "2023-10-15",
     years: "2018-2022",
@@ -41,8 +44,9 @@ export const sampleIndicators: Indicator[] = [
   },
   {
     id: "3",
-    name: "High School Graduation Rate",
-    description: "Percentage of students graduating high school within 4 years",
+    name: "Percentage of students graduating high school within 4 years",
+    description: "High School Graduation Rate",
+    categories: ["Education", "Educational Attainment", "High School"],
     source: "Indiana DOE",
     lastUpdated: "2024-01-20",
     years: "2010-2024",
@@ -54,8 +58,9 @@ export const sampleIndicators: Indicator[] = [
   },
   {
     id: "4",
-    name: "Air Quality Index",
-    description: "Relative level of airborne pollutant risk",
+    name: "Relative level of airborne pollutant risk",
+    description: "Air Quality Index",
+    categories: ["Environment", "Air Quality"],
     source: "EPA",
     lastUpdated: "2024-02-01",
     years: "2019-2022",
@@ -67,8 +72,9 @@ export const sampleIndicators: Indicator[] = [
   },
   {
     id: "5",
-    name: "Unemployment Rate",
-    description: "Percentage of the labor force that is jobless",
+    name: "Percentage of the labor force that is jobless",
+    description: "Unemployment Rate",
+    categories: ["Economy", "Employment", "Unemployment"],
     source: "BLS",
     lastUpdated: "2024-03-01",
     years: "2021-2024",
@@ -80,8 +86,9 @@ export const sampleIndicators: Indicator[] = [
   },
   {
     id: "6",
-    name: "Median Household Income",
-    description: "The median income of households in a geographic area.",
+    name: "The median income of households in a geographic area.",
+    description: "Median Household Income",
+    categories: ["Income", "Median"],
     source: "U.S. Census",
     lastUpdated: "2023-11-01",
     years: "2010-2023",
@@ -93,8 +100,9 @@ export const sampleIndicators: Indicator[] = [
   },
   {
     id: "7",
-    name: "Life Expectancy",
-    description: "Average number of years a person is expected to live.",
+    name: "Average number of years a person is expected to live.",
+    description: "Life Expectancy",
+    categories: ["Health", "Mortality", "Life Expectancy"],
     source: "Indiana DOH",
     lastUpdated: "2023-12-01",
     years: "2018-2022",
@@ -106,8 +114,9 @@ export const sampleIndicators: Indicator[] = [
   },
   {
     id: "8",
-    name: "Hispanic Population",
-    description: "Number of individuals identifying as Hispanic or Latino.",
+    name: "Number of individuals identifying as Hispanic or Latino.",
+    description: "Hispanic Population",
+    categories: ["Demographic", "Race and Ethnicity"],
     source: "U.S. Census",
     lastUpdated: "2023-11-01",
     years: "2010-2023",
