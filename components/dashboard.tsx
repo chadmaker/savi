@@ -76,8 +76,10 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
     setCurrentScreen("workspace")
   }
 
+  const isWorkspace = currentScreen === "workspace"
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="border-b border-gray-200 bg-white">
         <div className="flex h-16 items-center justify-between px-6">
@@ -93,26 +95,38 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
             </button>
 
             {/* Navigation Tabs */}
-            <nav className="flex space-x-8">
-              {navigationTabs.map((tab) => (
+            {!isWorkspace && (
+              <nav className="flex space-x-8">
+                {navigationTabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id as any)
+                      if (currentScreen !== "dashboard") {
+                        setCurrentScreen("dashboard")
+                      }
+                    }}
+                    className={`border-b-2 py-4 px-1 text-sm font-medium ${
+                      tab.active
+                        ? "border-blue-500 text-blue-600"
+                        : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </nav>
+            )}
+            {isWorkspace && (
+              <nav className="flex space-x-8">
                 <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id as any)
-                    if (currentScreen !== "dashboard") {
-                      setCurrentScreen("dashboard")
-                    }
-                  }}
-                  className={`border-b-2 py-4 px-1 text-sm font-medium ${
-                    tab.active
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                  }`}
+                  onClick={handleBackToDashboard}
+                  className="border-b-2 py-4 px-1 text-sm font-medium border-blue-500 text-blue-600"
                 >
-                  {tab.label}
+                  Projects
                 </button>
-              ))}
-            </nav>
+              </nav>
+            )}
           </div>
           <div className="flex items-center space-x-3"></div>
         </div>

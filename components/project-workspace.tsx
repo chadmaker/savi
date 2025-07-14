@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Map, BarChart3, Upload, Eye, List, LayoutGrid, Star, Edit, Lock, Users, Link, ArrowLeft } from "lucide-react"
+import { Map, BarChart3, Upload, Eye, List, LayoutGrid, Star, Edit, Lock, Link, ArrowLeft } from "lucide-react"
 import { SelectCommunityModal } from "./modals/select-community-modal"
 import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
 import { DataUploadModal } from "./modals/data-upload-modal"
@@ -72,7 +72,7 @@ export function ProjectWorkspace({
       case "unlisted":
         return <Link className="h-4 w-4 text-gray-500" />
       case "community":
-        return <Users className="h-4 w-4 text-gray-500" />
+        return <Link className="h-4 w-4 text-gray-500" />
       default:
         return <Lock className="h-4 w-4 text-gray-500" />
     }
@@ -83,7 +83,7 @@ export function ProjectWorkspace({
       case "private":
         return "Private"
       case "unlisted":
-        return "Shared"
+        return "Unlisted"
       case "community":
         return "Community"
       default:
@@ -111,39 +111,15 @@ export function ProjectWorkspace({
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Global Header */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="flex h-16 items-center justify-between px-6">
-          <div className="flex items-center space-x-8">
-            <button
-              onClick={onBackToDashboard}
-              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
-            >
-              <span className="font-bold text-xl text-gray-800">SAVI PRO</span>
-            </button>
-            <nav className="flex space-x-8">
-              <button
-                onClick={onBackToDashboard}
-                className="border-b-2 border-blue-500 text-blue-600 py-4 px-1 text-sm font-medium"
-              >
-                Projects
-              </button>
-              {/* Other nav items can be added here if needed */}
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 p-6">
+      <main className="flex-1">
         <div className="mx-auto max-w-7xl">
           {/* Project Header */}
           <div className="flex items-center justify-between mb-4">
-            <Button variant="ghost" onClick={onBackToDashboard}>
+            <Button variant="ghost" onClick={onBackToDashboard} className="text-gray-600">
               <ArrowLeft className="h-4 w-4 mr-2" />
               All projects
             </Button>
-            <h1 className="text-2xl font-semibold text-gray-900">{projectName}</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 text-center flex-grow">{projectName}</h1>
             <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
               <Edit className="h-4 w-4 mr-1" />
               Edit
@@ -152,32 +128,26 @@ export function ProjectWorkspace({
 
           {/* Shaded Project Details Area */}
           <div className="bg-gray-100 rounded-lg p-4 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="flex items-center space-x-6">
               {projectData?.createdDate && (
                 <div className="text-sm">
-                  <span className="font-medium text-gray-600 block">Created</span>
+                  <span className="font-medium text-gray-600">Created: </span>
                   <span className="text-gray-800">{new Date(projectData.createdDate).toLocaleDateString()}</span>
                 </div>
               )}
               {projectData?.lastModified && (
                 <div className="text-sm">
-                  <span className="font-medium text-gray-600 block">Last Updated</span>
+                  <span className="font-medium text-gray-600">Updated: </span>
                   <span className="text-gray-800">{new Date(projectData.lastModified).toLocaleDateString()}</span>
                 </div>
               )}
               {projectData?.visibility && (
-                <div className="text-sm">
-                  <span className="font-medium text-gray-600 block">Visibility</span>
+                <div className="text-sm flex items-center">
+                  <span className="font-medium text-gray-600 mr-2">Visibility: </span>
                   <div className="flex items-center text-gray-800">
                     {getVisibilityIcon(projectData.visibility)}
                     <span className="ml-2">{getVisibilityLabel(projectData.visibility)}</span>
                   </div>
-                </div>
-              )}
-              {projectData?.description && (
-                <div className="text-sm lg:col-span-4">
-                  <span className="font-medium text-gray-600 block">Description</span>
-                  <p className="text-gray-800">{projectData.description}</p>
                 </div>
               )}
             </div>
@@ -188,9 +158,9 @@ export function ProjectWorkspace({
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-lg font-medium text-gray-900">Saved Communities</h4>
               <div className="flex items-center space-x-2">
-                <div className="flex items-center border rounded-md">
+                <div className="flex items-center border rounded-md bg-white">
                   <Button
-                    variant={communitiesViewMode === "card" ? "default" : "ghost"}
+                    variant={communitiesViewMode === "card" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setCommunitiesViewMode("card")}
                     className="rounded-r-none"
@@ -198,7 +168,7 @@ export function ProjectWorkspace({
                     <LayoutGrid className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant={communitiesViewMode === "list" ? "default" : "ghost"}
+                    variant={communitiesViewMode === "list" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setCommunitiesViewMode("list")}
                     className="rounded-l-none"
@@ -207,12 +177,14 @@ export function ProjectWorkspace({
                   </Button>
                 </div>
                 <Button
-                  variant={communitiesShowStarred ? "default" : "outline"}
+                  variant="outline"
                   size="sm"
                   onClick={() => setCommunitiesShowStarred(!communitiesShowStarred)}
-                  className={communitiesShowStarred ? "bg-gray-900 text-white" : ""}
+                  className="bg-white"
                 >
-                  <Star className={`h-4 w-4 mr-1 ${communitiesShowStarred ? "fill-current text-yellow-400" : ""}`} />
+                  <Star
+                    className={`h-4 w-4 mr-1 ${communitiesShowStarred ? "fill-yellow-400 text-yellow-400" : "text-gray-600"}`}
+                  />
                   Starred
                 </Button>
               </div>
@@ -226,7 +198,7 @@ export function ProjectWorkspace({
                   </Card>
                 ))}
                 <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-blue-200 hover:border-blue-300"
+                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-blue-200 hover:border-blue-300 bg-blue-50/50"
                   onClick={() => setShowCommunityModal(true)}
                 >
                   <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full min-h-[140px]">
@@ -241,10 +213,10 @@ export function ProjectWorkspace({
             ) : (
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full">{/* Table content here */}</table>
-                <div className="p-4">
+                <div className="p-4 bg-gray-50">
                   <Button
                     variant="outline"
-                    className="w-full border-dashed border-blue-200 hover:border-blue-300 text-blue-600 bg-transparent"
+                    className="w-full border-dashed border-blue-300 text-blue-600 bg-white hover:bg-blue-50"
                     onClick={() => setShowCommunityModal(true)}
                   >
                     <Map className="h-4 w-4 mr-2" />
@@ -260,9 +232,9 @@ export function ProjectWorkspace({
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-lg font-medium text-gray-900">Saved Indicators</h4>
               <div className="flex items-center space-x-2">
-                <div className="flex items-center border rounded-md">
+                <div className="flex items-center border rounded-md bg-white">
                   <Button
-                    variant={indicatorsViewMode === "card" ? "default" : "ghost"}
+                    variant={indicatorsViewMode === "card" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setIndicatorsViewMode("card")}
                     className="rounded-r-none"
@@ -270,7 +242,7 @@ export function ProjectWorkspace({
                     <LayoutGrid className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant={indicatorsViewMode === "list" ? "default" : "ghost"}
+                    variant={indicatorsViewMode === "list" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setIndicatorsViewMode("list")}
                     className="rounded-l-none"
@@ -279,12 +251,14 @@ export function ProjectWorkspace({
                   </Button>
                 </div>
                 <Button
-                  variant={indicatorsShowStarred ? "default" : "outline"}
+                  variant="outline"
                   size="sm"
                   onClick={() => setIndicatorsShowStarred(!indicatorsShowStarred)}
-                  className={indicatorsShowStarred ? "bg-gray-900 text-white" : ""}
+                  className="bg-white"
                 >
-                  <Star className={`h-4 w-4 mr-1 ${indicatorsShowStarred ? "fill-current text-yellow-400" : ""}`} />
+                  <Star
+                    className={`h-4 w-4 mr-1 ${indicatorsShowStarred ? "fill-yellow-400 text-yellow-400" : "text-gray-600"}`}
+                  />
                   Starred
                 </Button>
               </div>
@@ -298,7 +272,7 @@ export function ProjectWorkspace({
                   </Card>
                 ))}
                 <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-green-200 hover:border-green-300"
+                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-green-200 hover:border-green-300 bg-green-50/50"
                   onClick={() => setShowIndicatorsModal(true)}
                 >
                   <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full min-h-[140px]">
@@ -313,10 +287,10 @@ export function ProjectWorkspace({
             ) : (
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full">{/* Table content here */}</table>
-                <div className="p-4">
+                <div className="p-4 bg-gray-50">
                   <Button
                     variant="outline"
-                    className="w-full border-dashed border-green-200 hover:border-green-300 text-green-600 bg-transparent"
+                    className="w-full border-dashed border-green-300 text-green-600 bg-white hover:bg-green-50"
                     onClick={() => setShowIndicatorsModal(true)}
                   >
                     <BarChart3 className="h-4 w-4 mr-2" />
@@ -332,9 +306,9 @@ export function ProjectWorkspace({
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-lg font-medium text-gray-900">Uploaded Datasets</h4>
               <div className="flex items-center space-x-2">
-                <div className="flex items-center border rounded-md">
+                <div className="flex items-center border rounded-md bg-white">
                   <Button
-                    variant={uploadsViewMode === "card" ? "default" : "ghost"}
+                    variant={uploadsViewMode === "card" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setUploadsViewMode("card")}
                     className="rounded-r-none"
@@ -342,7 +316,7 @@ export function ProjectWorkspace({
                     <LayoutGrid className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant={uploadsViewMode === "list" ? "default" : "ghost"}
+                    variant={uploadsViewMode === "list" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setUploadsViewMode("list")}
                     className="rounded-l-none"
@@ -351,12 +325,14 @@ export function ProjectWorkspace({
                   </Button>
                 </div>
                 <Button
-                  variant={uploadsShowStarred ? "default" : "outline"}
+                  variant="outline"
                   size="sm"
                   onClick={() => setUploadsShowStarred(!uploadsShowStarred)}
-                  className={uploadsShowStarred ? "bg-gray-900 text-white" : ""}
+                  className="bg-white"
                 >
-                  <Star className={`h-4 w-4 mr-1 ${uploadsShowStarred ? "fill-current text-yellow-400" : ""}`} />
+                  <Star
+                    className={`h-4 w-4 mr-1 ${uploadsShowStarred ? "fill-yellow-400 text-yellow-400" : "text-gray-600"}`}
+                  />
                   Starred
                 </Button>
               </div>
@@ -370,7 +346,7 @@ export function ProjectWorkspace({
                   </Card>
                 ))}
                 <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-purple-200 hover:border-purple-300"
+                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-purple-200 hover:border-purple-300 bg-purple-50/50"
                   onClick={() => setShowUploadModal(true)}
                 >
                   <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full min-h-[140px]">
@@ -385,10 +361,10 @@ export function ProjectWorkspace({
             ) : (
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full">{/* Table content here */}</table>
-                <div className="p-4">
+                <div className="p-4 bg-gray-50">
                   <Button
                     variant="outline"
-                    className="w-full border-dashed border-purple-200 hover:border-purple-300 text-purple-600 bg-transparent"
+                    className="w-full border-dashed border-purple-300 text-purple-600 bg-white hover:bg-purple-50"
                     onClick={() => setShowUploadModal(true)}
                   >
                     <Upload className="h-4 w-4 mr-2" />
@@ -405,7 +381,7 @@ export function ProjectWorkspace({
               <h4 className="text-lg font-medium text-gray-900">Saved Visualizations</h4>
               <div className="flex items-center space-x-2">
                 <Select defaultValue="all">
-                  <SelectTrigger className="w-32">
+                  <SelectTrigger className="w-32 bg-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -415,9 +391,9 @@ export function ProjectWorkspace({
                     <SelectItem value="profiles">Profiles</SelectItem>
                   </SelectContent>
                 </Select>
-                <div className="flex items-center border rounded-md">
+                <div className="flex items-center border rounded-md bg-white">
                   <Button
-                    variant={visualizationsViewMode === "card" ? "default" : "ghost"}
+                    variant={visualizationsViewMode === "card" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setVisualizationsViewMode("card")}
                     className="rounded-r-none"
@@ -425,7 +401,7 @@ export function ProjectWorkspace({
                     <LayoutGrid className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant={visualizationsViewMode === "list" ? "default" : "ghost"}
+                    variant={visualizationsViewMode === "list" ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setVisualizationsViewMode("list")}
                     className="rounded-l-none"
@@ -434,12 +410,14 @@ export function ProjectWorkspace({
                   </Button>
                 </div>
                 <Button
-                  variant={visualizationsShowStarred ? "default" : "outline"}
+                  variant="outline"
                   size="sm"
                   onClick={() => setVisualizationsShowStarred(!visualizationsShowStarred)}
-                  className={visualizationsShowStarred ? "bg-gray-900 text-white" : ""}
+                  className="bg-white"
                 >
-                  <Star className={`h-4 w-4 mr-1 ${visualizationsShowStarred ? "fill-current text-yellow-400" : ""}`} />
+                  <Star
+                    className={`h-4 w-4 mr-1 ${visualizationsShowStarred ? "fill-yellow-400 text-yellow-400" : "text-gray-600"}`}
+                  />
                   Starred
                 </Button>
               </div>
@@ -453,7 +431,7 @@ export function ProjectWorkspace({
                   </Card>
                 ))}
                 <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-indigo-200 hover:border-indigo-300"
+                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-indigo-200 hover:border-indigo-300 bg-indigo-50/50"
                   onClick={onStartVisualization}
                 >
                   <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full min-h-[140px]">
@@ -468,10 +446,10 @@ export function ProjectWorkspace({
             ) : (
               <div className="border rounded-lg overflow-hidden">
                 <table className="w-full">{/* Table content here */}</table>
-                <div className="p-4">
+                <div className="p-4 bg-gray-50">
                   <Button
                     variant="outline"
-                    className="w-full border-dashed border-indigo-200 hover:border-indigo-300 text-indigo-600 bg-transparent"
+                    className="w-full border-dashed border-indigo-300 text-indigo-600 bg-white hover:bg-indigo-50"
                     onClick={onStartVisualization}
                   >
                     <Eye className="h-4 w-4 mr-2" />
