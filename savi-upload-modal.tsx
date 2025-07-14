@@ -324,92 +324,94 @@ export default function SAVIWorkspace() {
       <h1 className="text-2xl font-bold text-gray-900">{getStepTitle()}</h1>
 
       <div className="grid grid-cols-10 gap-8">
-        {/* Left Column - Upload CSV (70% width) */}
-        <div className="col-span-7 space-y-6">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Upload CSV</h2>
-            <p className="text-gray-600">Drag and drop your CSV file or click to browse and select it.</p>
-          </div>
+        {/* Left Column - Download Template (40% width) */}
+        <div className="col-span-4">
+          <div className="bg-[#F7F9FC] rounded-lg p-4 space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Start with a Template</h2>
+              <p className="text-gray-600 text-sm">Use this template to see the expected format for your data.</p>
+            </div>
 
-          <div
-            className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors"
-            onDrop={handleDrop}
-            onDragOver={(e) => e.preventDefault()}
-            onDragEnter={(e) => e.preventDefault()}
-          >
-            <FileText className="w-16 h-16 mx-auto text-gray-400 mb-6" />
-            <p className="text-lg font-semibold text-gray-900 mb-2">Drag and drop your CSV file here</p>
-            <p className="text-gray-600 mb-6">or</p>
-            <Button
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="px-8 py-3 text-base"
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-3 text-sm">Template includes:</h4>
+              <div className="space-y-2 text-xs text-gray-700 mb-4">
+                <div className="flex items-center">
+                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
+                  Street Address
+                </div>
+                <div className="flex items-center">
+                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
+                  City, State, ZIP
+                </div>
+                <div className="flex items-center">
+                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
+                  Year, Population
+                </div>
+                <div className="flex items-center">
+                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
+                  Category
+                </div>
+              </div>
+              <Button
+                onClick={downloadTemplate}
+                variant="outline"
+                size="sm"
+                className="w-full border-blue-300 text-blue-700 hover:bg-blue-100 bg-transparent text-xs"
+              >
+                <Download className="w-3 h-3 mr-2" />
+                Download CSV
+              </Button>
+            </div>
+
+            <p className="text-xs text-gray-500">
+              Once downloaded, you can modify the template with your own data while keeping the same structure.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Column - Upload CSV (60% width) */}
+        <div className="col-span-6">
+          <div className="bg-[#F7F9FC] rounded-lg p-4 space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Upload CSV</h2>
+              <p className="text-gray-600">Drag and drop your CSV file or click to browse and select it.</p>
+            </div>
+
+            <div
+              className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors"
+              onDrop={handleDrop}
+              onDragOver={(e) => e.preventDefault()}
+              onDragEnter={(e) => e.preventDefault()}
             >
-              {isUploading ? "Processing..." : "Browse Files"}
-            </Button>
-            <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileSelect} className="hidden" />
-            <p className="text-sm text-gray-500 mt-6">Supported format: CSV files only</p>
-          </div>
+              <FileText className="w-16 h-16 mx-auto text-gray-400 mb-6" />
+              <p className="text-lg font-semibold text-gray-900 mb-2">Drag and drop your CSV file here</p>
+              <p className="text-gray-600 mb-6">or</p>
+              <Button
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="px-8 py-3 text-base"
+              >
+                {isUploading ? "Processing..." : "Browse Files"}
+              </Button>
+              <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileSelect} className="hidden" />
+              <p className="text-sm text-gray-500 mt-6">Supported format: CSV files only</p>
+            </div>
 
-          {uploadedData && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-              <div className="flex items-center gap-3 text-green-800">
-                <CheckCircle className="w-6 h-6" />
-                <div>
-                  <div className="font-semibold">File uploaded successfully!</div>
-                  <div className="text-sm text-green-700 mt-1">
-                    Found {uploadedData.headers.length} columns and {uploadedData.rows.length} rows
+            {uploadedData && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                <div className="flex items-center gap-3 text-green-800">
+                  <CheckCircle className="w-6 h-6" />
+                  <div>
+                    <div className="font-semibold">File uploaded successfully!</div>
+                    <div className="text-sm text-green-700 mt-1">
+                      Found {uploadedData.headers.length} columns and {uploadedData.rows.length} rows
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Right Column - Download Template (30% width) */}
-        <div className="col-span-3 space-y-6">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">Download Template</h2>
-            <p className="text-gray-600 text-sm">
-              Start by downloading our sample CSV template to see the expected format for your data.
-            </p>
+            )}
           </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-gray-900 mb-3 text-sm">Template includes:</h4>
-            <div className="space-y-2 text-xs text-gray-700 mb-4">
-              <div className="flex items-center">
-                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
-                Street Address
-              </div>
-              <div className="flex items-center">
-                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
-                City, State, ZIP
-              </div>
-              <div className="flex items-center">
-                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
-                Year, Population
-              </div>
-              <div className="flex items-center">
-                <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mr-2"></div>
-                Category
-              </div>
-            </div>
-            <Button
-              onClick={downloadTemplate}
-              variant="outline"
-              size="sm"
-              className="w-full border-blue-300 text-blue-700 hover:bg-blue-100 bg-transparent text-xs"
-            >
-              <Download className="w-3 h-3 mr-2" />
-              Download CSV
-            </Button>
-          </div>
-
-          <p className="text-xs text-gray-500">
-            Once downloaded, you can modify the template with your own data while keeping the same structure.
-          </p>
         </div>
       </div>
     </div>
