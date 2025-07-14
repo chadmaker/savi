@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { Search, ChevronDown, User, LogOut } from "lucide-react"
+
 import { CreateProjectModal } from "./modals/create-project-modal"
 import { SelectCommunityModal } from "./modals/select-community-modal"
 import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
@@ -11,9 +13,13 @@ import { CommunitiesPage } from "./pages/communities-page"
 import { IndicatorsPage } from "./pages/indicators-page"
 import { UploadPage } from "./pages/upload-page"
 import { VisualizationsPage } from "./pages/visualizations-page"
-import { ProjectWorkspace } from "./project-workspace" // Assuming this component exists
+import { ProjectWorkspace } from "./project-workspace"
 import { VisualizationBuilder } from "./visualization-builder"
 import type { ProjectData } from "./modals/create-project-modal"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { HamburgerMenu } from "./hamburger-menu"
 
 interface DashboardProps {
   onCreateProject: (project: ProjectData) => void
@@ -49,7 +55,7 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
     setCurrentProject(projectData.name)
     setCurrentProjectData(projectWithDate)
     setCurrentScreen("workspace")
-    passUpstreamCreateProject(projectWithDate) // Pass the complete project data
+    passUpstreamCreateProject(projectWithDate)
   }
 
   const handleStartVisualization = () => {
@@ -70,7 +76,6 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
 
   const handleBackToDashboard = () => {
     setCurrentScreen("dashboard")
-    // Keep the same tab active, don't reset project
   }
 
   const handleReturnToWorkspace = () => {
@@ -79,10 +84,11 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
+      <header className="border-b border-gray-200 bg-white px-6">
+        {/* Top Row */}
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center gap-4">
+            <HamburgerMenu />
             <button
               onClick={() => {
                 setCurrentScreen("dashboard")
@@ -90,37 +96,60 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
               }}
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
-              <Image src="/savi-logo.png" alt="SAVI Logo" width={100} height={40} />
+              <Image src="/savi-logo.png" alt="SAVI Logo" width={80} height={32} />
             </button>
-
-            {/* Navigation Tabs */}
-            <nav className="flex space-x-8">
-              {navigationTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id as any)
-                    if (currentScreen !== "dashboard") {
-                      setCurrentScreen("dashboard")
-                    }
-                  }}
-                  className={`border-b-2 py-4 px-1 text-sm font-medium ${
-                    tab.active
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
           </div>
-          <div className="flex items-center space-x-3"></div>
+          <div className="relative flex-1 max-w-xl mx-8">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input placeholder="Search with SAVI AI" className="pl-10 w-full" />
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2">
+                Account
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                <span>User Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Logout</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        {/* Bottom Row */}
+        <div className="flex h-16 items-center gap-10">
+          <h1 className="text-2xl font-bold text-gray-800">SAVI Pro</h1>
+          <nav className="flex space-x-8">
+            {navigationTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id as any)
+                  if (currentScreen !== "dashboard") {
+                    setCurrentScreen("dashboard")
+                  }
+                }}
+                className={`border-b-2 py-4 px-1 text-sm font-medium ${
+                  tab.active
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 py-6">
+      <main className="flex-1 p-6">
         <div>
           {currentScreen === "dashboard" && (
             <>
@@ -155,7 +184,7 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
         open={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onCreateProject={(proj) => {
-          handleCreateProject(proj) // proj is already the object
+          handleCreateProject(proj)
           setShowCreateModal(false)
         }}
       />
