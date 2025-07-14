@@ -1,13 +1,16 @@
 "use client"
 
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useState, useMemo } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, X } from "lucide-react"
+import { Search, Filter, Star, Plus, TrendingUp, TrendingDown, Minus, Calendar, Check, Info } from "lucide-react"
+import { sampleIndicators, type Indicator } from "@/data/indicators"
 
 interface SelectIndicatorsModalProps {
   open: boolean
@@ -16,218 +19,400 @@ interface SelectIndicatorsModalProps {
   onSelectionChange: (indicators: string[]) => void
 }
 
-const indicatorCategories = {
-  demographics: [
-    "Total Population",
-    "Population Density",
-    "Median Age",
-    "Race/Ethnicity Distribution",
-    "Household Size",
+const filterOptions = {
+  populations: [
+    "African Americans",
+    "Asians",
+    "Hispanics and Latinos",
+    "Older Adults",
+    "Working Age",
+    "Working Poor",
+    "Youth",
   ],
-  education: [
-    "High School Graduation Rate",
-    "Bachelor's Degree Attainment",
-    "School Enrollment",
-    "Educational Spending per Student",
-    "Student-Teacher Ratio",
+  topics: [
+    "Basic Needs",
+    "Community Development",
+    "Crime and Safety",
+    "Demographic",
+    "Early Care and Learning",
+    "Economic Mobility",
+    "Economy",
+    "Education",
+    "Environment",
+    "Equity",
+    "Food Access",
+    "Health",
+    "Housing",
+    "Poverty and Income",
   ],
-  economics: [
-    "Median Household Income",
-    "Poverty Rate",
-    "Unemployment Rate",
-    "Employment by Industry",
-    "Cost of Living Index",
-  ],
-  housing: ["Housing Units", "Homeownership Rate", "Median Home Value", "Rent Burden", "Housing Vacancy Rate"],
-  health: [
-    "Life Expectancy",
-    "Infant Mortality Rate",
-    "Access to Healthcare",
-    "Health Insurance Coverage",
-    "Chronic Disease Rates",
-  ],
+  reportingLevels: ["State", "County", "County Subdivision", "Census Tract", "Block Group", "Census Block"],
+  sources: ["U.S. Census", "CDC", "Indiana DOE", "EPA", "Indiana DOH", "BLS"],
 }
+
+const years = Array.from({ length: 15 }, (_, i) => (new Date().getFullYear() - i).toString())
 
 export function SelectIndicatorsModal({
   open,
   onClose,
-  selectedIndicators,
+  selectedIndicators: initialSelected,
   onSelectionChange,
 }: SelectIndicatorsModalProps) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [activeTab, setActiveTab] = useState("browse")
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({
+    populations: [],
+    topics: [],
+    reportingLevels: [],
+    sources: [],
+  })
+  const [selected, setSelected] = useState<string[]>(initialSelected)
+  const [selectedCommunity, setSelectedCommunity] = useState<string>("all")
 
-  const allIndicators = Object.values(indicatorCategories).flat()
-
-  const filteredIndicators = searchTerm
-    ? allIndicators.filter((indicator) => indicator.toLowerCase().includes(searchTerm.toLowerCase()))
-    : []
-
-  const handleToggleIndicator = (indicator: string) => {
-    if (selectedIndicators.includes(indicator)) {
-      onSelectionChange(selectedIndicators.filter((i) => i !== indicator))
-    } else {
-      onSelectionChange([...selectedIndicators, indicator])
-    }
+  const handleFilterChange = (category: string, value: string) => {
+    setActiveFilters((prev) => {
+      const newFilters = { ...prev }
+      const currentCategoryFilters = newFilters[category] || []
+      if (currentCategoryFilters.includes(value)) {
+        newFilters[category] = currentCategoryFilters.filter((item) => item !== value)
+      } else {
+        newFilters[category] = [...currentCategoryFilters, value]
+      }
+      return newFilters
+    })
   }
 
-  const handleRemoveIndicator = (indicator: string) => {
-    onSelectionChange(selectedIndicators.filter((i) => i !== indicator))
+  const clearAllFilters = () => {
+    setActiveFilters({ populations: [], topics: [], reportingLevels: [], sources: [] })
+  }
+
+  const filteredIndicators = useMemo(() => {
+    return sampleIndicators.filter((indicator) => {
+      const searchLower = searchTerm.toLowerCase()
+      const matchesSearch =
+        searchTerm === "" ||
+        indicator.name.toLowerCase().includes(searchLower) ||
+        indicator.description.toLowerCase().includes(searchLower)
+
+      const matchesFilters =
+        (activeFilters.populations.length === 0 ||
+          indicator.populations.some((p) => activeFilters.populations.includes(p))) &&
+        (activeFilters.topics.length === 0 || activeFilters.topics.includes(indicator.topic)) &&
+        (activeFilters.reportingLevels.length === 0 ||
+          activeFilters.reportingLevels.includes(indicator.reportingArea)) &&
+        (activeFilters.sources.length === 0 || activeFilters.sources.includes(indicator.source))
+
+      return matchesSearch && matchesFilters
+    })
+  }, [searchTerm, activeFilters])
+
+  const selectedIndicatorsData = useMemo(() => {
+    return sampleIndicators.filter((indicator) => selected.includes(indicator.id))
+  }, [selected])
+
+  const getFilterCounts = useMemo(() => {
+    const counts: Record<string, Record<string, number>> = {
+      populations: {},
+      topics: {},
+      reportingLevels: {},
+      sources: {},
+    }
+
+    sampleIndicators.forEach((indicator) => {
+      // This is a simplified count. A real implementation would be more complex.
+      indicator.populations.forEach((p) => {
+        counts.populations[p] = (counts.populations[p] || 0) + 1
+      })
+      counts.topics[indicator.topic] = (counts.topics[indicator.topic] || 0) + 1
+      counts.reportingLevels[indicator.reportingArea] = (counts.reportingLevels[indicator.reportingArea] || 0) + 1
+      counts.sources[indicator.source] = (counts.sources[indicator.source] || 0) + 1
+    })
+    return counts
+  }, [])
+
+  const handleSelectIndicator = (indicatorId: string) => {
+    setSelected((prev) =>
+      prev.includes(indicatorId) ? prev.filter((id) => id !== indicatorId) : [...prev, indicatorId],
+    )
   }
 
   const handleConfirm = () => {
+    onSelectionChange(selected)
     onClose()
   }
 
+  const TrendIcon = ({ trend }: { trend: "up" | "down" | "neutral" }) => {
+    switch (trend) {
+      case "up":
+        return <TrendingUp className="h-5 w-5 text-green-500" />
+      case "down":
+        return <TrendingDown className="h-5 w-5 text-red-500" />
+      default:
+        return <Minus className="h-5 w-5 text-gray-400" />
+    }
+  }
+
+  const IndicatorCard = ({
+    indicator,
+    onSelect,
+    isSelected,
+    selectedCommunity,
+  }: { indicator: Indicator; onSelect: (id: string) => void; isSelected: boolean; selectedCommunity: string }) => (
+    <div className="border rounded-lg p-4 flex items-start justify-between space-x-4 hover:bg-gray-50">
+      <div className="flex items-start space-x-4 flex-1">
+        <Star
+          className={`h-6 w-6 mt-1 flex-shrink-0 ${indicator.starred ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+        />
+        <div className="flex-1">
+          <h4 className="font-semibold">{indicator.name}</h4>
+          <div className="flex items-center space-x-4 text-xs text-gray-500 my-1">
+            <Badge variant="outline">{indicator.source}</Badge>
+            <span className="flex items-center">
+              <Calendar className="h-3 w-3 mr-1" /> {indicator.years}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1 my-2">
+            <Badge>{indicator.topic}</Badge>
+            {indicator.populations.map((p) => (
+              <Badge key={p} variant="secondary">
+                {p}
+              </Badge>
+            ))}
+          </div>
+          <p className="text-sm text-gray-600">{indicator.description}</p>
+        </div>
+      </div>
+      <div className="flex flex-col items-end space-y-2">
+        <Button
+          variant={isSelected ? "default" : "outline"}
+          size="sm"
+          onClick={() => onSelect(indicator.id)}
+          className="w-28"
+        >
+          {isSelected ? <Check className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
+          {isSelected ? "Selected" : "Select"}
+        </Button>
+        <div className="flex items-center space-x-2">
+          {selectedCommunity !== "all" && <TrendIcon trend={indicator.trend} />}
+          <Button variant="ghost" size="icon">
+            <Star className={`h-4 w-4 ${indicator.starred ? "text-yellow-400 fill-current" : "text-gray-400"}`} />
+          </Button>
+          <Button variant="ghost" size="icon">
+            <Info className="h-4 w-4 text-gray-500" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl max-h-[80vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>Select Data Indicators</DialogTitle>
+      <DialogContent className="max-w-screen-xl h-[90vh] flex flex-col p-0">
+        <DialogHeader className="p-4 border-b">
+          <DialogTitle className="text-lg">Select Indicators</DialogTitle>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="browse">Browse</TabsTrigger>
-            <TabsTrigger value="search">Search</TabsTrigger>
-            <TabsTrigger value="categories">Categories</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="browse" className="flex-1 min-h-0">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
-              {Object.entries(indicatorCategories).map(([category, indicators]) => (
-                <div key={category} className="space-y-2">
-                  <h3 className="font-semibold capitalize text-gray-900">{category}</h3>
-                  <div className="space-y-1 max-h-32 overflow-y-auto">
-                    {indicators.map((indicator) => (
-                      <div
-                        key={indicator}
-                        className={`flex items-center justify-between p-2 rounded cursor-pointer hover:bg-gray-50 ${
-                          selectedIndicators.includes(indicator) ? "bg-blue-50 border border-blue-200" : ""
-                        }`}
-                        onClick={() => handleToggleIndicator(indicator)}
-                      >
-                        <span className="text-sm">{indicator}</span>
-                        <input
-                          type="checkbox"
-                          checked={selectedIndicators.includes(indicator)}
-                          onChange={() => handleToggleIndicator(indicator)}
-                          className="rounded"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+        <div className="flex flex-1 min-h-0">
+          {/* Filters Sidebar */}
+          <aside className="w-1/4 max-w-xs border-r overflow-y-auto p-4 space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-semibold flex items-center">
+                <Filter className="h-4 w-4 mr-2" />
+                Filters
+              </h3>
+              <Button variant="ghost" size="sm" onClick={clearAllFilters}>
+                Clear all
+              </Button>
             </div>
-          </TabsContent>
-
-          <TabsContent value="search" className="flex-1 min-h-0">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="indicator-search">Search Indicators</Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="indicator-search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search for indicators..."
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              {searchTerm && (
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {filteredIndicators.map((indicator) => (
-                    <div
-                      key={indicator}
-                      className={`flex items-center justify-between p-2 rounded cursor-pointer hover:bg-gray-50 ${
-                        selectedIndicators.includes(indicator) ? "bg-blue-50 border border-blue-200" : ""
-                      }`}
-                      onClick={() => handleToggleIndicator(indicator)}
-                    >
-                      <span className="text-sm">{indicator}</span>
-                      <input
-                        type="checkbox"
-                        checked={selectedIndicators.includes(indicator)}
-                        onChange={() => handleToggleIndicator(indicator)}
-                        className="rounded"
-                      />
+            <Accordion
+              type="multiple"
+              defaultValue={["community", "populations", "topics", "reportingLevels", "sources"]}
+            >
+              <AccordionItem value="community">
+                <AccordionTrigger>Community</AccordionTrigger>
+                <AccordionContent>
+                  <Select value={selectedCommunity} onValueChange={setSelectedCommunity}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All areas</SelectItem>
+                      <SelectItem value="marion">Marion County</SelectItem>
+                      <SelectItem value="broad-ripple">Broad Ripple</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="availability">
+                <AccordionTrigger>Data Availability</AccordionTrigger>
+                <AccordionContent className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="From" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {years.map((y) => (
+                          <SelectItem key={y} value={y}>
+                            {y}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="To" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {years.map((y) => (
+                          <SelectItem key={y} value={y}>
+                            {y}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="populations">
+                <AccordionTrigger>Populations</AccordionTrigger>
+                <AccordionContent>
+                  {filterOptions.populations.map((item) => (
+                    <div key={item} className="flex items-center justify-between space-x-2 p-1">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`pop-${item}`}
+                          checked={activeFilters.populations.includes(item)}
+                          onCheckedChange={() => handleFilterChange("populations", item)}
+                        />
+                        <label htmlFor={`pop-${item}`} className="text-sm font-medium leading-none">
+                          {item}
+                        </label>
+                      </div>
+                      <span className="text-xs text-gray-500">{getFilterCounts.populations[item] || 0}</span>
                     </div>
                   ))}
-                </div>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="categories" className="flex-1 min-h-0">
-            <div className="grid grid-cols-1 gap-4">
-              {Object.entries(indicatorCategories).map(([category, indicators]) => (
-                <div key={category} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold capitalize text-gray-900">{category}</h3>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const categoryIndicators = indicators.filter((i) => !selectedIndicators.includes(i))
-                        onSelectionChange([...selectedIndicators, ...categoryIndicators])
-                      }}
-                    >
-                      Select All
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {indicators.map((indicator) => (
-                      <div
-                        key={indicator}
-                        className={`flex items-center justify-between p-2 rounded cursor-pointer hover:bg-gray-50 ${
-                          selectedIndicators.includes(indicator) ? "bg-blue-50 border border-blue-200" : ""
-                        }`}
-                        onClick={() => handleToggleIndicator(indicator)}
-                      >
-                        <span className="text-sm">{indicator}</span>
-                        <input
-                          type="checkbox"
-                          checked={selectedIndicators.includes(indicator)}
-                          onChange={() => handleToggleIndicator(indicator)}
-                          className="rounded"
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="topics">
+                <AccordionTrigger>Topics</AccordionTrigger>
+                <AccordionContent>
+                  {filterOptions.topics.map((item) => (
+                    <div key={item} className="flex items-center justify-between space-x-2 p-1">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`topic-${item}`}
+                          checked={activeFilters.topics.includes(item)}
+                          onCheckedChange={() => handleFilterChange("topics", item)}
                         />
+                        <label htmlFor={`topic-${item}`} className="text-sm font-medium leading-none">
+                          {item}
+                        </label>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+                      <span className="text-xs text-gray-500">{getFilterCounts.topics[item] || 0}</span>
+                    </div>
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="reportingLevels">
+                <AccordionTrigger>Reporting Level</AccordionTrigger>
+                <AccordionContent>
+                  {filterOptions.reportingLevels.map((item) => (
+                    <div key={item} className="flex items-center justify-between space-x-2 p-1">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`level-${item}`}
+                          checked={activeFilters.reportingLevels.includes(item)}
+                          onCheckedChange={() => handleFilterChange("reportingLevels", item)}
+                        />
+                        <label htmlFor={`level-${item}`} className="text-sm font-medium leading-none">
+                          {item}
+                        </label>
+                      </div>
+                      <span className="text-xs text-gray-500">{getFilterCounts.reportingLevels[item] || 0}</span>
+                    </div>
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="sources">
+                <AccordionTrigger>Sources</AccordionTrigger>
+                <AccordionContent>
+                  {filterOptions.sources.map((item) => (
+                    <div key={item} className="flex items-center justify-between space-x-2 p-1">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`source-${item}`}
+                          checked={activeFilters.sources.includes(item)}
+                          onCheckedChange={() => handleFilterChange("sources", item)}
+                        />
+                        <label htmlFor={`source-${item}`} className="text-sm font-medium leading-none">
+                          {item}
+                        </label>
+                      </div>
+                      <span className="text-xs text-gray-500">{getFilterCounts.sources[item] || 0}</span>
+                    </div>
+                  ))}
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </aside>
 
-        {/* Selected Indicators */}
-        {selectedIndicators.length > 0 && (
-          <div className="border-t pt-4">
-            <Label>Selected Indicators ({selectedIndicators.length})</Label>
-            <div className="mt-2 flex flex-wrap gap-2 max-h-24 overflow-y-auto">
-              {selectedIndicators.map((indicator) => (
-                <Badge key={indicator} variant="secondary" className="flex items-center gap-1">
-                  {indicator}
-                  <X
-                    className="h-3 w-3 cursor-pointer hover:text-red-500"
-                    onClick={() => handleRemoveIndicator(indicator)}
+          {/* Main Content */}
+          <main className="flex-1 flex flex-col">
+            <Tabs defaultValue="results" className="flex-1 flex flex-col min-h-0">
+              <TabsList className="mx-4 justify-start">
+                <TabsTrigger value="results" className="flex items-center space-x-2">
+                  <span>Results</span>
+                  <Badge variant="secondary">{filteredIndicators.length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="selected" className="flex items-center space-x-2">
+                  <span>Selected Indicators</span>
+                  <Badge variant="secondary">{selected.length}</Badge>
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="results" className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search results by keyword..."
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
+                </div>
+                {filteredIndicators.map((indicator) => (
+                  <IndicatorCard
+                    key={indicator.id}
+                    indicator={indicator}
+                    onSelect={handleSelectIndicator}
+                    isSelected={selected.includes(indicator.id)}
+                    selectedCommunity={selectedCommunity}
+                  />
+                ))}
+              </TabsContent>
+              <TabsContent value="selected" className="flex-1 overflow-y-auto p-4 space-y-4">
+                {selectedIndicatorsData.length > 0 ? (
+                  selectedIndicatorsData.map((indicator) => (
+                    <IndicatorCard
+                      key={indicator.id}
+                      indicator={indicator}
+                      onSelect={handleSelectIndicator}
+                      isSelected={selected.includes(indicator.id)}
+                      selectedCommunity={selectedCommunity}
+                    />
+                  ))
+                ) : (
+                  <div className="text-center text-gray-500 py-10">No indicators selected.</div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </main>
+        </div>
 
-        <div className="flex justify-end space-x-2 pt-4 border-t">
+        <DialogFooter className="p-4 border-t">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm}>Confirm Selection ({selectedIndicators.length})</Button>
-        </div>
+          <Button onClick={handleConfirm}>Confirm Selection ({selected.length})</Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

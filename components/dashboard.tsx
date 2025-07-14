@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { CreateProjectModal } from "./modals/create-project-modal"
 import { SelectCommunityModal } from "./modals/select-community-modal"
 import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
@@ -11,18 +12,14 @@ import { IndicatorsPage } from "./pages/indicators-page"
 import { UploadPage } from "./pages/upload-page"
 import { VisualizationsPage } from "./pages/visualizations-page"
 import { ProjectWorkspace } from "./project-workspace" // Assuming this component exists
+import { VisualizationBuilder } from "./visualization-builder"
+import type { ProjectData } from "./modals/create-project-modal"
 
 interface DashboardProps {
   onCreateProject: (project: ProjectData) => void
 }
 
-interface ProjectData {
-  name: string
-  description: string
-  // Add other project data fields as needed
-}
-
-export function Dashboard({ onCreateProject }: DashboardProps) {
+export function Dashboard({ onCreateProject: passUpstreamCreateProject }: DashboardProps) {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showCommunityModal, setShowCommunityModal] = useState(false)
   const [showIndicatorsModal, setShowIndicatorsModal] = useState(false)
@@ -40,7 +37,7 @@ export function Dashboard({ onCreateProject }: DashboardProps) {
     { id: "projects", label: "Projects", active: activeTab === "projects" },
     { id: "communities", label: "Communities", active: activeTab === "communities" },
     { id: "indicators", label: "Indicators", active: activeTab === "indicators" },
-    { id: "upload", label: "Data Upload", active: activeTab === "upload" },
+    { id: "upload", label: "Uploads", active: activeTab === "upload" },
     { id: "visualizations", label: "Visualizations", active: activeTab === "visualizations" },
   ]
 
@@ -52,16 +49,32 @@ export function Dashboard({ onCreateProject }: DashboardProps) {
     setCurrentProject(projectData.name)
     setCurrentProjectData(projectWithDate)
     setCurrentScreen("workspace")
+    passUpstreamCreateProject(projectWithDate) // Pass the complete project data
   }
 
   const handleStartVisualization = () => {
+    if (!currentProject) {
+      const tempProject = {
+        name: "New Visualization",
+        description: "Create a new visualization.",
+        visibility: "private",
+        createdDate: new Date().toISOString(),
+        relatedPopulations: [],
+        relatedTopics: [],
+      }
+      setCurrentProject(tempProject.name)
+      setCurrentProjectData(tempProject)
+    }
     setCurrentScreen("visualization")
   }
 
   const handleBackToDashboard = () => {
     setCurrentScreen("dashboard")
-    setCurrentProject(null)
-    setCurrentProjectData(null)
+    // Keep the same tab active, don't reset project
+  }
+
+  const handleReturnToWorkspace = () => {
+    setCurrentScreen("workspace")
   }
 
   return (
@@ -69,32 +82,42 @@ export function Dashboard({ onCreateProject }: DashboardProps) {
       {/* Header */}
       <header className="border-b border-gray-200 bg-white">
         <div className="flex h-16 items-center justify-between px-6">
-          <div className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-blue-600 text-white font-bold">S</div>
-            <span className="text-xl font-semibold text-gray-900">SAVI PRO</span>
+          <div className="flex items-center space-x-8">
+            <button
+              onClick={() => {
+                setCurrentScreen("dashboard")
+                setActiveTab("projects")
+              }}
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+            >
+              <Image src="/savi-logo.png" alt="SAVI Logo" width={100} height={40} />
+            </button>
+
+            {/* Navigation Tabs */}
+            <nav className="flex space-x-8">
+              {navigationTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    setActiveTab(tab.id as any)
+                    if (currentScreen !== "dashboard") {
+                      setCurrentScreen("dashboard")
+                    }
+                  }}
+                  className={`border-b-2 py-4 px-1 text-sm font-medium ${
+                    tab.active
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
           </div>
           <div className="flex items-center space-x-3"></div>
         </div>
       </header>
-
-      {/* Navigation Tabs */}
-      <nav className="border-b border-gray-200 bg-white">
-        <div className="flex space-x-8 px-6">
-          {navigationTabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`border-b-2 py-4 px-1 text-sm font-medium ${
-                tab.active
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </nav>
 
       {/* Main Content */}
       <main className="flex-1 p-6">
@@ -105,7 +128,7 @@ export function Dashboard({ onCreateProject }: DashboardProps) {
               {activeTab === "communities" && <CommunitiesPage onSelectCommunity={() => setShowCommunityModal(true)} />}
               {activeTab === "indicators" && <IndicatorsPage onSelectIndicators={() => setShowIndicatorsModal(true)} />}
               {activeTab === "upload" && <UploadPage onUploadData={() => setShowUploadModal(true)} />}
-              {activeTab === "visualizations" && <VisualizationsPage />}
+              {activeTab === "visualizations" && <VisualizationsPage onAddVisualization={handleStartVisualization} />}
             </>
           )}
           {currentScreen === "workspace" && currentProject && (
@@ -116,12 +139,14 @@ export function Dashboard({ onCreateProject }: DashboardProps) {
               onBackToDashboard={handleBackToDashboard}
             />
           )}
-          {currentScreen === "visualization" && (
-            <div>
-              {/* Visualization Component Here */}
-              <h2>Visualization</h2>
-              <button onClick={handleBackToDashboard}>Back to Dashboard</button>
-            </div>
+          {currentScreen === "visualization" && currentProject && (
+            <VisualizationBuilder
+              projectName={currentProject}
+              projectData={currentProjectData}
+              onBackToWorkspace={
+                currentProjectData?.name === "New Visualization" ? handleBackToDashboard : handleReturnToWorkspace
+              }
+            />
           )}
         </div>
       </main>

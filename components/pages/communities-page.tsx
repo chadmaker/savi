@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Plus, Map, Star, List, LayoutGrid, Calendar } from "lucide-react"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Plus, Map, Star, List, LayoutGrid, MoreHorizontal, Eye } from "lucide-react"
 
 interface CommunitiesPageProps {
   onSelectCommunity: () => void
@@ -13,6 +14,7 @@ interface CommunitiesPageProps {
 export function CommunitiesPage({ onSelectCommunity }: CommunitiesPageProps) {
   const [viewMode, setViewMode] = useState<"card" | "list">("card")
   const [showStarred, setShowStarred] = useState(false)
+  const [filter, setFilter] = useState("all")
   const [savedCommunities, setSavedCommunities] = useState([
     { id: 1, name: "Marion County", type: "County", starred: true, lastUsed: "2024-01-15", population: "964,582" },
     { id: 2, name: "Broad Ripple", type: "Neighborhood", starred: false, lastUsed: "2024-01-12", population: "12,500" },
@@ -42,23 +44,31 @@ export function CommunitiesPage({ onSelectCommunity }: CommunitiesPageProps) {
     )
   }
 
-  const filteredCommunities = showStarred ? savedCommunities.filter((community) => community.starred) : savedCommunities
+  const filteredCommunities = savedCommunities
+    .filter((c) => (showStarred ? c.starred : true))
+    .filter((c) => (filter === "all" ? true : false)) // Placeholder for shared filter logic
 
   return (
     <div>
       {/* Header Section */}
-      <div className="flex min-h-[400px] flex-col items-center justify-center text-center mb-12">
-        <div className="rounded-full bg-blue-100 p-6 mb-6">
-          <Map className="h-12 w-12 text-blue-600" />
+      <div className="border border-gray-200 rounded-lg p-6 mb-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="rounded-full bg-blue-100 p-4">
+              <Map className="h-8 w-8 text-blue-600" />
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">Communities</h2>
+              <p className="text-gray-600 mt-1">
+                Select geographic areas for your analysis including counties, cities, and neighborhoods.
+              </p>
+            </div>
+          </div>
+          <Button onClick={onSelectCommunity} className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Community
+          </Button>
         </div>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">Communities</h2>
-        <p className="text-gray-600 mb-8 max-w-md">
-          Explore and select geographic areas for your analysis. Browse communities, neighborhoods, and regions.
-        </p>
-        <Button onClick={onSelectCommunity} className="bg-blue-600 hover:bg-blue-700 text-white" size="lg">
-          <Plus className="h-5 w-5 mr-2" />
-          Explore Communities
-        </Button>
       </div>
 
       {/* Saved Communities */}
@@ -66,6 +76,24 @@ export function CommunitiesPage({ onSelectCommunity }: CommunitiesPageProps) {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-gray-900">Saved Communities</h2>
           <div className="flex items-center space-x-2">
+            <Select value={filter} onValueChange={setFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">View all</SelectItem>
+                <SelectItem value="shared">Shared</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant={showStarred ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowStarred(!showStarred)}
+              className={showStarred ? "bg-gray-900 text-white" : ""}
+            >
+              <Star className={`h-4 w-4 mr-1 ${showStarred ? "fill-current text-yellow-400" : ""}`} />
+              Starred
+            </Button>
             <div className="flex items-center border rounded-md">
               <Button
                 variant={viewMode === "card" ? "default" : "ghost"}
@@ -84,49 +112,61 @@ export function CommunitiesPage({ onSelectCommunity }: CommunitiesPageProps) {
                 <List className="h-4 w-4" />
               </Button>
             </div>
-            <Button
-              variant={showStarred ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowStarred(!showStarred)}
-            >
-              ⭐ Starred
-            </Button>
           </div>
         </div>
 
         {filteredCommunities.length > 0 ? (
           viewMode === "card" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {filteredCommunities.map((community) => (
-                <Card key={community.id} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-medium text-gray-900">{community.name}</h3>
-                        <Badge variant="secondary" className="mt-1">
-                          {community.type}
-                        </Badge>
-                      </div>
-                      <Button variant="ghost" size="sm" onClick={() => toggleStarred(community.id)}>
+                <div
+                  key={community.id}
+                  className="border rounded-lg p-4 flex flex-col justify-between hover:shadow-md transition-shadow"
+                >
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold text-gray-800">{community.name}</h3>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 -mt-1 -mr-1"
+                        onClick={() => toggleStarred(community.id)}
+                      >
                         <Star
-                          className={`h-4 w-4 ${community.starred ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`}
+                          className={`h-4 w-4 ${community.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
                         />
                       </Button>
                     </div>
-                    <div className="mb-3">
-                      <p className="text-sm text-gray-600">Population: {community.population}</p>
-                    </div>
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        <span>{new Date(community.lastUsed).toLocaleDateString()}</span>
+                    <Badge variant="secondary">{community.type}</Badge>
+                  </div>
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-500 mb-2">Population: {community.population}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500">
+                        Last used: {new Date(community.lastUsed).toLocaleDateString()}
+                      </span>
+                      <div className="flex items-center space-x-1">
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-3 w-3 mr-1" />
+                          View
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                            <DropdownMenuItem>Start Visualization</DropdownMenuItem>
+                            <DropdownMenuItem>New Profile</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
-                      <Button variant="outline" size="sm">
-                        Select
-                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           ) : (
@@ -134,17 +174,24 @@ export function CommunitiesPage({ onSelectCommunity }: CommunitiesPageProps) {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th className="p-4 w-12"></th>
                     <th className="text-left p-4 font-medium text-gray-900">Community Name</th>
                     <th className="text-left p-4 font-medium text-gray-900">Type</th>
                     <th className="text-left p-4 font-medium text-gray-900">Population</th>
                     <th className="text-left p-4 font-medium text-gray-900">Last Used</th>
-                    <th className="text-left p-4 font-medium text-gray-900">Starred</th>
                     <th className="text-left p-4 font-medium text-gray-900">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredCommunities.map((community, index) => (
                     <tr key={community.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                      <td className="p-4 text-center">
+                        <Button variant="ghost" size="sm" onClick={() => toggleStarred(community.id)}>
+                          <Star
+                            className={`h-4 w-4 ${community.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
+                          />
+                        </Button>
+                      </td>
                       <td className="p-4 font-medium text-gray-900">{community.name}</td>
                       <td className="p-4">
                         <Badge variant="secondary">{community.type}</Badge>
@@ -152,16 +199,25 @@ export function CommunitiesPage({ onSelectCommunity }: CommunitiesPageProps) {
                       <td className="p-4 text-gray-600">{community.population}</td>
                       <td className="p-4 text-gray-600">{new Date(community.lastUsed).toLocaleDateString()}</td>
                       <td className="p-4">
-                        <Button variant="ghost" size="sm" onClick={() => toggleStarred(community.id)}>
-                          <Star
-                            className={`h-4 w-4 ${community.starred ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`}
-                          />
-                        </Button>
-                      </td>
-                      <td className="p-4">
-                        <Button variant="outline" size="sm">
-                          Select
-                        </Button>
+                        <div className="flex items-center space-x-1">
+                          <Button variant="outline" size="sm">
+                            <Eye className="h-3 w-3 mr-1" />
+                            View
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuItem>Delete</DropdownMenuItem>
+                              <DropdownMenuItem>Start Visualization</DropdownMenuItem>
+                              <DropdownMenuItem>New Profile</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -172,7 +228,7 @@ export function CommunitiesPage({ onSelectCommunity }: CommunitiesPageProps) {
         ) : (
           <div className="text-center py-12 text-gray-500">
             <Map className="h-8 w-8 mx-auto mb-3 text-gray-300" />
-            <p>No saved communities yet. Explore communities to save your favorites.</p>
+            <p>No saved communities match your filters.</p>
           </div>
         )}
       </div>

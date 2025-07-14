@@ -8,28 +8,18 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  ArrowLeft,
-  Map,
-  BarChart3,
-  Table,
-  User,
-  Download,
-  Share,
-  ChevronRight,
-  ChevronLeft,
-  Plus,
-  Save,
-} from "lucide-react"
+import { ArrowLeft, Map, BarChart3, Table, User, Download, Share, Save, Settings } from "lucide-react"
 import { ExportModal } from "./modals/export-modal"
 import type { ProjectData } from "./modals/create-project-modal"
 
+// Update the interface to make projectData required
 interface VisualizationBuilderProps {
   projectName: string
-  projectData?: ProjectData
+  projectData: ProjectData & { createdDate: string }
   onBackToWorkspace: () => void
 }
 
+// Remove the optional projectData parameter and ensure it's always passed
 export function VisualizationBuilder({ projectName, projectData, onBackToWorkspace }: VisualizationBuilderProps) {
   const [activeView, setActiveView] = useState<"map" | "chart" | "table" | "profile">("map")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -48,6 +38,7 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
     { id: "profile", label: "Profile", icon: User },
   ]
 
+  const sampleProjects = ["Marion County Analysis", "Education Trends", "Housing Market Study"]
   const sampleCommunities = ["Marion County", "Broad Ripple", "Fountain Square"]
   const sampleIndicators = ["Population", "Median Income", "Education Attainment"]
   const sampleDatasets = ["Custom Demographics 2023", "Housing Market Data"]
@@ -97,24 +88,41 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
       {/* Left Sidebar Controls */}
       <div
         className={`fixed top-16 left-0 h-full bg-white border-r border-gray-200 transition-all duration-300 z-20 ${
-          sidebarCollapsed ? "w-12" : "w-80"
+          sidebarCollapsed ? "w-16" : "w-80"
         }`}
       >
         <div className="p-4">
-          <Button variant="ghost" size="sm" onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="mb-4">
-            {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          <Button
+            variant="ghost"
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="w-full flex items-center justify-start mb-4"
+          >
+            <Settings className="h-5 w-5" />
+            {!sidebarCollapsed && <span className="ml-2 font-medium">Configure</span>}
           </Button>
 
           {!sidebarCollapsed && (
             <div className="space-y-6">
+              {/* Project Selection */}
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Project</h3>
+                <Select defaultValue={projectName}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sampleProjects.map((proj) => (
+                      <SelectItem key={proj} value={proj}>
+                        {proj}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Communities Section */}
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-gray-900">Communities</h3>
-                  <Button variant="ghost" size="sm">
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
+                <h3 className="font-semibold text-gray-900 mb-3">Communities</h3>
                 <Select>
                   <SelectTrigger>
                     <SelectValue placeholder="Select communities" />
@@ -129,56 +137,6 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
                 </Select>
                 <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent">
                   Add Community
-                </Button>
-              </div>
-
-              {/* Indicators Section */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-gray-900">Indicators</h3>
-                  <Button variant="ghost" size="sm">
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select indicators" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sampleIndicators.map((indicator) => (
-                      <SelectItem key={indicator} value={indicator}>
-                        {indicator}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent">
-                  Add Indicator
-                </Button>
-              </div>
-
-              {/* Data Sets Section */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-gray-900">Data Sets</h3>
-                  <Button variant="ghost" size="sm">
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select datasets" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sampleDatasets.map((dataset) => (
-                      <SelectItem key={dataset} value={dataset}>
-                        {dataset}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent">
-                  Upload Data
                 </Button>
               </div>
 
@@ -219,6 +177,46 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
                 </div>
               </div>
 
+              {/* Indicators Section */}
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Indicators</h3>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select indicators" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sampleIndicators.map((indicator) => (
+                      <SelectItem key={indicator} value={indicator}>
+                        {indicator}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent">
+                  Add Indicator
+                </Button>
+              </div>
+
+              {/* Data Sets Section */}
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">Data Sets</h3>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select datasets" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sampleDatasets.map((dataset) => (
+                      <SelectItem key={dataset} value={dataset}>
+                        {dataset}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent">
+                  Upload Data
+                </Button>
+              </div>
+
               {/* Normalization */}
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">Normalization</h3>
@@ -239,7 +237,7 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
       </div>
 
       {/* Main Content Area */}
-      <div className={`flex-1 pt-16 transition-all duration-300 ${sidebarCollapsed ? "ml-12" : "ml-80"}`}>
+      <div className={`flex-1 pt-16 transition-all duration-300 ${sidebarCollapsed ? "ml-16" : "ml-80"}`}>
         {/* Visualization Tabs */}
         <div className="border-b border-gray-200 bg-white">
           <div className="flex space-x-8 px-6">
@@ -306,14 +304,11 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
 
           {activeView === "chart" && (
             <Card className="h-[600px]">
-              <CardHeader>
-                <CardTitle>Data Visualization</CardTitle>
-              </CardHeader>
-              <CardContent className="h-full">
-                <div className="h-full bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg flex items-center justify-center">
+              <CardContent className="h-full flex items-center justify-center">
+                <div className="h-full w-full bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg flex items-center justify-center">
                   <div className="text-center">
                     <BarChart3 className="h-16 w-16 text-purple-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Chart Visualization</h3>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-2">Chart View</h3>
                     <p className="text-gray-500">Interactive charts and graphs</p>
                   </div>
                 </div>
@@ -322,7 +317,7 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
           )}
 
           {activeView === "table" && (
-            <Card className="h-[600px]">
+            <Card>
               <CardHeader>
                 <CardTitle>Data Table</CardTitle>
               </CardHeader>
@@ -364,7 +359,7 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
           )}
 
           {activeView === "profile" && (
-            <Card className="h-[600px]">
+            <Card>
               <CardHeader>
                 <CardTitle>Community Profile</CardTitle>
               </CardHeader>
@@ -388,49 +383,23 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
                     </div>
                   </div>
 
-                  {/* Related Data Summaries */}
-                  {projectData && (
-                    <div>
-                      <h3 className="font-semibold mb-4">Related Data Summaries</h3>
-                      {projectData.relatedTopics?.length > 0 && (
-                        <div className="mb-4">
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">Topic Insights</h4>
-                          <div className="space-y-2">
-                            {projectData.relatedTopics.slice(0, 3).map((topic) => (
-                              <div key={topic} className="text-sm">
-                                <span className="font-medium">{topic}:</span>
-                                <span className="text-gray-600 ml-2">
-                                  {topic === "Housing" && "Median home value: $145,000"}
-                                  {topic === "Education" && "High school graduation: 87%"}
-                                  {topic === "Health" && "Life expectancy: 76.2 years"}
-                                  {!["Housing", "Education", "Health"].includes(topic) && "Data available"}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {projectData.relatedPopulations?.length > 0 && (
-                        <div>
-                          <h4 className="text-sm font-medium text-gray-700 mb-2">Population Breakdown</h4>
-                          <div className="space-y-2">
-                            {projectData.relatedPopulations.slice(0, 3).map((population) => (
-                              <div key={population} className="text-sm">
-                                <span className="font-medium">{population}:</span>
-                                <span className="text-gray-600 ml-2">
-                                  {population === "African Americans" && "28.5% of population"}
-                                  {population === "Working Age" && "62.1% of population"}
-                                  {population === "Youth" && "24.3% of population"}
-                                  {!["African Americans", "Working Age", "Youth"].includes(population) &&
-                                    "Data available"}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                  <div>
+                    <h3 className="font-semibold mb-4">Project Information</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span>Project:</span>
+                        <span className="font-medium">{projectName}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Created:</span>
+                        <span className="font-medium">{new Date(projectData.createdDate).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Visibility:</span>
+                        <span className="font-medium capitalize">{projectData.visibility}</span>
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
