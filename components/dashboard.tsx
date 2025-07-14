@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import { CreateProjectModal } from "./modals/create-project-modal"
 import { SelectCommunityModal } from "./modals/select-community-modal"
 import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
@@ -90,7 +89,7 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
               }}
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
-              <Image src="/savi-logo.png" alt="SAVI Logo" width={100} height={40} />
+              <span className="font-bold text-xl text-gray-800">SAVI PRO</span>
             </button>
 
             {/* Navigation Tabs */}
