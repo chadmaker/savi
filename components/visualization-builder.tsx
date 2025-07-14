@@ -15,7 +15,7 @@ import type { ProjectData } from "./modals/create-project-modal"
 // Update the interface to make projectData required
 interface VisualizationBuilderProps {
   projectName: string
-  projectData: ProjectData & { createdDate: string }
+  projectData?: ProjectData & { createdDate?: string; visibility?: string } // now optional
   onBackToWorkspace: () => void
 }
 
@@ -392,11 +392,13 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
                       </div>
                       <div className="flex justify-between">
                         <span>Created:</span>
-                        <span className="font-medium">{new Date(projectData.createdDate).toLocaleDateString()}</span>
+                        <span className="font-medium">
+                          {new Date(projectData?.createdDate ?? Date.now()).toLocaleDateString()}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span>Visibility:</span>
-                        <span className="font-medium capitalize">{projectData.visibility}</span>
+                        <span className="font-medium capitalize">{projectData?.visibility ?? "private"}</span>
                       </div>
                     </div>
                   </div>
