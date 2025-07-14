@@ -2,10 +2,10 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { X, Menu } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "@/components/ui/sheet"
+import { Menu } from "lucide-react"
 
 const menuItems = [
   { href: "#", label: "SAVI.org" },
@@ -27,15 +27,10 @@ export function HamburgerMenu() {
       </SheetTrigger>
       <SheetContent side="left" className="w-[300px] sm:w-[400px]">
         <SheetHeader className="border-b pb-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center">
             <Link href="#" className="flex items-center gap-2" prefetch={false}>
               <Image src="/savi-logo.png" alt="SAVI Logo" width={80} height={32} />
             </Link>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <X className="h-6 w-6" />
-              </Button>
-            </SheetTrigger>
           </div>
         </SheetHeader>
         <div className="mt-6">

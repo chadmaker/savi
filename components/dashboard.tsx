@@ -124,7 +124,7 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
         </div>
         {/* Bottom Row */}
         <div className="flex h-16 items-center gap-10">
-          <h1 className="text-2xl font-bold text-gray-800">SAVI Pro</h1>
+          <h1 className="text-xl font-bold text-gray-800">SAVI Pro</h1>
           <nav className="flex space-x-8">
             {navigationTabs.map((tab) => (
               <button
