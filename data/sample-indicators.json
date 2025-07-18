@@ -1,0 +1,126 @@
+{
+  "indicators": [
+    {
+      "id": "pop_total",
+      "name": "Total Population",
+      "category1": "Demographics",
+      "category2": "Population",
+      "category3": "Total",
+      "category4": null,
+      "source": "U.S. Census ACS",
+      "lastUpdated": "2024-04-15",
+      "value": 971822,
+      "reportingArea": "Marion County",
+      "availability": "2010-2023",
+      "description": "Total population count for Marion County",
+      "notes": "Annual estimates from American Community Survey"
+    },
+    {
+      "id": "pop_male_18_24",
+      "name": "Male Population 18-24",
+      "category1": "Demographics",
+      "category2": "Gender",
+      "category3": "Male",
+      "category4": "18-24",
+      "source": "U.S. Census ACS",
+      "lastUpdated": "2024-04-15",
+      "value": 54821,
+      "reportingArea": "Marion County",
+      "availability": "2010-2023",
+      "description": "Male population aged 18-24 years",
+      "notes": "Part of gender and age breakdown analysis"
+    },
+    {
+      "id": "pop_female_18_24",
+      "name": "Female Population 18-24",
+      "category1": "Demographics",
+      "category2": "Gender",
+      "category3": "Female",
+      "category4": "18-24",
+      "source": "U.S. Census ACS",
+      "lastUpdated": "2024-04-15",
+      "value": 55892,
+      "reportingArea": "Marion County",
+      "availability": "2010-2023",
+      "description": "Female population aged 18-24 years",
+      "notes": "Part of gender and age breakdown analysis"
+    },
+    {
+      "id": "race_white",
+      "name": "White Population",
+      "category1": "Demographics",
+      "category2": "Race",
+      "category3": "White",
+      "category4": null,
+      "source": "U.S. Census ACS",
+      "lastUpdated": "2024-04-15",
+      "value": 527699,
+      "reportingArea": "Marion County",
+      "availability": "2010-2023",
+      "description": "Population identifying as White alone",
+      "notes": "Single race category from Census"
+    },
+    {
+      "id": "race_black",
+      "name": "Black Population",
+      "category1": "Demographics",
+      "category2": "Race",
+      "category3": "Black",
+      "category4": null,
+      "source": "U.S. Census ACS",
+      "lastUpdated": "2024-04-15",
+      "value": 278913,
+      "reportingArea": "Marion County",
+      "availability": "2010-2023",
+      "description": "Population identifying as Black or African American alone",
+      "notes": "Single race category from Census"
+    },
+    {
+      "id": "edu_bachelors_total",
+      "name": "Bachelor's Degree Attainment",
+      "category1": "Education",
+      "category2": "Attainment",
+      "category3": "Bachelor's Degree",
+      "category4": null,
+      "source": "U.S. Census ACS",
+      "lastUpdated": "2024-04-15",
+      "value": 234567,
+      "reportingArea": "Marion County",
+      "availability": "2010-2023",
+      "description": "Population 25+ with Bachelor's degree or higher",
+      "notes": "Educational attainment for adults"
+    },
+    {
+      "id": "poverty_rate",
+      "name": "Poverty Rate",
+      "category1": "Basic Needs",
+      "category2": "Poverty",
+      "category3": "Below Poverty Line",
+      "category4": null,
+      "source": "U.S. Census ACS",
+      "lastUpdated": "2024-04-15",
+      "value": 18.2,
+      "reportingArea": "Marion County",
+      "availability": "2010-2023",
+      "description": "Percentage of population below federal poverty line",
+      "notes": "Based on federal poverty thresholds"
+    }
+  ],
+  "groups": [
+    {
+      "id": "demographics_overview",
+      "name": "Demographics Overview",
+      "level": 1,
+      "indicators": ["pop_total"],
+      "children": ["gender_breakdown", "race_breakdown"]
+    },
+    {
+      "id": "gender_breakdown",
+      "name": "Gender Breakdown",
+      "level": 2,
+      "parent": "demographics_overview",
+      "indicators": ["pop_male_18_24", "pop_female_18_24"],
+      "children": []
+    }
+  ]
+}

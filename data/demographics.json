@@ -1,0 +1,62 @@
+{
+  "Demographics": {
+    "Total Population": {
+      "value": 450000,
+      "metadata": {
+        "source": "US Census Bureau",
+        "availability": "2022",
+        "last_updated": "December 2023",
+        "reporting_area": "Marion County"
+      }
+    },
+    "Gender": {
+      "Male": {
+        "percentage": 49.5,
+        "age_groups": {
+          "0-17": 5,
+          "18-24": 8,
+          "25-34": 18,
+          "35-54": 32,
+          "55-64": 19,
+          "65+": 18
+        },
+        "metadata": {
+          "source": "US Census Bureau",
+          "availability": "2022",
+          "last_updated": "December 2023",
+          "reporting_area": "Marion County"
+        }
+      },
+      "Female": {
+        "percentage": 50.5,
+        "age_groups": {
+          "0-17": 5,
+          "18-24": 7,
+          "25-34": 17,
+          "35-54": 31,
+          "55-64": 20,
+          "65+": 20
+        },
+        "metadata": {
+          "source": "US Census Bureau",
+          "availability": "2022",
+          "last_updated": "December 2023",
+          "reporting_area": "Marion County"
+        }
+      }
+    },
+    "Race": {
+      "White": 70.2,
+      "Black": 15.5,
+      "Hispanic": 8.3,
+      "Asian": 4.1,
+      "Other": 1.9,
+      "metadata": {
+        "source": "US Census Bureau",
+        "availability": "2022",
+        "last_updated": "December 2023",
+        "reporting_area": "Marion County"
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "indicators": [
+    {
+      "id": "indicator_1",
+      "topic": "Poverty and Income",
+      "category": "Populations Affected",
+      "tile": "Senior Poverty Rate",
+      "indicator": "Population Under Age 18 Living in Poverty as% of Pop Under 18",
+      "source": "SAVI Data Portal",
+      "lastUpdated": "2024-01-15",
+      "value": 45230,
+      "reportingArea": "Marion County",
+      "availability": "2020-2024",
+      "description": "Population Under Age 18 Living in Poverty as% of Pop Under 18 - Detailed indicator description",
+      "notes": "Data sourced from SAVI community indicators"
+    },
+    {
+      "id": "indicator_2",
+      "topic": "Education",
+      "category": "Educational Attainment",
+      "tile": "High School Graduation",
+      "indicator": "High School Graduation Rate",
+      "source": "SAVI Data Portal",
+      "lastUpdated": "2024-01-15",
+      "value": 78500,
+      "reportingArea": "Marion County",
+      "availability": "2020-2024",
+      "description": "High School Graduation Rate - Detailed indicator description",
+      "notes": "Data sourced from SAVI community indicators"
+    },
+    {
+      "id": "indicator_3",
+      "topic": "Health",
+      "category": "Health Outcomes",
+      "tile": "Life Expectancy",
+      "indicator": "Average Life Expectancy",
+      "source": "SAVI Data Portal",
+      "lastUpdated": "2024-01-15",
+      "value": 76,
+      "reportingArea": "Marion County",
+      "availability": "2020-2024",
+      "description": "Average Life Expectancy - Detailed indicator description",
+      "notes": "Data sourced from SAVI community indicators"
+    }
+  ]
+}

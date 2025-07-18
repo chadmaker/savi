@@ -1,0 +1,60 @@
+{
+  "topics": [
+    {
+      "name": "Demographics",
+      "categories": ["Population", "Age", "Gender", "Race/Ethnicity"],
+      "indicators": [
+        {
+          "name": "Total Population",
+          "tile": "Population"
+        },
+        {
+          "name": "Median Age",
+          "tile": "Age"
+        },
+        {
+          "name": "Male Population",
+          "tile": "Gender"
+        },
+        {
+          "name": "Female Population",
+          "tile": "Gender"
+        },
+        {
+          "name": "White Population",
+          "tile": "Race/Ethnicity"
+        },
+        {
+          "name": "Black Population",
+          "tile": "Race/Ethnicity"
+        },
+        {
+          "name": "Hispanic Population",
+          "tile": "Race/Ethnicity"
+        }
+      ]
+    },
+    {
+      "name": "Basic Needs",
+      "categories": ["Poverty", "Food Security", "Housing"],
+      "indicators": [
+        {
+          "name": "Poverty Rate",
+          "tile": "Poverty"
+        },
+        {
+          "name": "Food Insecurity Rate",
+          "tile": "Food Security"
+        },
+        {
+          "name": "Median Rent",
+          "tile": "Housing"
+        },
+        {
+          "name": "Homeownership Rate",
+          "tile": "Housing"
+        }
+      ]
+    }
+  ]
+}
