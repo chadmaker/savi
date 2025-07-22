@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Edit, Trash2, MapPin, Save, Link } from "lucide-react"
+import { RegionsManagement } from "./regions-management"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface Geography {
   id: string
@@ -174,279 +176,298 @@ export function GeographyManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <Tabs defaultValue="geographies" className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Geography Management</h1>
-          <p className="text-muted-foreground">Manage Indiana geographies and their relationships</p>
+          <p className="text-muted-foreground">Manage Indiana geographies, regions, and their relationships</p>
         </div>
-        <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Geography
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Add New Geography</DialogTitle>
-            </DialogHeader>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="geo-name">Geography Name</Label>
-                  <Input
-                    id="geo-name"
-                    value={newGeo.name}
-                    onChange={(e) => setNewGeo((prev) => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter geography name..."
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="geo-id">Geography ID</Label>
-                  <Input
-                    id="geo-id"
-                    value={newGeo.geographyId}
-                    onChange={(e) => setNewGeo((prev) => ({ ...prev, geographyId: e.target.value }))}
-                    placeholder="Enter FIPS or unique ID..."
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="geo-level">Geography Level</Label>
-                  <Select
-                    value={newGeo.level}
-                    onValueChange={(v) => setNewGeo((prev) => ({ ...prev, level: v as any, parentId: "" }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {GEOGRAPHY_LEVELS.map((level) => (
-                        <SelectItem key={level.value} value={level.value}>
-                          {level.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="parent-geo">Parent Geography</Label>
-                  <Select
-                    value={newGeo.parentId || "none"}
-                    onValueChange={(v) => setNewGeo((prev) => ({ ...prev, parentId: v }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select parent..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No Parent</SelectItem>
-                      {getAvailableParents(newGeo.level!).map((geo) => (
-                        <SelectItem key={geo.id} value={geo.id}>
-                          {geo.name} ({geo.level})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="population">Population</Label>
-                  <Input
-                    id="population"
-                    type="number"
-                    value={newGeo.population || ""}
-                    onChange={(e) =>
-                      setNewGeo((prev) => ({ ...prev, population: Number.parseInt(e.target.value) || undefined }))
-                    }
-                    placeholder="Enter population..."
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="area">Area (sq mi)</Label>
-                  <Input
-                    id="area"
-                    type="number"
-                    value={newGeo.area || ""}
-                    onChange={(e) =>
-                      setNewGeo((prev) => ({ ...prev, area: Number.parseFloat(e.target.value) || undefined }))
-                    }
-                    placeholder="Enter area..."
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="esri-connection">ESRI Connection</Label>
-                <Input
-                  id="esri-connection"
-                  value={newGeo.esriConnection || ""}
-                  onChange={(e) => setNewGeo((prev) => ({ ...prev, esriConnection: e.target.value }))}
-                  placeholder="Enter ESRI service URL..."
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Geography Properties</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="default-comparison"
-                      checked={newGeo.isDefaultComparison}
-                      onCheckedChange={(checked) =>
-                        setNewGeo((prev) => ({ ...prev, isDefaultComparison: checked as boolean }))
-                      }
-                    />
-                    <Label htmlFor="default-comparison">Default Comparison Geography</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="peer-geography"
-                      checked={newGeo.isPeerGeography}
-                      onCheckedChange={(checked) =>
-                        setNewGeo((prev) => ({ ...prev, isPeerGeography: checked as boolean }))
-                      }
-                    />
-                    <Label htmlFor="peer-geography">Peer Geography</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="navigable"
-                      checked={newGeo.isNavigable}
-                      onCheckedChange={(checked) => setNewGeo((prev) => ({ ...prev, isNavigable: checked as boolean }))}
-                    />
-                    <Label htmlFor="navigable">Navigable (parent/child relationships)</Label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-4 border-t">
-              <Button variant="outline" onClick={() => setShowCreateModal(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleCreateGeography} disabled={!newGeo.name || !newGeo.geographyId}>
-                <Save className="w-4 h-4 mr-2" />
-                Add Geography
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <TabsList>
+          <TabsTrigger value="geographies">Geographies</TabsTrigger>
+          <TabsTrigger value="regions">Regions</TabsTrigger>
+        </TabsList>
       </div>
 
-      {/* Geography Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Indiana Geographies ({geographies.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>ID</TableHead>
-                <TableHead>Level</TableHead>
-                <TableHead>Hierarchy</TableHead>
-                <TableHead>Population</TableHead>
-                <TableHead>Properties</TableHead>
-                <TableHead>Children</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {geographies
-                .sort((a, b) => {
-                  const aOrder = GEOGRAPHY_LEVELS.find((l) => l.value === a.level)?.order || 0
-                  const bOrder = GEOGRAPHY_LEVELS.find((l) => l.value === b.level)?.order || 0
-                  if (aOrder !== bOrder) return aOrder - bOrder
-                  return a.name.localeCompare(b.name)
-                })
-                .map((geo) => (
-                  <TableRow key={geo.id}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        {geo.name}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <code className="text-xs bg-muted px-1 py-0.5 rounded">{geo.geographyId}</code>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{GEOGRAPHY_LEVELS.find((l) => l.value === geo.level)?.label}</Badge>
-                    </TableCell>
-                    <TableCell className="max-w-xs">
-                      <div className="truncate text-sm text-muted-foreground">{getHierarchyPath(geo)}</div>
-                    </TableCell>
-                    <TableCell>{geo.population?.toLocaleString() || "—"}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {geo.isDefaultComparison && (
-                          <Badge variant="default" className="text-xs">
-                            Default
-                          </Badge>
-                        )}
-                        {geo.isPeerGeography && (
-                          <Badge variant="secondary" className="text-xs">
-                            Peer
-                          </Badge>
-                        )}
-                        {geo.isNavigable && (
-                          <Badge variant="outline" className="text-xs">
-                            Navigable
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm">{geo.childrenIds.length}</span>
-                        {geo.childrenIds.length > 0 && <Link className="w-3 h-3" />}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => setEditingGeo(geo)}>
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => deleteGeography(geo.id)}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      {/* Geography Hierarchy Visualization */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Geography Hierarchy</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {geographies
-              .filter((g) => !g.parentId)
-              .map((rootGeo) => (
-                <GeographyHierarchyNode key={rootGeo.id} geography={rootGeo} allGeographies={geographies} level={0} />
-              ))}
+      <TabsContent value="geographies" className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Individual Geographies</h2>
+            <p className="text-muted-foreground">Manage individual geographic units</p>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+          <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Geography
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Add New Geography</DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="geo-name">Geography Name</Label>
+                    <Input
+                      id="geo-name"
+                      value={newGeo.name}
+                      onChange={(e) => setNewGeo((prev) => ({ ...prev, name: e.target.value }))}
+                      placeholder="Enter geography name..."
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="geo-id">Geography ID</Label>
+                    <Input
+                      id="geo-id"
+                      value={newGeo.geographyId}
+                      onChange={(e) => setNewGeo((prev) => ({ ...prev, geographyId: e.target.value }))}
+                      placeholder="Enter FIPS or unique ID..."
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="geo-level">Geography Level</Label>
+                    <Select
+                      value={newGeo.level}
+                      onValueChange={(v) => setNewGeo((prev) => ({ ...prev, level: v as any, parentId: "" }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GEOGRAPHY_LEVELS.map((level) => (
+                          <SelectItem key={level.value} value={level.value}>
+                            {level.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="parent-geo">Parent Geography</Label>
+                    <Select
+                      value={newGeo.parentId || "none"}
+                      onValueChange={(v) => setNewGeo((prev) => ({ ...prev, parentId: v }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select parent..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Parent</SelectItem>
+                        {getAvailableParents(newGeo.level!).map((geo) => (
+                          <SelectItem key={geo.id} value={geo.id}>
+                            {geo.name} ({geo.level})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="population">Population</Label>
+                    <Input
+                      id="population"
+                      type="number"
+                      value={newGeo.population || ""}
+                      onChange={(e) =>
+                        setNewGeo((prev) => ({ ...prev, population: Number.parseInt(e.target.value) || undefined }))
+                      }
+                      placeholder="Enter population..."
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="area">Area (sq mi)</Label>
+                    <Input
+                      id="area"
+                      type="number"
+                      value={newGeo.area || ""}
+                      onChange={(e) =>
+                        setNewGeo((prev) => ({ ...prev, area: Number.parseFloat(e.target.value) || undefined }))
+                      }
+                      placeholder="Enter area..."
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="esri-connection">ESRI Connection</Label>
+                  <Input
+                    id="esri-connection"
+                    value={newGeo.esriConnection || ""}
+                    onChange={(e) => setNewGeo((prev) => ({ ...prev, esriConnection: e.target.value }))}
+                    placeholder="Enter ESRI service URL..."
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Geography Properties</Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="default-comparison"
+                        checked={newGeo.isDefaultComparison}
+                        onCheckedChange={(checked) =>
+                          setNewGeo((prev) => ({ ...prev, isDefaultComparison: checked as boolean }))
+                        }
+                      />
+                      <Label htmlFor="default-comparison">Default Comparison Geography</Label>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="peer-geography"
+                        checked={newGeo.isPeerGeography}
+                        onCheckedChange={(checked) =>
+                          setNewGeo((prev) => ({ ...prev, isPeerGeography: checked as boolean }))
+                        }
+                      />
+                      <Label htmlFor="peer-geography">Peer Geography</Label>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="navigable"
+                        checked={newGeo.isNavigable}
+                        onCheckedChange={(checked) =>
+                          setNewGeo((prev) => ({ ...prev, isNavigable: checked as boolean }))
+                        }
+                      />
+                      <Label htmlFor="navigable">Navigable (parent/child relationships)</Label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => setShowCreateModal(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleCreateGeography} disabled={!newGeo.name || !newGeo.geographyId}>
+                  <Save className="w-4 h-4 mr-2" />
+                  Add Geography
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Geography Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Indiana Geographies ({geographies.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Level</TableHead>
+                  <TableHead>Hierarchy</TableHead>
+                  <TableHead>Population</TableHead>
+                  <TableHead>Properties</TableHead>
+                  <TableHead>Children</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {geographies
+                  .sort((a, b) => {
+                    const aOrder = GEOGRAPHY_LEVELS.find((l) => l.value === a.level)?.order || 0
+                    const bOrder = GEOGRAPHY_LEVELS.find((l) => l.value === b.level)?.order || 0
+                    if (aOrder !== bOrder) return aOrder - bOrder
+                    return a.name.localeCompare(b.name)
+                  })
+                  .map((geo) => (
+                    <TableRow key={geo.id}>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          {geo.name}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <code className="text-xs bg-muted px-1 py-0.5 rounded">{geo.geographyId}</code>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{GEOGRAPHY_LEVELS.find((l) => l.value === geo.level)?.label}</Badge>
+                      </TableCell>
+                      <TableCell className="max-w-xs">
+                        <div className="truncate text-sm text-muted-foreground">{getHierarchyPath(geo)}</div>
+                      </TableCell>
+                      <TableCell>{geo.population?.toLocaleString() || "—"}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {geo.isDefaultComparison && (
+                            <Badge variant="default" className="text-xs">
+                              Default
+                            </Badge>
+                          )}
+                          {geo.isPeerGeography && (
+                            <Badge variant="secondary" className="text-xs">
+                              Peer
+                            </Badge>
+                          )}
+                          {geo.isNavigable && (
+                            <Badge variant="outline" className="text-xs">
+                              Navigable
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <span className="text-sm">{geo.childrenIds.length}</span>
+                          {geo.childrenIds.length > 0 && <Link className="w-3 h-3" />}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="sm" onClick={() => setEditingGeo(geo)}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => deleteGeography(geo.id)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Geography Hierarchy Visualization */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Geography Hierarchy</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {geographies
+                .filter((g) => !g.parentId)
+                .map((rootGeo) => (
+                  <GeographyHierarchyNode key={rootGeo.id} geography={rootGeo} allGeographies={geographies} level={0} />
+                ))}
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      <TabsContent value="regions">
+        <RegionsManagement geographies={geographies} />
+      </TabsContent>
+    </Tabs>
   )
 }
 
