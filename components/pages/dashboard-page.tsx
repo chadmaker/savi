@@ -66,41 +66,67 @@ export function DashboardPage({ onCreateProject, onStartVisualization }: Dashboa
                 <CardTitle className="text-xl font-semibold">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <Button
-                    className="h-16 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center justify-center space-y-2"
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* Create New Project */}
+                  <div
+                    className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
                     onClick={() => setShowCreateModal(true)}
-                    title="Start a new project"
                   >
-                    <Plus className="h-5 w-5" />
-                    <span className="text-sm font-medium">Create New Project</span>
-                  </Button>
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Plus className="h-8 w-8 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 mb-2">Create New Project</h3>
+                        <p className="text-sm text-gray-600">Start a new analysis project</p>
+                      </div>
+                    </div>
+                  </div>
 
-                  <Button
-                    className="h-16 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center justify-center space-y-2"
+                  {/* Upload Data */}
+                  <div
+                    className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
                     onClick={() => setShowUploadModal(true)}
-                    title="Start a new data upload"
                   >
-                    <Upload className="h-5 w-5" />
-                    <span className="text-sm font-medium">Upload Data</span>
-                  </Button>
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
+                        <Upload className="h-8 w-8 text-purple-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 mb-2">Upload Data</h3>
+                        <p className="text-sm text-gray-600">Import your own datasets</p>
+                      </div>
+                    </div>
+                  </div>
 
-                  <Button
-                    className="h-16 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center justify-center space-y-2"
-                    title="Start a new custom profile"
-                  >
-                    <User className="h-5 w-5" />
-                    <span className="text-sm font-medium">New Custom Profile</span>
-                  </Button>
+                  {/* New Custom Profile */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer">
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                        <User className="h-8 w-8 text-green-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 mb-2">New Custom Profile</h3>
+                        <p className="text-sm text-gray-600">Create custom boundary profiles</p>
+                      </div>
+                    </div>
+                  </div>
 
-                  <Button
-                    className="h-16 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center justify-center space-y-2"
+                  {/* Build Visualization */}
+                  <div
+                    className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer"
                     onClick={onStartVisualization}
-                    title="Start a new visualization"
                   >
-                    <BarChart3 className="h-5 w-5" />
-                    <span className="text-sm font-medium">Build Visualization</span>
-                  </Button>
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center">
+                        <BarChart3 className="h-8 w-8 text-orange-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 mb-2">Build Visualization</h3>
+                        <p className="text-sm text-gray-600">Create charts and maps</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
