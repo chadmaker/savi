@@ -43,17 +43,11 @@ export function Dashboard() {
   const [selectedCommunities, setSelectedCommunities] = useState<string[]>([])
   const [selectedIndicators, setSelectedIndicators] = useState<string[]>([])
 
-  const navigationItems = [
-    { id: "projects" as Page, label: "Data Projects", icon: Folder, color: "text-blue-600", bgColor: "bg-blue-100" },
-    {
-      id: "communities" as Page,
-      label: "Communities",
-      icon: MapPin,
-      color: "text-orange-600",
-      bgColor: "bg-orange-100",
-    },
-    { id: "catalog" as Page, label: "Data Catalog", icon: BarChart3, color: "text-green-600", bgColor: "bg-green-100" },
-    { id: "studio" as Page, label: "Studio", icon: Eye, color: "text-indigo-600", bgColor: "bg-indigo-100" },
+  const navigationTabs = [
+    { id: "projects" as Page, label: "Data Projects", icon: Folder },
+    { id: "communities" as Page, label: "Communities", icon: MapPin },
+    { id: "catalog" as Page, label: "Data Catalog", icon: BarChart3 },
+    { id: "studio" as Page, label: "Studio", icon: Eye },
   ]
 
   const handleCreateProject = (projectData: ProjectData) => {
@@ -137,38 +131,33 @@ export function Dashboard() {
         </div>
       </header>
 
-      <div className="flex">
-        {/* Sidebar */}
-        <nav className="w-64 bg-white border-r border-gray-200 min-h-screen">
-          <div className="p-6">
-            <ul className="space-y-2">
-              {navigationItems.map((item) => {
-                const Icon = item.icon
-                return (
-                  <li key={item.id}>
-                    <button
-                      onClick={() => setCurrentPage(item.id)}
-                      className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                        currentPage === item.id
-                          ? "bg-gray-100 text-gray-900"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                      }`}
-                    >
-                      <div className={`rounded-full p-2 ${item.bgColor}`}>
-                        <Icon className={`h-4 w-4 ${item.color}`} />
-                      </div>
-                      <span className="font-medium">{item.label}</span>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        </nav>
-
-        {/* Main Content */}
-        <main className="flex-1 p-8">{renderCurrentPage()}</main>
+      {/* Navigation Tabs */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="px-6">
+          <nav className="flex space-x-8">
+            {navigationTabs.map((tab) => {
+              const Icon = tab.icon
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setCurrentPage(tab.id)}
+                  className={`flex items-center space-x-2 border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
+                    currentPage === tab.id
+                      ? "border-blue-500 text-blue-600"
+                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                </button>
+              )
+            })}
+          </nav>
+        </div>
       </div>
+
+      {/* Main Content */}
+      <main className="p-8">{renderCurrentPage()}</main>
 
       {/* Modals */}
       <CreateProjectModal
