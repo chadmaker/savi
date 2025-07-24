@@ -265,35 +265,39 @@ export function ProjectWorkspace({
                 >
                   <Star className="h-5 w-5 text-gray-400 hover:text-yellow-400" />
                 </Button>
-                <h1 className="text-3xl font-bold text-gray-900">{projectName}</h1>
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">{projectName}</h1>
+                  {/* Description aligned under project name */}
+                  {projectData?.description && <p className="text-gray-700 mt-2">{projectData.description}</p>}
+                </div>
               </div>
-
-              {/* Description */}
-              {projectData?.description && <p className="text-gray-700 mb-4">{projectData.description}</p>}
             </div>
 
-            <div className="flex flex-col items-end space-y-2 ml-8">
-              {/* Visibility */}
-              {projectData && (
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <span>Visibility:</span>
-                  <div className="flex items-center space-x-1">
-                    {getVisibilityIcon(projectData.visibility)}
-                    <span className="font-medium">{getVisibilityLabel(projectData.visibility)}</span>
-                    {projectData.visibility === "unlisted" && <Link className="h-3 w-3" />}
+            <div className="flex items-center space-x-6 ml-8">
+              {/* Visibility and Updated info aligned to left of Edit button */}
+              <div className="flex flex-col items-end space-y-1">
+                {/* Visibility */}
+                {projectData && (
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <span>Visibility:</span>
+                    <div className="flex items-center space-x-1">
+                      {getVisibilityIcon(projectData.visibility)}
+                      <span className="font-medium">{getVisibilityLabel(projectData.visibility)}</span>
+                      {projectData.visibility === "unlisted" && <Link className="h-3 w-3" />}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Updated Date */}
-              {projectData && (
-                <div className="text-sm text-gray-600">
-                  Updated{" "}
-                  {projectData.lastModified
-                    ? new Date(projectData.lastModified).toLocaleDateString()
-                    : new Date(projectData.createdDate).toLocaleDateString()}
-                </div>
-              )}
+                {/* Updated Date */}
+                {projectData && (
+                  <div className="text-sm text-gray-600">
+                    Updated{" "}
+                    {projectData.lastModified
+                      ? new Date(projectData.lastModified).toLocaleDateString()
+                      : new Date(projectData.createdDate).toLocaleDateString()}
+                  </div>
+                )}
+              </div>
 
               {/* Edit Button */}
               <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>

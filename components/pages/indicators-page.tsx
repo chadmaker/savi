@@ -4,7 +4,6 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Plus,
   BarChart3,
@@ -21,27 +20,16 @@ import {
   Users,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface IndicatorsPageProps {
   onSelectIndicators: () => void
-}
-
-interface Dataset {
-  id: number
-  name: string
-  size: string
-  uploadDate: string
-  visibility: "private" | "unlisted" | "community"
-  records: number
-  starred: boolean
 }
 
 export function IndicatorsPage({ onSelectIndicators }: IndicatorsPageProps) {
   const [viewMode, setViewMode] = useState<"card" | "list">("list")
   const [showStarred, setShowStarred] = useState(false)
   const [filter, setFilter] = useState("all")
-  const [activeTab, setActiveTab] = useState("indicators")
-
   const [savedIndicators, setSavedIndicators] = useState([
     {
       id: 1,
@@ -65,6 +53,16 @@ export function IndicatorsPage({ onSelectIndicators }: IndicatorsPageProps) {
     },
   ])
 
+  interface Dataset {
+    id: number
+    name: string
+    size: string
+    uploadDate: string
+    visibility: "private" | "unlisted" | "community"
+    records: number
+    starred: boolean
+  }
+
   const [uploadedDatasets, setUploadedDatasets] = useState<Dataset[]>([
     {
       id: 1,
@@ -86,7 +84,9 @@ export function IndicatorsPage({ onSelectIndicators }: IndicatorsPageProps) {
     },
   ])
 
-  const toggleIndicatorStar = (id: number) => {
+  const [activeTab, setActiveTab] = useState("indicators")
+
+  const toggleStar = (id: number) => {
     setSavedIndicators((prevIndicators) =>
       prevIndicators.map((indicator) =>
         indicator.id === id ? { ...indicator, starred: !indicator.starred } : indicator,
@@ -128,7 +128,7 @@ export function IndicatorsPage({ onSelectIndicators }: IndicatorsPageProps) {
 
   const filteredIndicators = savedIndicators
     .filter((i) => (showStarred ? i.starred : true))
-    .filter((i) => (filter === "all" ? true : false))
+    .filter((i) => (filter === "all" ? true : false)) // Placeholder for shared filter
 
   const filteredDatasets = uploadedDatasets
     .filter((d) => (showStarred ? d.starred : true))
@@ -228,7 +228,7 @@ export function IndicatorsPage({ onSelectIndicators }: IndicatorsPageProps) {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 -mt-1 -mr-1 flex-shrink-0"
-                            onClick={() => toggleIndicatorStar(indicator.id)}
+                            onClick={() => toggleStar(indicator.id)}
                           >
                             <Star
                               className={`h-4 w-4 ${indicator.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
@@ -293,7 +293,7 @@ export function IndicatorsPage({ onSelectIndicators }: IndicatorsPageProps) {
                       {filteredIndicators.map((indicator, index) => (
                         <tr key={indicator.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                           <td className="p-4 text-center">
-                            <Button variant="ghost" size="sm" onClick={() => toggleIndicatorStar(indicator.id)}>
+                            <Button variant="ghost" size="sm" onClick={() => toggleStar(indicator.id)}>
                               <Star
                                 className={`h-4 w-4 ${indicator.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
                               />

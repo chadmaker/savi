@@ -2,186 +2,215 @@
 
 import { useState } from "react"
 import Image from "next/image"
+import { Search, ChevronDown, User, LogOut } from "lucide-react"
+
+import { CreateProjectModal } from "./modals/create-project-modal"
+import { SelectCommunityModal } from "./modals/select-community-modal"
+import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
+import { DataUploadModal } from "./modals/data-upload-modal"
+import { ProjectsPage } from "./pages/projects-page"
+import { CommunitiesPage } from "./pages/communities-page"
+import { IndicatorsPage } from "./pages/indicators-page"
+import { VisualizationsPage } from "./pages/visualizations-page"
+import { ProjectWorkspace } from "./project-workspace"
+import { VisualizationBuilder } from "./visualization-builder"
+import type { ProjectData } from "./modals/create-project-modal"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { HamburgerMenu } from "@/components/hamburger-menu"
-import { ProjectsPage } from "@/components/pages/projects-page"
-import { CommunitiesPage } from "@/components/pages/communities-page"
-import { IndicatorsPage } from "@/components/pages/indicators-page"
-import { VisualizationsPage } from "@/components/pages/visualizations-page"
-import { CreateProjectModal } from "@/components/modals/create-project-modal"
-import { SelectCommunityModal } from "@/components/modals/select-community-modal"
-import { SelectIndicatorsModal } from "@/components/modals/select-indicators-modal"
-import { DataUploadModal } from "@/components/modals/data-upload-modal"
-import { ExportModal } from "@/components/modals/export-modal"
-import { ProjectWorkspace } from "@/components/project-workspace"
-import { VisualizationBuilder } from "@/components/visualization-builder"
-import { Folder, MapPin, BarChart3, Eye, User, ChevronDown } from "lucide-react"
+import { HamburgerMenu } from "./hamburger-menu"
 
-type Page = "projects" | "communities" | "catalog" | "studio"
-type Screen = "dashboard" | "workspace" | "visualization"
-
-interface ProjectData {
-  name: string
-  description: string
-  visibility: string
-  relatedPopulations: string[]
-  relatedTopics: string[]
-  createdDate: string
-  lastModified: string
+interface DashboardProps {
+  onCreateProject: (project: ProjectData) => void
 }
 
-export function Dashboard() {
-  const [currentPage, setCurrentPage] = useState<Page>("projects")
-  const [currentScreen, setCurrentScreen] = useState<Screen>("dashboard")
-  const [currentProject, setCurrentProject] = useState<ProjectData | null>(null)
-  const [showCreateProject, setShowCreateProject] = useState(false)
-  const [showSelectCommunity, setShowSelectCommunity] = useState(false)
-  const [showSelectIndicators, setShowSelectIndicators] = useState(false)
-  const [showDataUpload, setShowDataUpload] = useState(false)
-  const [showExport, setShowExport] = useState(false)
+export function Dashboard({ onCreateProject: passUpstreamCreateProject }: DashboardProps) {
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showCommunityModal, setShowCommunityModal] = useState(false)
+  const [showIndicatorsModal, setShowIndicatorsModal] = useState(false)
+  const [showUploadModal, setShowUploadModal] = useState(false)
   const [selectedCommunities, setSelectedCommunities] = useState<string[]>([])
   const [selectedIndicators, setSelectedIndicators] = useState<string[]>([])
+  const [activeTab, setActiveTab] = useState<"projects" | "communities" | "indicators" | "upload" | "visualizations">(
+    "projects",
+  )
+  const [currentProject, setCurrentProject] = useState<string | null>(null)
+  const [currentScreen, setCurrentScreen] = useState<"dashboard" | "workspace" | "visualization">("dashboard")
+  const [currentProjectData, setCurrentProjectData] = useState<any>(null)
 
   const navigationTabs = [
-    { id: "projects" as Page, label: "Data Projects", icon: Folder },
-    { id: "communities" as Page, label: "Communities", icon: MapPin },
-    { id: "catalog" as Page, label: "Data Catalog", icon: BarChart3 },
-    { id: "studio" as Page, label: "Studio", icon: Eye },
+    { id: "projects", label: "Data Projects", active: activeTab === "projects" },
+    { id: "indicators", label: "Data Catalog", active: activeTab === "indicators" },
+    { id: "communities", label: "My Communities", active: activeTab === "communities" },
+    { id: "visualizations", label: "Studio", active: activeTab === "visualizations" },
   ]
 
   const handleCreateProject = (projectData: ProjectData) => {
-    setCurrentProject(projectData)
+    const projectWithDate = {
+      ...projectData,
+      createdDate: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
+    }
+    setCurrentProject(projectData.name)
+    setCurrentProjectData(projectWithDate)
     setCurrentScreen("workspace")
-    setShowCreateProject(false)
-  }
-
-  const handleOpenProject = (projectData: ProjectData) => {
-    setCurrentProject(projectData)
-    setCurrentScreen("workspace")
+    passUpstreamCreateProject(projectWithDate)
   }
 
   const handleStartVisualization = () => {
+    if (!currentProject) {
+      const tempProject = {
+        name: "New Visualization",
+        description: "Create a new visualization.",
+        visibility: "private",
+        createdDate: new Date().toISOString(),
+        relatedPopulations: [],
+        relatedTopics: [],
+      }
+      setCurrentProject(tempProject.name)
+      setCurrentProjectData(tempProject)
+    }
     setCurrentScreen("visualization")
   }
 
   const handleBackToDashboard = () => {
     setCurrentScreen("dashboard")
-    setCurrentProject(null)
   }
 
-  const handleBackToWorkspace = () => {
+  const handleReturnToWorkspace = () => {
     setCurrentScreen("workspace")
   }
 
-  if (currentScreen === "workspace" && currentProject) {
-    return (
-      <ProjectWorkspace
-        projectData={currentProject}
-        onStartVisualization={handleStartVisualization}
-        onBackToDashboard={handleBackToDashboard}
-      />
-    )
-  }
-
-  if (currentScreen === "visualization" && currentProject) {
-    return <VisualizationBuilder projectName={currentProject.name} onBackToWorkspace={handleBackToWorkspace} />
-  }
-
-  const renderCurrentPage = () => {
-    switch (currentPage) {
-      case "projects":
-        return <ProjectsPage onCreateProject={() => setShowCreateProject(true)} onOpenProject={handleOpenProject} />
-      case "communities":
-        return <CommunitiesPage onSelectCommunity={() => setShowSelectCommunity(true)} />
-      case "catalog":
-        return <IndicatorsPage onSelectIndicators={() => setShowSelectIndicators(true)} />
-      case "studio":
-        return <VisualizationsPage onAddVisualization={() => setShowExport(true)} />
-      default:
-        return <ProjectsPage onCreateProject={() => setShowCreateProject(true)} onOpenProject={handleOpenProject} />
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="flex items-center justify-between h-16 px-6">
-          <div className="flex items-center space-x-4">
+    <div className="min-h-screen bg-white">
+      <header className="border-b border-gray-200 bg-white">
+        {/* Top Row */}
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center gap-4">
             <HamburgerMenu />
-            <Image src="/savi-logo.png" alt="SAVI Logo" width={80} height={32} />
+            <button
+              onClick={() => {
+                setCurrentScreen("dashboard")
+                setActiveTab("projects")
+              }}
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+            >
+              <Image src="/savi-logo.png" alt="SAVI Logo" width={80} height={32} />
+            </button>
           </div>
-
+          <div className="relative flex-1 max-w-xl mx-8">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input placeholder="Search with SAVI AI" className="pl-10 w-full" />
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="bg-red-400 hover:bg-red-500 text-white rounded-full px-6 py-2 h-10 flex items-center space-x-3">
-                <User className="h-5 w-5" />
-                <span className="font-semibold text-sm tracking-wide">PRO</span>
+              <Button variant="ghost" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem>Profile Settings</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuItem>Sign Out</DropdownMenuItem>
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                <span>User Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Logout</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </header>
-
-      {/* Navigation Tabs */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="px-6">
+        {/* Bottom Row */}
+        <div className="flex h-16 items-center gap-10">
+          <h1 className="text-xl font-bold text-gray-800">SAVI Pro</h1>
           <nav className="flex space-x-8">
-            {navigationTabs.map((tab) => {
-              const Icon = tab.icon
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setCurrentPage(tab.id)}
-                  className={`flex items-center space-x-2 border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
-                    currentPage === tab.id
-                      ? "border-blue-500 text-blue-600"
-                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{tab.label}</span>
-                </button>
-              )
-            })}
+            {navigationTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id as any)
+                  if (currentScreen !== "dashboard") {
+                    setCurrentScreen("dashboard")
+                  }
+                }}
+                className={`border-b-2 py-4 px-1 text-sm font-medium ${
+                  tab.active
+                    ? "border-blue-500 text-blue-600"
+                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </nav>
         </div>
-      </div>
+      </header>
 
       {/* Main Content */}
-      <main className="p-8">{renderCurrentPage()}</main>
+      <main className="flex-1 py-6">
+        <div>
+          {currentScreen === "dashboard" && (
+            <>
+              {activeTab === "projects" && (
+                <ProjectsPage
+                  onCreateProject={() => setShowCreateModal(true)}
+                  onOpenProject={(projectData) => {
+                    setCurrentProject(projectData.name)
+                    setCurrentProjectData(projectData)
+                    setCurrentScreen("workspace")
+                  }}
+                />
+              )}
+              {activeTab === "communities" && <CommunitiesPage onSelectCommunity={() => setShowCommunityModal(true)} />}
+              {activeTab === "indicators" && <IndicatorsPage onSelectIndicators={() => setShowIndicatorsModal(true)} />}
+              {activeTab === "visualizations" && <VisualizationsPage onAddVisualization={handleStartVisualization} />}
+            </>
+          )}
+          {currentScreen === "workspace" && currentProject && (
+            <ProjectWorkspace
+              projectName={currentProject}
+              projectData={currentProjectData}
+              onStartVisualization={handleStartVisualization}
+              onBackToDashboard={handleBackToDashboard}
+            />
+          )}
+          {currentScreen === "visualization" && currentProject && (
+            <VisualizationBuilder
+              projectName={currentProject}
+              projectData={currentProjectData}
+              onBackToWorkspace={
+                currentProjectData?.name === "New Visualization" ? handleBackToDashboard : handleReturnToWorkspace
+              }
+            />
+          )}
+        </div>
+      </main>
 
-      {/* Modals */}
       <CreateProjectModal
-        open={showCreateProject}
-        onClose={() => setShowCreateProject(false)}
-        onCreateProject={handleCreateProject}
+        open={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreateProject={(proj) => {
+          handleCreateProject(proj)
+          setShowCreateModal(false)
+        }}
       />
 
       <SelectCommunityModal
-        open={showSelectCommunity}
-        onClose={() => setShowSelectCommunity(false)}
+        open={showCommunityModal}
+        onClose={() => setShowCommunityModal(false)}
         selectedCommunities={selectedCommunities}
         onSelectionChange={setSelectedCommunities}
       />
 
       <SelectIndicatorsModal
-        open={showSelectIndicators}
-        onClose={() => setShowSelectIndicators(false)}
+        open={showIndicatorsModal}
+        onClose={() => setShowIndicatorsModal(false)}
         selectedIndicators={selectedIndicators}
         onSelectionChange={setSelectedIndicators}
       />
 
-      <DataUploadModal open={showDataUpload} onClose={() => setShowDataUpload(false)} />
-      <ExportModal isOpen={showExport} onClose={() => setShowExport(false)} />
+      <DataUploadModal open={showUploadModal} onClose={() => setShowUploadModal(false)} />
     </div>
   )
 }

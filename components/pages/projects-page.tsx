@@ -8,7 +8,7 @@ import { Plus, Folder, List, LayoutGrid, Eye, Star, Lock, Users, Link, MoreHoriz
 
 interface ProjectsPageProps {
   onCreateProject: () => void
-  onOpenProject: (projectData: any) => void
+  onOpenProject: (projectData: any) => void // Add this line
 }
 
 export function ProjectsPage({ onCreateProject, onOpenProject }: ProjectsPageProps) {
@@ -117,10 +117,9 @@ export function ProjectsPage({ onCreateProject, onOpenProject }: ProjectsPagePro
               <Folder className="h-8 w-8 text-gray-600" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Data Projects</h2>
+              <h2 className="text-xl font-semibold text-gray-900">Projects</h2>
               <p className="text-gray-600 mt-1">
-                Use data projects to organize your data, communities, and visualizations in one area. Projects can be
-                shared.
+                Use projects to organize your data, communities, and visualizations in one area. Projects can be shared.
               </p>
             </div>
           </div>
@@ -134,7 +133,7 @@ export function ProjectsPage({ onCreateProject, onOpenProject }: ProjectsPagePro
       {/* Saved Projects */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Saved Data Projects</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Saved Projects</h2>
           <div className="flex items-center space-x-2">
             <Select value={filter} onValueChange={setFilter}>
               <SelectTrigger className="w-32">
@@ -317,7 +316,7 @@ export function ProjectsPage({ onCreateProject, onOpenProject }: ProjectsPagePro
         ) : (
           <div className="text-center py-12 text-gray-500">
             <Folder className="h-8 w-8 mx-auto mb-3 text-gray-300" />
-            <p>No saved data projects match your filters.</p>
+            <p>No saved projects match your filters.</p>
           </div>
         )}
       </div>

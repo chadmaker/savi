@@ -30,7 +30,7 @@ const availableCommunities = [
 export function SelectCommunityModal({
   open,
   onClose,
-  selectedCommunities = [], // Add default empty array
+  selectedCommunities,
   onSelectionChange,
 }: SelectCommunityModalProps) {
   const [searchTerm, setSearchTerm] = useState("")
@@ -43,17 +43,15 @@ export function SelectCommunityModal({
   })
 
   const handleToggleCommunity = (communityName: string) => {
-    const currentSelected = selectedCommunities || []
-    if (currentSelected.includes(communityName)) {
-      onSelectionChange(currentSelected.filter((c) => c !== communityName))
+    if (selectedCommunities.includes(communityName)) {
+      onSelectionChange(selectedCommunities.filter((c) => c !== communityName))
     } else {
-      onSelectionChange([...currentSelected, communityName])
+      onSelectionChange([...selectedCommunities, communityName])
     }
   }
 
   const handleRemoveCommunity = (communityName: string) => {
-    const currentSelected = selectedCommunities || []
-    onSelectionChange(currentSelected.filter((c) => c !== communityName))
+    onSelectionChange(selectedCommunities.filter((c) => c !== communityName))
   }
 
   const handleConfirm = () => {
@@ -107,7 +105,7 @@ export function SelectCommunityModal({
                   <div
                     key={community.id}
                     className={`flex items-center justify-between p-2 rounded cursor-pointer hover:bg-gray-50 ${
-                      selectedCommunities?.includes(community.name) ? "bg-blue-50 border border-blue-200" : ""
+                      selectedCommunities.includes(community.name) ? "bg-blue-50 border border-blue-200" : ""
                     }`}
                     onClick={() => handleToggleCommunity(community.name)}
                   >
@@ -117,7 +115,7 @@ export function SelectCommunityModal({
                     </div>
                     <input
                       type="checkbox"
-                      checked={selectedCommunities?.includes(community.name) || false}
+                      checked={selectedCommunities.includes(community.name)}
                       onChange={() => handleToggleCommunity(community.name)}
                       className="rounded"
                     />
@@ -141,7 +139,7 @@ export function SelectCommunityModal({
         </div>
 
         {/* Selected Communities */}
-        {selectedCommunities && selectedCommunities.length > 0 && (
+        {selectedCommunities.length > 0 && (
           <div className="border-t pt-4">
             <Label>Selected Communities ({selectedCommunities.length})</Label>
             <div className="mt-2 flex flex-wrap gap-2">
@@ -162,7 +160,7 @@ export function SelectCommunityModal({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleConfirm}>Confirm Selection ({selectedCommunities?.length || 0})</Button>
+          <Button onClick={handleConfirm}>Confirm Selection ({selectedCommunities.length})</Button>
         </div>
       </DialogContent>
     </Dialog>

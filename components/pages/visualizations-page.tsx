@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, Eye, BarChart3, Map, Table, List, LayoutGrid, Star, MoreHorizontal, Palette } from "lucide-react"
+import { Plus, Eye, BarChart3, Map, Table, List, LayoutGrid, Star, MoreHorizontal } from "lucide-react"
 import { UsersIcon as Profile } from "lucide-react"
 
 interface VisualizationsPageProps {
@@ -73,27 +73,26 @@ export function VisualizationsPage({ onAddVisualization }: VisualizationsPagePro
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="rounded-full bg-indigo-100 p-4">
-              <Palette className="h-8 w-8 text-indigo-600" />
+              <Eye className="h-8 w-8 text-indigo-600" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Studio</h2>
+              <h2 className="text-xl font-semibold text-gray-900">Visualizations</h2>
               <p className="text-gray-600 mt-1">
-                Create and manage your data visualizations in our comprehensive studio. Build maps, charts, tables, and
-                community profiles.
+                Create and manage your data visualizations including maps, charts, tables, and community profiles.
               </p>
             </div>
           </div>
           <Button onClick={onAddVisualization} className="bg-indigo-600 hover:bg-indigo-700 text-white">
             <Plus className="h-4 w-4 mr-2" />
-            Create Visualization
+            Add Visualization
           </Button>
         </div>
       </div>
 
-      {/* My Visualizations */}
+      {/* Saved Visualizations */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">My Visualizations</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Saved Visualizations</h2>
           <div className="flex items-center space-x-2">
             <Select value={filter} onValueChange={setFilter}>
               <SelectTrigger className="w-36">
@@ -268,8 +267,8 @@ export function VisualizationsPage({ onAddVisualization }: VisualizationsPagePro
           )
         ) : (
           <div className="text-center py-12 text-gray-500">
-            <Palette className="h-8 w-8 mx-auto mb-3 text-gray-300" />
-            <p>No visualizations match your filters.</p>
+            <Eye className="h-8 w-8 mx-auto mb-3 text-gray-300" />
+            <p>No saved visualizations match your filters.</p>
           </div>
         )}
       </div>
