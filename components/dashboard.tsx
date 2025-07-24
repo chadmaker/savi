@@ -40,6 +40,8 @@ export function Dashboard() {
   const [showSelectIndicators, setShowSelectIndicators] = useState(false)
   const [showDataUpload, setShowDataUpload] = useState(false)
   const [showExport, setShowExport] = useState(false)
+  const [selectedCommunities, setSelectedCommunities] = useState<string[]>([])
+  const [selectedIndicators, setSelectedIndicators] = useState<string[]>([])
 
   const navigationItems = [
     { id: "projects" as Page, label: "Data Projects", icon: Folder, color: "text-blue-600", bgColor: "bg-blue-100" },
@@ -170,13 +172,26 @@ export function Dashboard() {
 
       {/* Modals */}
       <CreateProjectModal
-        isOpen={showCreateProject}
+        open={showCreateProject}
         onClose={() => setShowCreateProject(false)}
         onCreateProject={handleCreateProject}
       />
-      <SelectCommunityModal isOpen={showSelectCommunity} onClose={() => setShowSelectCommunity(false)} />
-      <SelectIndicatorsModal isOpen={showSelectIndicators} onClose={() => setShowSelectIndicators(false)} />
-      <DataUploadModal isOpen={showDataUpload} onClose={() => setShowDataUpload(false)} />
+
+      <SelectCommunityModal
+        open={showSelectCommunity}
+        onClose={() => setShowSelectCommunity(false)}
+        selectedCommunities={selectedCommunities}
+        onSelectionChange={setSelectedCommunities}
+      />
+
+      <SelectIndicatorsModal
+        open={showSelectIndicators}
+        onClose={() => setShowSelectIndicators(false)}
+        selectedIndicators={selectedIndicators}
+        onSelectionChange={setSelectedIndicators}
+      />
+
+      <DataUploadModal open={showDataUpload} onClose={() => setShowDataUpload(false)} />
       <ExportModal isOpen={showExport} onClose={() => setShowExport(false)} />
     </div>
   )
