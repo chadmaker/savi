@@ -1,7 +1,7 @@
 "use client"
 
-import React from "react"
-import { useState } from "react"
+import type React from "react"
+import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,13 +9,6 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Lock, Link, Users } from "lucide-react"
-
-interface CreateProjectModalProps {
-  open: boolean
-  onClose: () => void
-  onCreateProject: (projectData: ProjectData) => void
-  editData?: ProjectData | null
-}
 
 export interface ProjectData {
   name: string
@@ -25,39 +18,44 @@ export interface ProjectData {
   relatedTopics: string[]
 }
 
+interface CreateProjectModalProps {
+  open: boolean
+  onClose: () => void
+  onCreateProject: (projectData: ProjectData) => void
+  editData?: ProjectData | null
+}
+
 export function CreateProjectModal({ open, onClose, onCreateProject, editData }: CreateProjectModalProps) {
   const [projectName, setProjectName] = useState("")
   const [description, setDescription] = useState("")
   const [visibility, setVisibility] = useState<"private" | "unlisted" | "community">("private")
 
+  // Reset / populate form when modal opens
+  useEffect(() => {
+    if (!open) return
+    if (editData) {
+      setProjectName(editData.name)
+      setDescription(editData.description)
+      setVisibility(editData.visibility)
+    } else {
+      setProjectName("")
+      setDescription("")
+      setVisibility("private")
+    }
+  }, [open, editData])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (projectName.trim()) {
-      onCreateProject({
-        name: projectName.trim(),
-        description: description.trim(),
-        visibility,
-        relatedPopulations: [],
-        relatedTopics: [],
-      })
-      onClose()
-    }
+    if (!projectName.trim()) return
+    onCreateProject({
+      name: projectName.trim(),
+      description: description.trim(),
+      visibility,
+      relatedPopulations: [],
+      relatedTopics: [],
+    })
+    onClose()
   }
-
-  // Initialize form state when modal opens
-  React.useEffect(() => {
-    if (open) {
-      if (editData) {
-        setProjectName(editData.name)
-        setDescription(editData.description)
-        setVisibility(editData.visibility)
-      } else {
-        setProjectName("")
-        setDescription("")
-        setVisibility("private")
-      }
-    }
-  }, [open])
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -69,7 +67,7 @@ export function CreateProjectModal({ open, onClose, onCreateProject, editData }:
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Basic Info Section */}
+          {/* Basic Info */}
           <div className="space-y-6">
             <div>
               <Label htmlFor="project-name" className="text-base font-medium text-gray-900">
@@ -100,59 +98,73 @@ export function CreateProjectModal({ open, onClose, onCreateProject, editData }:
             </div>
           </div>
 
-          {/* Project Visibility Section */}
+          {/* Visibility */}
           <div>
             <Label className="text-base font-medium text-gray-900 mb-4 block">Project Visibility</Label>
-            <RadioGroup value={visibility} onValueChange={(value: any) => setVisibility(value)} className="space-y-4">
-              <div className="flex items-start space-x-3 p-4 border rounded-lg">
-                <RadioGroupItem value="private" id="private" className="mt-1" />
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Lock className="h-4 w-4 text-gray-600" />
-                    <Label htmlFor="private" className="font-medium cursor-pointer text-gray-900">
-                      Private
-                    </Label>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Only you can view and access this project. Recommended for sensitive information.
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-start space-x-3 p-4 border rounded-lg">
-                <RadioGroupItem value="unlisted" id="unlisted" className="mt-1" />
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Link className="h-4 w-4 text-gray-600" />
-                    <Label htmlFor="unlisted" className="font-medium cursor-pointer text-gray-900">
-                      Sharable
-                    </Label>
+            <RadioGroup value={visibility} onValueChange={(v: any) => setVisibility(v)}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Private card */}
+                <label
+                  htmlFor="private"
+                  className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                    visibility === "private" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <RadioGroupItem value="private" id="private" className="mt-1" />
+                    <div>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <Lock className="h-4 w-4 text-gray-600" />
+                        <span className="font-medium">Private</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Only you can access this project.</p>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    You can share this project with other SAVI users, but it won't be indexed or discoverable by other
-                    SAVI users.
-                  </p>
-                </div>
-              </div>
+                </label>
 
-              <div className="flex items-start space-x-3 p-4 border rounded-lg">
-                <RadioGroupItem value="community" id="community" className="mt-1" />
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Users className="h-4 w-4 text-gray-600" />
-                    <Label htmlFor="community" className="font-medium cursor-pointer text-gray-900">
-                      Public
-                    </Label>
+                {/* Unlisted card */}
+                <label
+                  htmlFor="unlisted"
+                  className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                    visibility === "unlisted" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <RadioGroupItem value="unlisted" id="unlisted" className="mt-1" />
+                    <div>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <Link className="h-4 w-4 text-gray-600" />
+                        <span className="font-medium">Unlisted</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Shareable via link; not searchable.</p>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    Project will be visible to other SAVI users and may be used for research purposes.
-                  </p>
-                </div>
+                </label>
+
+                {/* Community card */}
+                <label
+                  htmlFor="community"
+                  className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                    visibility === "community" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <RadioGroupItem value="community" id="community" className="mt-1" />
+                    <div>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <Users className="h-4 w-4 text-gray-600" />
+                        <span className="font-medium">Community</span>
+                      </div>
+                      <p className="text-sm text-gray-600">Public to other SAVI users.</p>
+                    </div>
+                  </div>
+                </label>
               </div>
             </RadioGroup>
           </div>
 
-          {/* Bottom Navigation */}
+          {/* Footer */}
           <div className="flex justify-between pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel

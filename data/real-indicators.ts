@@ -1,0 +1,166 @@
+export interface RealIndicator {
+  id: string
+  name: string
+  topic: string
+  subtopic: string
+  source: string
+  reportingLevel: string
+  trend: "up" | "down" | "neutral"
+  availability: string
+  lastUpdated: string
+  starred: boolean
+  description?: string
+  categories: string[]
+}
+
+// This will be populated with real data from the CSV
+export const realIndicators: RealIndicator[] = [
+  {
+    id: "1",
+    name: "Subsidized Rental Units Targeted to People with Disabilities",
+    topic: "Alleviating Poverty",
+    subtopic: "Subsidized Housing",
+    source: "CDC",
+    reportingLevel: "Block Group",
+    trend: "neutral",
+    availability: "2018-2023",
+    lastUpdated: "2025-07-14",
+    starred: false,
+    description: "Subsidized Housing for Disabled",
+    categories: ["Alleviating Poverty", "Subsidized Housing"],
+  },
+  {
+    id: "2",
+    name: "Adult Population with a Disability",
+    topic: "Health",
+    subtopic: "Disability",
+    source: "U.S. Census",
+    reportingLevel: "Census Tract",
+    trend: "up",
+    availability: "2015-2023",
+    lastUpdated: "2025-06-15",
+    starred: true,
+    description: "Adult Disability Rate",
+    categories: ["Health", "Disability"],
+  },
+  {
+    id: "3",
+    name: "Children in Single-Parent Households",
+    topic: "Family Structure",
+    subtopic: "Household Composition",
+    source: "U.S. Census",
+    reportingLevel: "County",
+    trend: "down",
+    availability: "2010-2023",
+    lastUpdated: "2025-05-20",
+    starred: false,
+    description: "Single-Parent Household Rate",
+    categories: ["Family Structure", "Household Composition"],
+  },
+  {
+    id: "4",
+    name: "Median Household Income",
+    topic: "Economic Mobility",
+    subtopic: "Income",
+    source: "U.S. Census",
+    reportingLevel: "Block Group",
+    trend: "up",
+    availability: "2010-2023",
+    lastUpdated: "2025-04-10",
+    starred: true,
+    description: "Median Income",
+    categories: ["Economic Mobility", "Income"],
+  },
+  {
+    id: "5",
+    name: "High School Graduation Rate",
+    topic: "Education",
+    subtopic: "Educational Attainment",
+    source: "Indiana DOE",
+    reportingLevel: "School District",
+    trend: "up",
+    availability: "2015-2024",
+    lastUpdated: "2025-03-15",
+    starred: false,
+    description: "HS Graduation Rate",
+    categories: ["Education", "Educational Attainment"],
+  },
+  {
+    id: "6",
+    name: "Air Quality Index",
+    topic: "Environment",
+    subtopic: "Air Quality",
+    source: "EPA",
+    reportingLevel: "County",
+    trend: "down",
+    availability: "2018-2023",
+    lastUpdated: "2025-02-28",
+    starred: false,
+    description: "Air Quality Measurement",
+    categories: ["Environment", "Air Quality"],
+  },
+  {
+    id: "7",
+    name: "Unemployment Rate",
+    topic: "Economic Mobility",
+    subtopic: "Employment",
+    source: "BLS",
+    reportingLevel: "County",
+    trend: "down",
+    availability: "2020-2024",
+    lastUpdated: "2025-01-30",
+    starred: true,
+    description: "Unemployment Rate",
+    categories: ["Economic Mobility", "Employment"],
+  },
+  {
+    id: "8",
+    name: "Infant Mortality Rate",
+    topic: "Health",
+    subtopic: "Maternal and Child Health",
+    source: "Indiana DOH",
+    reportingLevel: "County",
+    trend: "neutral",
+    availability: "2015-2022",
+    lastUpdated: "2024-12-15",
+    starred: false,
+    description: "Infant Mortality",
+    categories: ["Health", "Maternal and Child Health"],
+  },
+  {
+    id: "9",
+    name: "Housing Cost Burden",
+    topic: "Housing",
+    subtopic: "Housing Affordability",
+    source: "U.S. Census",
+    reportingLevel: "Census Tract",
+    trend: "up",
+    availability: "2010-2023",
+    lastUpdated: "2024-11-20",
+    starred: false,
+    description: "Housing Affordability",
+    categories: ["Housing", "Housing Affordability"],
+  },
+  {
+    id: "10",
+    name: "Crime Rate per 1,000 Residents",
+    topic: "Safety",
+    subtopic: "Crime",
+    source: "Local Police",
+    reportingLevel: "Neighborhood",
+    trend: "down",
+    availability: "2018-2024",
+    lastUpdated: "2024-10-25",
+    starred: true,
+    description: "Crime Rate",
+    categories: ["Safety", "Crime"],
+  },
+]
+
+// Extract unique values for filters
+export const filterOptionsReal = {
+  topics: [...new Set(realIndicators.map((i) => i.topic))].sort(),
+  subtopics: [...new Set(realIndicators.map((i) => i.subtopic))].sort(),
+  sources: [...new Set(realIndicators.map((i) => i.source))].sort(),
+  reportingLevels: [...new Set(realIndicators.map((i) => i.reportingLevel))].sort(),
+}

@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Map, BarChart3, Table, User, Download, Share, Save, Settings } from "lucide-react"
+import { ArrowLeft, Map, BarChart3, Table, User, Download, Share, Save, Settings, Plus } from "lucide-react"
 import { ExportModal } from "./modals/export-modal"
 import type { ProjectData } from "./modals/create-project-modal"
 
@@ -70,7 +70,7 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
               Back
             </Button>
             <div className="h-6 w-px bg-gray-300" />
-            <h1 className="text-xl font-semibold text-gray-900">{projectName}</h1>
+            <h1 className="text-xl font-semibold text-gray-900">New Visualization</h1>
           </div>
           <div className="flex items-center space-x-3">
             <Button variant="outline" size="sm" onClick={() => setShowExportModal(true)}>
@@ -102,11 +102,13 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
           </Button>
 
           {!sidebarCollapsed && (
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* Project Selection */}
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Project</h3>
-                <Select defaultValue={projectName}>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Project</h3>
+                </div>
+                <Select defaultValue={sampleProjects[0]}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -121,8 +123,13 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
               </div>
 
               {/* Communities Section */}
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Communities</h3>
+              <div className="pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Communities</h3>
+                  <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-blue-500">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
                 <Select>
                   <SelectTrigger>
                     <SelectValue placeholder="Select communities" />
@@ -135,14 +142,52 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
                     ))}
                   </SelectContent>
                 </Select>
-                <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent">
-                  Add Community
-                </Button>
+              </div>
+
+              {/* Indicators Section */}
+              <div className="pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Indicators</h3>
+                  <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-blue-500">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select indicators" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sampleIndicators.map((indicator) => (
+                      <SelectItem key={indicator} value={indicator}>
+                        {indicator}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Normalization */}
+              <div className="pt-1">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Normalization</h3>
+                </div>
+                <Select value={normalization} onValueChange={setNormalization}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="count">Count</SelectItem>
+                    <SelectItem value="percent-population">% of Population</SelectItem>
+                    <SelectItem value="percent-total">% of Total</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Time Series */}
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Time Series</h3>
+              <div className="pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Time Series</h3>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <Label className="text-xs text-gray-600">From</Label>
@@ -177,32 +222,17 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
                 </div>
               </div>
 
-              {/* Indicators Section */}
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Indicators</h3>
+              {/* Uploads Section (renamed from Data Sets) */}
+              <div className="pt-2 border-t border-gray-100">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wider">Uploads</h3>
+                  <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-blue-500">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
                 <Select>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select indicators" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sampleIndicators.map((indicator) => (
-                      <SelectItem key={indicator} value={indicator}>
-                        {indicator}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent">
-                  Add Indicator
-                </Button>
-              </div>
-
-              {/* Data Sets Section */}
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Data Sets</h3>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select datasets" />
+                    <SelectValue placeholder="Select uploads" />
                   </SelectTrigger>
                   <SelectContent>
                     {sampleDatasets.map((dataset) => (
@@ -210,24 +240,6 @@ export function VisualizationBuilder({ projectName, projectData, onBackToWorkspa
                         {dataset}
                       </SelectItem>
                     ))}
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" size="sm" className="w-full mt-2 bg-transparent">
-                  Upload Data
-                </Button>
-              </div>
-
-              {/* Normalization */}
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Normalization</h3>
-                <Select value={normalization} onValueChange={setNormalization}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="count">Count</SelectItem>
-                    <SelectItem value="percent-population">% of Population</SelectItem>
-                    <SelectItem value="percent-total">% of Total</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -8,9 +8,10 @@ import { Plus, Folder, List, LayoutGrid, Eye, Star, Lock, Users, Link, MoreHoriz
 
 interface ProjectsPageProps {
   onCreateProject: () => void
+  onOpenProject: (projectData: any) => void
 }
 
-export function ProjectsPage({ onCreateProject }: ProjectsPageProps) {
+export function ProjectsPage({ onCreateProject, onOpenProject }: ProjectsPageProps) {
   const [viewMode, setViewMode] = useState<"card" | "list">("list")
   const [showStarredOnly, setShowStarredOnly] = useState(false)
   const [filter, setFilter] = useState("all")
@@ -92,6 +93,20 @@ export function ProjectsPage({ onCreateProject }: ProjectsPageProps) {
     }
   }
 
+  const handleOpenProject = (project: any) => {
+    // Convert the saved project data to match the expected format
+    const projectData = {
+      name: project.name,
+      description: project.description,
+      visibility: project.visibility,
+      relatedPopulations: [],
+      relatedTopics: [],
+      createdDate: new Date().toISOString(), // Use current date as placeholder
+      lastModified: project.lastModified,
+    }
+    onOpenProject(projectData)
+  }
+
   return (
     <div>
       {/* Header Section */}
@@ -102,9 +117,10 @@ export function ProjectsPage({ onCreateProject }: ProjectsPageProps) {
               <Folder className="h-8 w-8 text-gray-600" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Projects</h2>
+              <h2 className="text-xl font-semibold text-gray-900">Data Projects</h2>
               <p className="text-gray-600 mt-1">
-                Use projects to organize your data, communities, and visualizations in one area. Projects can be shared.
+                Use data projects to organize your data, communities, and visualizations in one area. Projects can be
+                shared.
               </p>
             </div>
           </div>
@@ -118,7 +134,7 @@ export function ProjectsPage({ onCreateProject }: ProjectsPageProps) {
       {/* Saved Projects */}
       <div>
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">Saved Projects</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Saved Data Projects</h2>
           <div className="flex items-center space-x-2">
             <Select value={filter} onValueChange={setFilter}>
               <SelectTrigger className="w-32">
@@ -198,7 +214,7 @@ export function ProjectsPage({ onCreateProject }: ProjectsPageProps) {
                         Updated: {new Date(project.lastModified).toLocaleDateString()}
                       </span>
                       <div className="flex items-center space-x-1">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={() => handleOpenProject(project)}>
                           <Eye className="h-3 w-3 mr-1" />
                           Open
                         </Button>
@@ -274,7 +290,7 @@ export function ProjectsPage({ onCreateProject }: ProjectsPageProps) {
                       </td>
                       <td className="p-4">
                         <div className="flex items-center space-x-1">
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" onClick={() => handleOpenProject(project)}>
                             <Eye className="h-3 w-3 mr-1" />
                             Open
                           </Button>
@@ -301,7 +317,7 @@ export function ProjectsPage({ onCreateProject }: ProjectsPageProps) {
         ) : (
           <div className="text-center py-12 text-gray-500">
             <Folder className="h-8 w-8 mx-auto mb-3 text-gray-300" />
-            <p>No saved projects match your filters.</p>
+            <p>No saved data projects match your filters.</p>
           </div>
         )}
       </div>
