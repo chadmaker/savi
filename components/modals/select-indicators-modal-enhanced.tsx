@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import {
   Search,
   Star,
@@ -65,7 +66,17 @@ export function SelectIndicatorsModalEnhanced({
         indicator.topic.toLowerCase().includes(searchLower) ||
         indicator.subtopic.toLowerCase().includes(searchLower)
 
-      return matchesSearch
+      // Apply category filter
+      const matchesCategory = selectedCategory === "All Categories" || indicator.topic === selectedCategory
+
+      // Apply data source filter
+      const matchesSource = selectedDataSource === "All Data Sources" || indicator.source === selectedDataSource
+
+      // Apply reporting area filter
+      const matchesReportingArea =
+        selectedReportingArea === "All Reporting Areas" || indicator.reportingLevel === selectedReportingArea
+
+      return matchesSearch && matchesCategory && matchesSource && matchesReportingArea
     })
 
     // Sort results
@@ -90,7 +101,7 @@ export function SelectIndicatorsModalEnhanced({
     }
 
     return filtered
-  }, [searchTerm, indicators, sortBy])
+  }, [searchTerm, indicators, sortBy, selectedCategory, selectedDataSource, selectedReportingArea])
 
   const handleSelectIndicator = (indicatorId: string) => {
     setSelected((prev) =>
@@ -225,13 +236,13 @@ export function SelectIndicatorsModalEnhanced({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="min-w-[1280px] w-[95vw] max-w-[95vw] h-[100vh] max-h-[100vh] flex flex-col p-0 m-0">
-        <DialogHeader className="p-6 pb-4">
+        <DialogHeader className="p-6 pb-4 flex-shrink-0">
           <DialogTitle className="text-xl font-semibold">Select Indicators</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 flex flex-col min-h-0">
           {/* Search Bar */}
-          <div className="px-6 pb-4">
+          <div className="px-6 pb-4 flex-shrink-0">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -244,7 +255,7 @@ export function SelectIndicatorsModalEnhanced({
           </div>
 
           {/* Filters Section */}
-          <div className="bg-gray-100 px-6 py-4">
+          <div className="bg-gray-100 px-6 py-4 flex-shrink-0">
             <div className="mb-3">
               <span className="text-sm font-medium text-gray-700">Filters</span>
             </div>
@@ -336,7 +347,7 @@ export function SelectIndicatorsModalEnhanced({
           {/* Results Section */}
           <div className="flex-1 flex flex-col min-h-0">
             <Tabs defaultValue="results" className="flex-1 flex flex-col">
-              <div className="flex items-center justify-between px-6 py-3 border-b">
+              <div className="flex items-center justify-between px-6 py-3 border-b flex-shrink-0">
                 <TabsList>
                   <TabsTrigger value="results" className="flex items-center space-x-2">
                     <span>Results</span>
@@ -384,26 +395,36 @@ export function SelectIndicatorsModalEnhanced({
                 </div>
               </div>
 
-              <TabsContent value="results" className="flex-1 overflow-y-auto p-6 space-y-4">
-                {filteredIndicators.map((indicator) => (
-                  <IndicatorCard key={indicator.id} indicator={indicator} />
-                ))}
+              <TabsContent value="results" className="flex-1 min-h-0 m-0">
+                <ScrollArea className="h-full">
+                  <div className="p-6 space-y-4">
+                    {filteredIndicators.length === 0 ? (
+                      <div className="text-center py-12 text-gray-500">No indicators found matching your criteria</div>
+                    ) : (
+                      filteredIndicators.map((indicator) => <IndicatorCard key={indicator.id} indicator={indicator} />)
+                    )}
+                  </div>
+                </ScrollArea>
               </TabsContent>
 
-              <TabsContent value="selected" className="flex-1 overflow-y-auto p-6 space-y-4">
-                {selected.length > 0 ? (
-                  indicators
-                    .filter((indicator) => selected.includes(indicator.id))
-                    .map((indicator) => <IndicatorCard key={indicator.id} indicator={indicator} />)
-                ) : (
-                  <div className="text-center py-12 text-gray-500">No indicators selected</div>
-                )}
+              <TabsContent value="selected" className="flex-1 min-h-0 m-0">
+                <ScrollArea className="h-full">
+                  <div className="p-6 space-y-4">
+                    {selected.length > 0 ? (
+                      indicators
+                        .filter((indicator) => selected.includes(indicator.id))
+                        .map((indicator) => <IndicatorCard key={indicator.id} indicator={indicator} />)
+                    ) : (
+                      <div className="text-center py-12 text-gray-500">No indicators selected</div>
+                    )}
+                  </div>
+                </ScrollArea>
               </TabsContent>
             </Tabs>
           </div>
         </div>
 
-        <DialogFooter className="p-6 pt-4 border-t bg-gray-50">
+        <DialogFooter className="p-6 pt-4 border-t bg-gray-50 flex-shrink-0">
           <div className="flex items-center justify-between w-full">
             <div className="text-sm text-gray-600">
               {selected.length > 0 && `${selected.length} Indicator${selected.length !== 1 ? "s" : ""} selected`}
