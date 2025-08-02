@@ -138,41 +138,41 @@ export function SelectIndicatorsModalEnhanced({
     const isExpanded = expandedIndicator === indicator.id
 
     return (
-      <div className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors">
+      <div className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors mb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-3 flex-1">
             <Button
               variant="ghost"
               size="icon"
-              className="h-6 w-6 p-0 mt-1"
+              className="h-6 w-6 p-0 mt-1 flex-shrink-0"
               onClick={() => handleToggleStar(indicator.id)}
             >
               <Star className={`h-4 w-4 ${indicator.starred ? "text-yellow-400 fill-current" : "text-gray-300"}`} />
             </Button>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <h4 className="font-medium text-gray-900 mb-1">{indicator.name}</h4>
               <div className="flex items-center text-sm text-gray-600 mb-2">
                 <span>{indicator.topic}</span>
-                <ChevronRight className="h-3 w-3 mx-1" />
+                <ChevronRight className="h-3 w-3 mx-1 flex-shrink-0" />
                 <span>{indicator.subtopic}</span>
               </div>
               <div className="flex items-center space-x-4 text-xs text-gray-500">
                 <div className="flex items-center">
-                  <Database className="h-3 w-3 mr-1" />
-                  {indicator.source}
+                  <Database className="h-3 w-3 mr-1 flex-shrink-0" />
+                  <span>{indicator.source}</span>
                 </div>
                 <div className="flex items-center">
-                  <MapPin className="h-3 w-3 mr-1" />
-                  {indicator.reportingLevel}
+                  <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
+                  <span>{indicator.reportingLevel}</span>
                 </div>
                 <div className="flex items-center">
-                  <Calendar className="h-3 w-3 mr-1" />
-                  {indicator.availability}
+                  <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
+                  <span>{indicator.availability}</span>
                 </div>
               </div>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 flex-shrink-0">
             <Button
               variant={isSelected ? "default" : "outline"}
               size="sm"
@@ -236,13 +236,13 @@ export function SelectIndicatorsModalEnhanced({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="min-w-[1280px] w-[95vw] max-w-[95vw] h-[100vh] max-h-[100vh] flex flex-col p-0 m-0">
-        <DialogHeader className="p-6 pb-4 flex-shrink-0">
+        <DialogHeader className="p-6 pb-4 flex-shrink-0 border-b">
           <DialogTitle className="text-xl font-semibold">Select Indicators</DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col overflow-hidden">
           {/* Search Bar */}
-          <div className="px-6 pb-4 flex-shrink-0">
+          <div className="px-6 py-4 flex-shrink-0">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -345,8 +345,8 @@ export function SelectIndicatorsModalEnhanced({
           </div>
 
           {/* Results Section */}
-          <div className="flex-1 flex flex-col min-h-0">
-            <Tabs defaultValue="results" className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <Tabs defaultValue="results" className="flex-1 flex flex-col overflow-hidden">
               <div className="flex items-center justify-between px-6 py-3 border-b flex-shrink-0">
                 <TabsList>
                   <TabsTrigger value="results" className="flex items-center space-x-2">
@@ -395,25 +395,33 @@ export function SelectIndicatorsModalEnhanced({
                 </div>
               </div>
 
-              <TabsContent value="results" className="flex-1 min-h-0 m-0">
-                <ScrollArea className="h-full">
-                  <div className="p-6 space-y-4">
+              <TabsContent value="results" className="flex-1 overflow-hidden m-0 p-0">
+                <ScrollArea className="h-full w-full">
+                  <div className="p-6">
                     {filteredIndicators.length === 0 ? (
                       <div className="text-center py-12 text-gray-500">No indicators found matching your criteria</div>
                     ) : (
-                      filteredIndicators.map((indicator) => <IndicatorCard key={indicator.id} indicator={indicator} />)
+                      <div className="space-y-0">
+                        {filteredIndicators.map((indicator) => (
+                          <IndicatorCard key={indicator.id} indicator={indicator} />
+                        ))}
+                      </div>
                     )}
                   </div>
                 </ScrollArea>
               </TabsContent>
 
-              <TabsContent value="selected" className="flex-1 min-h-0 m-0">
-                <ScrollArea className="h-full">
-                  <div className="p-6 space-y-4">
+              <TabsContent value="selected" className="flex-1 overflow-hidden m-0 p-0">
+                <ScrollArea className="h-full w-full">
+                  <div className="p-6">
                     {selected.length > 0 ? (
-                      indicators
-                        .filter((indicator) => selected.includes(indicator.id))
-                        .map((indicator) => <IndicatorCard key={indicator.id} indicator={indicator} />)
+                      <div className="space-y-0">
+                        {indicators
+                          .filter((indicator) => selected.includes(indicator.id))
+                          .map((indicator) => (
+                            <IndicatorCard key={indicator.id} indicator={indicator} />
+                          ))}
+                      </div>
                     ) : (
                       <div className="text-center py-12 text-gray-500">No indicators selected</div>
                     )}
