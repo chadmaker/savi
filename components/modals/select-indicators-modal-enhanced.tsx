@@ -224,7 +224,7 @@ export function SelectIndicatorsModalEnhanced({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl h-[90vh] flex flex-col p-0">
+      <DialogContent className="min-w-[1280px] w-[95vw] max-w-[95vw] h-[100vh] max-h-[100vh] flex flex-col p-0 m-0">
         <DialogHeader className="p-6 pb-4">
           <DialogTitle className="text-xl font-semibold">Select Indicators</DialogTitle>
         </DialogHeader>
