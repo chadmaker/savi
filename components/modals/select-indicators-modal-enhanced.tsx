@@ -44,18 +44,35 @@ export function SelectIndicatorsModalEnhanced({
   const [groupBy, setGroupBy] = useState<"none" | "topics" | "subtopics" | "sources">("none")
   const [expandedIndicator, setExpandedIndicator] = useState<string | null>(null)
 
-  // Active filters
-  const [activeFilters, setActiveFilters] = useState<string[]>([
-    "Filter populated by AI Results",
-    "Filter from Refined Results",
-  ])
-
   // Filter options
   const [selectedCategory, setSelectedCategory] = useState("All Categories")
   const [selectedDataRange, setSelectedDataRange] = useState("All Data Ranges")
-  const [selectedCommunity, setSelectedCommunity] = useState("For Communities")
+  const [selectedCommunity, setSelectedCommunity] = useState("All Communities")
   const [selectedReportingArea, setSelectedReportingArea] = useState("All Reporting Areas")
   const [selectedDataSource, setSelectedDataSource] = useState("All Data Sources")
+
+  // Get active filter chips
+  const activeFilterChips = useMemo(() => {
+    const chips: Array<{ label: string; value: string; type: string }> = []
+
+    if (selectedCategory !== "All Categories") {
+      chips.push({ label: selectedCategory, value: selectedCategory, type: "category" })
+    }
+    if (selectedDataRange !== "All Data Ranges") {
+      chips.push({ label: selectedDataRange, value: selectedDataRange, type: "dataRange" })
+    }
+    if (selectedCommunity !== "All Communities") {
+      chips.push({ label: selectedCommunity, value: selectedCommunity, type: "community" })
+    }
+    if (selectedReportingArea !== "All Reporting Areas") {
+      chips.push({ label: selectedReportingArea, value: selectedReportingArea, type: "reportingArea" })
+    }
+    if (selectedDataSource !== "All Data Sources") {
+      chips.push({ label: selectedDataSource, value: selectedDataSource, type: "dataSource" })
+    }
+
+    return chips
+  }, [selectedCategory, selectedDataRange, selectedCommunity, selectedReportingArea, selectedDataSource])
 
   const filteredIndicators = useMemo(() => {
     const filtered = indicators.filter((indicator) => {
@@ -118,8 +135,24 @@ export function SelectIndicatorsModalEnhanced({
     onClose()
   }
 
-  const removeActiveFilter = (filter: string) => {
-    setActiveFilters((prev) => prev.filter((f) => f !== filter))
+  const removeFilterChip = (type: string) => {
+    switch (type) {
+      case "category":
+        setSelectedCategory("All Categories")
+        break
+      case "dataRange":
+        setSelectedDataRange("All Data Ranges")
+        break
+      case "community":
+        setSelectedCommunity("All Communities")
+        break
+      case "reportingArea":
+        setSelectedReportingArea("All Reporting Areas")
+        break
+      case "dataSource":
+        setSelectedDataSource("All Data Sources")
+        break
+    }
   }
 
   const TrendIcon = ({ trend }: { trend: "up" | "down" | "neutral" }) => {
@@ -257,9 +290,6 @@ export function SelectIndicatorsModalEnhanced({
           {/* Filters Section */}
           <div className="bg-gray-100 px-6 py-4 flex-shrink-0">
             <div className="mb-3">
-              <span className="text-sm font-medium text-gray-700">Filters</span>
-            </div>
-            <div className="mb-3">
               <span className="text-xs text-gray-600 mb-2 block">Refine results</span>
               <div className="flex flex-wrap gap-3">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -292,7 +322,7 @@ export function SelectIndicatorsModalEnhanced({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="For Communities">For Communities</SelectItem>
+                    <SelectItem value="All Communities">All Communities</SelectItem>
                     <SelectItem value="Marion County">Marion County</SelectItem>
                     <SelectItem value="Broad Ripple">Broad Ripple</SelectItem>
                   </SelectContent>
@@ -328,15 +358,19 @@ export function SelectIndicatorsModalEnhanced({
               </div>
             </div>
 
-            {/* Active Filters */}
-            {activeFilters.length > 0 && (
+            {/* Active Filter Chips */}
+            {activeFilterChips.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {activeFilters.map((filter) => (
-                  <Badge key={filter} variant="secondary" className="flex items-center gap-1 text-xs">
-                    {filter}
+                {activeFilterChips.map((chip) => (
+                  <Badge
+                    key={`${chip.type}-${chip.value}`}
+                    variant="secondary"
+                    className="flex items-center gap-1 text-xs"
+                  >
+                    {chip.label}
                     <X
                       className="h-3 w-3 cursor-pointer hover:text-red-500"
-                      onClick={() => removeActiveFilter(filter)}
+                      onClick={() => removeFilterChip(chip.type)}
                     />
                   </Badge>
                 ))}
