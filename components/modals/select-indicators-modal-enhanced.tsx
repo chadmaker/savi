@@ -46,8 +46,8 @@ export function SelectIndicatorsModalEnhanced({
 
   // Filter options
   const [selectedCategory, setSelectedCategory] = useState("All Categories")
-  const [selectedDataRange, setSelectedDataRange] = useState("All Data Ranges")
-  const [selectedCommunity, setSelectedCommunity] = useState("All Communities")
+  const [selectedDataRange, setSelectedDataRange] = useState("All Years")
+  const [selectedCommunity, setSelectedCommunity] = useState("All Region")
   const [selectedReportingArea, setSelectedReportingArea] = useState("All Reporting Areas")
   const [selectedDataSource, setSelectedDataSource] = useState("All Data Sources")
 
@@ -58,10 +58,10 @@ export function SelectIndicatorsModalEnhanced({
     if (selectedCategory !== "All Categories") {
       chips.push({ label: selectedCategory, value: selectedCategory, type: "category" })
     }
-    if (selectedDataRange !== "All Data Ranges") {
+    if (selectedDataRange !== "All Years") {
       chips.push({ label: selectedDataRange, value: selectedDataRange, type: "dataRange" })
     }
-    if (selectedCommunity !== "All Communities") {
+    if (selectedCommunity !== "All Region") {
       chips.push({ label: selectedCommunity, value: selectedCommunity, type: "community" })
     }
     if (selectedReportingArea !== "All Reporting Areas") {
@@ -141,10 +141,10 @@ export function SelectIndicatorsModalEnhanced({
         setSelectedCategory("All Categories")
         break
       case "dataRange":
-        setSelectedDataRange("All Data Ranges")
+        setSelectedDataRange("All Years")
         break
       case "community":
-        setSelectedCommunity("All Communities")
+        setSelectedCommunity("All Region")
         break
       case "reportingArea":
         setSelectedReportingArea("All Reporting Areas")
@@ -158,11 +158,11 @@ export function SelectIndicatorsModalEnhanced({
   const TrendIcon = ({ trend }: { trend: "up" | "down" | "neutral" }) => {
     switch (trend) {
       case "up":
-        return <TrendingUp className="h-4 w-4 text-green-500" />
+        return <TrendingUp className="h-4 w-4 text-blue-600" />
       case "down":
-        return <TrendingDown className="h-4 w-4 text-red-500" />
+        return <TrendingDown className="h-4 w-4 text-blue-600" />
       default:
-        return <Minus className="h-4 w-4 text-gray-400" />
+        return <Minus className="h-4 w-4 text-blue-600" />
     }
   }
 
@@ -231,8 +231,12 @@ export function SelectIndicatorsModalEnhanced({
               <div>
                 <h5 className="font-medium text-sm mb-2">Topic Classification</h5>
                 <div className="space-x-2">
-                  <Badge variant="secondary">{indicator.topic}</Badge>
-                  <Badge variant="outline">{indicator.subtopic}</Badge>
+                  <Badge variant="outline" className="border-blue-200 text-blue-700">
+                    {indicator.topic}
+                  </Badge>
+                  <Badge variant="outline" className="border-blue-200 text-blue-700">
+                    {indicator.subtopic}
+                  </Badge>
                 </div>
               </div>
               <div>
@@ -293,7 +297,7 @@ export function SelectIndicatorsModalEnhanced({
               <span className="text-xs text-gray-600 mb-2 block">Refine results</span>
               <div className="flex flex-wrap gap-3">
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-40 h-8 text-xs">
+                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -307,29 +311,29 @@ export function SelectIndicatorsModalEnhanced({
                 </Select>
 
                 <Select value={selectedDataRange} onValueChange={setSelectedDataRange}>
-                  <SelectTrigger className="w-40 h-8 text-xs">
+                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="All Data Ranges">All Data Ranges</SelectItem>
+                    <SelectItem value="All Years">All Years</SelectItem>
                     <SelectItem value="2020-2024">2020-2024</SelectItem>
                     <SelectItem value="2015-2023">2015-2023</SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Select value={selectedCommunity} onValueChange={setSelectedCommunity}>
-                  <SelectTrigger className="w-40 h-8 text-xs">
+                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="All Communities">All Communities</SelectItem>
+                    <SelectItem value="All Region">All Region</SelectItem>
                     <SelectItem value="Marion County">Marion County</SelectItem>
                     <SelectItem value="Broad Ripple">Broad Ripple</SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Select value={selectedReportingArea} onValueChange={setSelectedReportingArea}>
-                  <SelectTrigger className="w-40 h-8 text-xs">
+                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -343,7 +347,7 @@ export function SelectIndicatorsModalEnhanced({
                 </Select>
 
                 <Select value={selectedDataSource} onValueChange={setSelectedDataSource}>
-                  <SelectTrigger className="w-40 h-8 text-xs">
+                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -391,7 +395,7 @@ export function SelectIndicatorsModalEnhanced({
                   </TabsTrigger>
                   <TabsTrigger value="selected" className="flex items-center space-x-2">
                     <span>Selected Indicators</span>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
                       {selected.length}
                     </Badge>
                   </TabsTrigger>
