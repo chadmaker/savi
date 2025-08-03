@@ -41,9 +41,9 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
 
   const navigationTabs = [
     { id: "dashboard", label: "Dashboard", active: activeTab === "dashboard" },
-    { id: "projects", label: "Data Projects", active: activeTab === "projects" },
+    { id: "projects", label: "Projects", active: activeTab === "projects" },
     { id: "indicators", label: "Data Catalog", active: activeTab === "indicators" },
-    { id: "communities", label: "My Communities", active: activeTab === "communities" },
+    { id: "communities", label: "Communities", active: activeTab === "communities" },
     { id: "visualizations", label: "Studio", active: activeTab === "visualizations" },
   ]
 
