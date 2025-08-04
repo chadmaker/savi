@@ -6,12 +6,13 @@ import { Search, ChevronDown, User, LogOut } from "lucide-react"
 
 import { CreateProjectModal } from "./modals/create-project-modal"
 import { SelectCommunityModal } from "./modals/select-community-modal"
-import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
+import { SelectIndicatorsModalEnhanced } from "./modals/select-indicators-modal-enhanced"
 import { DataUploadModal } from "./modals/data-upload-modal"
 import { ProjectsPage } from "./pages/projects-page"
 import { CommunitiesPage } from "./pages/communities-page"
 import { IndicatorsPage } from "./pages/indicators-page"
 import { VisualizationsPage } from "./pages/visualizations-page"
+import { DashboardPage } from "./pages/dashboard-page"
 import { ProjectWorkspace } from "./project-workspace"
 import { VisualizationBuilder } from "./visualization-builder"
 import type { ProjectData } from "./modals/create-project-modal"
@@ -31,15 +32,18 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [selectedCommunities, setSelectedCommunities] = useState<string[]>([])
   const [selectedIndicators, setSelectedIndicators] = useState<string[]>([])
-  const [activeTab, setActiveTab] = useState<"projects" | "communities" | "indicators" | "visualizations">("projects")
+  const [activeTab, setActiveTab] = useState<
+    "dashboard" | "projects" | "communities" | "indicators" | "visualizations"
+  >("dashboard")
   const [currentProject, setCurrentProject] = useState<string | null>(null)
   const [currentScreen, setCurrentScreen] = useState<"dashboard" | "workspace" | "visualization">("dashboard")
   const [currentProjectData, setCurrentProjectData] = useState<any>(null)
 
   const navigationTabs = [
-    { id: "projects", label: "Data Projects", active: activeTab === "projects" },
-    { id: "indicators", label: "Data Catalog", active: activeTab === "indicators" },
-    { id: "communities", label: "My Communities", active: activeTab === "communities" },
+    { id: "dashboard", label: "Dashboard", active: activeTab === "dashboard" },
+    { id: "projects", label: "Projects", active: activeTab === "projects" },
+    { id: "communities", label: "Communities", active: activeTab === "communities" },
+    { id: "indicators", label: "Indicators", active: activeTab === "indicators" },
     { id: "visualizations", label: "Studio", active: activeTab === "visualizations" },
   ]
 
@@ -51,7 +55,8 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
     }
     setCurrentProject(projectData.name)
     setCurrentProjectData(projectWithDate)
-    setCurrentScreen("workspace")
+    setActiveTab("projects") // Set Projects tab as active
+    setCurrentScreen("workspace") // Use the same workspace layout as existing projects
     passUpstreamCreateProject(projectWithDate)
   }
 
@@ -68,15 +73,45 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
       setCurrentProject(tempProject.name)
       setCurrentProjectData(tempProject)
     }
+    setActiveTab("visualizations") // Keep Studio tab active
     setCurrentScreen("visualization")
   }
 
   const handleBackToDashboard = () => {
     setCurrentScreen("dashboard")
+    setActiveTab("dashboard") // Set Dashboard tab as active when returning
   }
 
   const handleReturnToWorkspace = () => {
+    setActiveTab("projects") // Keep Projects tab active
     setCurrentScreen("workspace")
+  }
+
+  const handleOpenProject = (projectData: any) => {
+    setCurrentProject(projectData.name)
+    setCurrentProjectData(projectData)
+    setActiveTab("projects") // Set Projects tab as active
+    setCurrentScreen("workspace")
+  }
+
+  const handleNavigateToProjects = () => {
+    setActiveTab("projects")
+    setCurrentScreen("dashboard")
+  }
+
+  const handleNavigateToCommunities = () => {
+    setActiveTab("communities")
+    setCurrentScreen("dashboard")
+  }
+
+  const handleNavigateToIndicators = () => {
+    setActiveTab("indicators")
+    setCurrentScreen("dashboard")
+  }
+
+  const handleNavigateToVisualizations = () => {
+    setActiveTab("visualizations")
+    setCurrentScreen("dashboard")
   }
 
   return (
@@ -89,7 +124,7 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
             <button
               onClick={() => {
                 setCurrentScreen("dashboard")
-                setActiveTab("projects")
+                setActiveTab("dashboard")
               }}
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
@@ -150,15 +185,17 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
         <div>
           {currentScreen === "dashboard" && (
             <>
-              {activeTab === "projects" && (
-                <ProjectsPage
+              {activeTab === "dashboard" && (
+                <DashboardPage
+                  onNavigateToProjects={handleNavigateToProjects}
+                  onNavigateToCommunities={handleNavigateToCommunities}
+                  onNavigateToIndicators={handleNavigateToIndicators}
+                  onNavigateToVisualizations={handleNavigateToVisualizations}
                   onCreateProject={() => setShowCreateModal(true)}
-                  onOpenProject={(projectData) => {
-                    setCurrentProject(projectData.name)
-                    setCurrentProjectData(projectData)
-                    setCurrentScreen("workspace")
-                  }}
                 />
+              )}
+              {activeTab === "projects" && (
+                <ProjectsPage onCreateProject={() => setShowCreateModal(true)} onOpenProject={handleOpenProject} />
               )}
               {activeTab === "communities" && <CommunitiesPage onSelectCommunity={() => setShowCommunityModal(true)} />}
               {activeTab === "indicators" && <IndicatorsPage onSelectIndicators={() => setShowIndicatorsModal(true)} />}
@@ -201,7 +238,7 @@ export function Dashboard({ onCreateProject: passUpstreamCreateProject }: Dashbo
         onSelectionChange={setSelectedCommunities}
       />
 
-      <SelectIndicatorsModal
+      <SelectIndicatorsModalEnhanced
         open={showIndicatorsModal}
         onClose={() => setShowIndicatorsModal(false)}
         selectedIndicators={selectedIndicators}

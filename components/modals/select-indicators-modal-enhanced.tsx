@@ -1,28 +1,17 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { useState, useEffect } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Slider } from "@/components/ui/slider"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Search,
-  Star,
-  X,
-  Calendar,
-  Database,
-  MapPin,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Info,
-  ChevronRight,
-} from "lucide-react"
-import { realIndicators, filterOptionsReal, type RealIndicator } from "@/data/real-indicators"
-import { cn } from "@/lib/utils"
+import { Separator } from "@/components/ui/separator"
+import { Search, X, ChevronDown, ChevronUp } from "lucide-react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { realIndicators } from "@/data/real-indicators"
 
 interface SelectIndicatorsModalEnhancedProps {
   open: boolean
@@ -31,464 +20,399 @@ interface SelectIndicatorsModalEnhancedProps {
   onSelectionChange: (indicators: string[]) => void
 }
 
+interface Indicator {
+  id: string
+  name: string
+  description: string
+  categories: string[]
+  extent: string
+  reportingArea: string
+  lastUpdated: string
+  availability?: string
+  source: string
+}
+
+const CATEGORY_OPTIONS = [
+  "Demographics",
+  "Economics",
+  "Education",
+  "Health",
+  "Housing",
+  "Transportation",
+  "Environment",
+  "Safety",
+  "Arts & Culture",
+  "Civic Engagement",
+  "Infrastructure",
+  "Employment",
+  "Social Services",
+]
+
+const REGION_OPTIONS = [
+  { value: "all", label: "All Regions" },
+  { value: "marion-county", label: "Marion County" },
+  { value: "indianapolis", label: "Indianapolis" },
+  { value: "metro-area", label: "Indianapolis Metro Area" },
+  { value: "indiana", label: "Indiana" },
+  { value: "midwest", label: "Midwest Region" },
+  { value: "national", label: "National" },
+]
+
 export function SelectIndicatorsModalEnhanced({
   open,
   onClose,
-  selectedIndicators: initialSelected,
+  selectedIndicators,
   onSelectionChange,
 }: SelectIndicatorsModalEnhancedProps) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [indicators, setIndicators] = useState<RealIndicator[]>(realIndicators)
-  const [selected, setSelected] = useState<string[]>(initialSelected)
-  const [sortBy, setSortBy] = useState<"relevance" | "name" | "topic" | "updated">("relevance")
-  const [groupBy, setGroupBy] = useState<"none" | "topics" | "subtopics" | "sources">("none")
-  const [expandedIndicator, setExpandedIndicator] = useState<string | null>(null)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [selectedRegion, setSelectedRegion] = useState("all")
+  const [yearRange, setYearRange] = useState([2010, 2024])
+  const [isRegionOpen, setIsRegionOpen] = useState(false)
+  const [filteredIndicators, setFilteredIndicators] = useState<Indicator[]>([])
 
-  // Filter options
-  const [selectedCategory, setSelectedCategory] = useState("All Categories")
-  const [selectedDataRange, setSelectedDataRange] = useState("All Years")
-  const [selectedCommunity, setSelectedCommunity] = useState("All Region")
-  const [selectedReportingArea, setSelectedReportingArea] = useState("All Reporting Areas")
-  const [selectedDataSource, setSelectedDataSource] = useState("All Data Sources")
+  // Convert real indicators data to our format
+  const indicators: Indicator[] = realIndicators.map((indicator, index) => ({
+    id: indicator.id || `indicator-${index}`,
+    name: indicator.name,
+    description: indicator.description || `Analysis of ${indicator.name.toLowerCase()}`,
+    categories: indicator.categories || ["Demographics"],
+    extent: indicator.extent || "County",
+    reportingArea: indicator.reportingArea || "Census Tract",
+    lastUpdated: indicator.lastUpdated || "2023-01-01",
+    availability: indicator.availability,
+    source: indicator.source || "American Community Survey",
+  }))
 
-  // Get active filter chips
-  const activeFilterChips = useMemo(() => {
-    const chips: Array<{ label: string; value: string; type: string }> = []
+  useEffect(() => {
+    let filtered = indicators
 
-    if (selectedCategory !== "All Categories") {
-      chips.push({ label: selectedCategory, value: selectedCategory, type: "category" })
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (indicator) =>
+          indicator.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          indicator.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          indicator.categories.some((cat) => cat.toLowerCase().includes(searchTerm.toLowerCase())),
+      )
     }
-    if (selectedDataRange !== "All Years") {
-      chips.push({ label: selectedDataRange, value: selectedDataRange, type: "dataRange" })
-    }
-    if (selectedCommunity !== "All Region") {
-      chips.push({ label: selectedCommunity, value: selectedCommunity, type: "community" })
-    }
-    if (selectedReportingArea !== "All Reporting Areas") {
-      chips.push({ label: selectedReportingArea, value: selectedReportingArea, type: "reportingArea" })
-    }
-    if (selectedDataSource !== "All Data Sources") {
-      chips.push({ label: selectedDataSource, value: selectedDataSource, type: "dataSource" })
+
+    // Category filter
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter((indicator) => indicator.categories.some((cat) => selectedCategories.includes(cat)))
     }
 
-    return chips
-  }, [selectedCategory, selectedDataRange, selectedCommunity, selectedReportingArea, selectedDataSource])
+    // Region filter (simplified - in real app would filter by actual geographic coverage)
+    if (selectedRegion !== "all") {
+      // For demo purposes, we'll keep all indicators but in real app would filter by region
+      filtered = filtered
+    }
 
-  const filteredIndicators = useMemo(() => {
-    const filtered = indicators.filter((indicator) => {
-      const searchLower = searchTerm.toLowerCase()
-      const matchesSearch =
-        searchTerm === "" ||
-        indicator.name.toLowerCase().includes(searchLower) ||
-        indicator.topic.toLowerCase().includes(searchLower) ||
-        indicator.subtopic.toLowerCase().includes(searchLower)
+    // Year range filter - safely handle availability field
+    let matchesYearRange = true
+    filtered = filtered.filter((indicator) => {
+      if (indicator.availability && typeof indicator.availability === "string") {
+        const availabilityYears = indicator.availability
+          .split("-")
+          .map((y) => {
+            const year = Number.parseInt(y.trim())
+            return isNaN(year) ? null : year
+          })
+          .filter((year) => year !== null) as number[]
 
-      // Apply category filter
-      const matchesCategory = selectedCategory === "All Categories" || indicator.topic === selectedCategory
-
-      // Apply data source filter
-      const matchesSource = selectedDataSource === "All Data Sources" || indicator.source === selectedDataSource
-
-      // Apply reporting area filter
-      const matchesReportingArea =
-        selectedReportingArea === "All Reporting Areas" || indicator.reportingLevel === selectedReportingArea
-
-      return matchesSearch && matchesCategory && matchesSource && matchesReportingArea
+        if (availabilityYears.length > 0) {
+          matchesYearRange = availabilityYears.some((year) => year >= yearRange[0] && year <= yearRange[1])
+        }
+      }
+      return matchesYearRange
     })
 
-    // Sort results
-    switch (sortBy) {
-      case "name":
-        filtered.sort((a, b) => a.name.localeCompare(b.name))
-        break
-      case "topic":
-        filtered.sort((a, b) => a.topic.localeCompare(b.topic))
-        break
-      case "updated":
-        filtered.sort((a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime())
-        break
-      case "relevance":
-      default:
-        filtered.sort((a, b) => {
-          if (a.starred && !b.starred) return -1
-          if (!a.starred && b.starred) return 1
-          return 0
-        })
-        break
-    }
+    setFilteredIndicators(filtered)
+  }, [searchTerm, selectedCategories, selectedRegion, yearRange])
 
-    return filtered
-  }, [searchTerm, indicators, sortBy, selectedCategory, selectedDataSource, selectedReportingArea])
-
-  const handleSelectIndicator = (indicatorId: string) => {
-    setSelected((prev) =>
-      prev.includes(indicatorId) ? prev.filter((id) => id !== indicatorId) : [...prev, indicatorId],
+  const handleCategoryToggle = (category: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category],
     )
   }
 
-  const handleToggleStar = (indicatorId: string) => {
-    setIndicators((prev) => prev.map((ind) => (ind.id === indicatorId ? { ...ind, starred: !ind.starred } : ind)))
+  const handleIndicatorToggle = (indicatorId: string) => {
+    const newSelection = selectedIndicators.includes(indicatorId)
+      ? selectedIndicators.filter((id) => id !== indicatorId)
+      : [...selectedIndicators, indicatorId]
+    onSelectionChange(newSelection)
   }
 
-  const handleConfirm = () => {
-    onSelectionChange(selected)
-    onClose()
+  const handleSelectAll = () => {
+    const allIds = filteredIndicators.map((indicator) => indicator.id)
+    onSelectionChange(allIds)
   }
 
-  const removeFilterChip = (type: string) => {
-    switch (type) {
+  const handleClearAll = () => {
+    onSelectionChange([])
+  }
+
+  const clearFilter = (filterType: string, value?: string) => {
+    switch (filterType) {
+      case "search":
+        setSearchTerm("")
+        break
       case "category":
-        setSelectedCategory("All Categories")
+        if (value) {
+          setSelectedCategories((prev) => prev.filter((c) => c !== value))
+        } else {
+          setSelectedCategories([])
+        }
         break
-      case "dataRange":
-        setSelectedDataRange("All Years")
+      case "region":
+        setSelectedRegion("all")
         break
-      case "community":
-        setSelectedCommunity("All Region")
-        break
-      case "reportingArea":
-        setSelectedReportingArea("All Reporting Areas")
-        break
-      case "dataSource":
-        setSelectedDataSource("All Data Sources")
+      case "year":
+        setYearRange([2010, 2024])
         break
     }
   }
 
-  const TrendIcon = ({ trend }: { trend: "up" | "down" | "neutral" }) => {
-    switch (trend) {
-      case "up":
-        return <TrendingUp className="h-4 w-4 text-blue-600" />
-      case "down":
-        return <TrendingDown className="h-4 w-4 text-blue-600" />
-      default:
-        return <Minus className="h-4 w-4 text-blue-600" />
-    }
+  const getActiveFiltersCount = () => {
+    let count = 0
+    if (searchTerm) count++
+    if (selectedCategories.length > 0) count += selectedCategories.length
+    if (selectedRegion !== "all") count++
+    if (yearRange[0] !== 2010 || yearRange[1] !== 2024) count++
+    return count
   }
 
-  const IndicatorCard = ({ indicator }: { indicator: RealIndicator }) => {
-    const isSelected = selected.includes(indicator.id)
-    const isExpanded = expandedIndicator === indicator.id
-
-    return (
-      <div className="border rounded-lg p-4 bg-white hover:bg-gray-50 transition-colors mb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex items-start space-x-3 flex-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 p-0 mt-1 flex-shrink-0"
-              onClick={() => handleToggleStar(indicator.id)}
-            >
-              <Star className={`h-4 w-4 ${indicator.starred ? "text-yellow-400 fill-current" : "text-gray-300"}`} />
-            </Button>
-            <div className="flex-1 min-w-0">
-              <h4 className="font-medium text-gray-900 mb-1">{indicator.name}</h4>
-              <div className="flex items-center text-sm text-gray-600 mb-2">
-                <span>{indicator.topic}</span>
-                <ChevronRight className="h-3 w-3 mx-1 flex-shrink-0" />
-                <span>{indicator.subtopic}</span>
-              </div>
-              <div className="flex items-center space-x-4 text-xs text-gray-500">
-                <div className="flex items-center">
-                  <Database className="h-3 w-3 mr-1 flex-shrink-0" />
-                  <span>{indicator.source}</span>
-                </div>
-                <div className="flex items-center">
-                  <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
-                  <span>{indicator.reportingLevel}</span>
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
-                  <span>{indicator.availability}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2 flex-shrink-0">
-            <Button
-              variant={isSelected ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleSelectIndicator(indicator.id)}
-              className={cn("min-w-[80px]", isSelected && "bg-blue-600 hover:bg-blue-700")}
-            >
-              {isSelected ? "Selected" : "Select"}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setExpandedIndicator(isExpanded ? null : indicator.id)}
-              className="h-8 w-8"
-            >
-              <Info className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        {isExpanded && (
-          <div className="mt-4 pt-4 border-t bg-gray-50 -mx-4 -mb-4 px-4 pb-4 rounded-b-lg">
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <h5 className="font-medium text-sm mb-2">Topic Classification</h5>
-                <div className="space-x-2">
-                  <Badge variant="outline" className="border-blue-200 text-blue-700">
-                    {indicator.topic}
-                  </Badge>
-                  <Badge variant="outline" className="border-blue-200 text-blue-700">
-                    {indicator.subtopic}
-                  </Badge>
-                </div>
-              </div>
-              <div>
-                <h5 className="font-medium text-sm mb-2">Data Details</h5>
-                <div className="flex items-center text-sm">
-                  <TrendIcon trend={indicator.trend} />
-                  <span className="ml-2 text-gray-600">
-                    {indicator.trend === "up" ? "Increasing" : indicator.trend === "down" ? "Decreasing" : "Stable"}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-4 mt-4 text-sm">
-              <div>
-                <span className="font-medium">Source:</span> {indicator.source}
-              </div>
-              <div>
-                <span className="font-medium">Availability:</span> {indicator.availability}
-              </div>
-              <div>
-                <span className="font-medium">Reporting Level:</span> {indicator.reportingLevel}
-              </div>
-              <div className="col-span-3">
-                <span className="font-medium">Last Updated:</span>{" "}
-                {new Date(indicator.lastUpdated).toLocaleDateString()}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    )
-  }
+  const selectedRegionLabel = REGION_OPTIONS.find((r) => r.value === selectedRegion)?.label || "All Regions"
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="min-w-[1280px] w-[95vw] max-w-[95vw] h-[100vh] max-h-[100vh] flex flex-col p-0 m-0">
-        <DialogHeader className="p-6 pb-4 flex-shrink-0 border-b">
-          <DialogTitle className="text-xl font-semibold">Select Indicators</DialogTitle>
+      <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
+          <DialogTitle className="text-xl font-semibold">Select Data Indicators</DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Search Bar */}
-          <div className="px-6 py-4 flex-shrink-0">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search indicators with SAVI AI"
-                className="pl-10 h-12"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          {/* Filters Section */}
-          <div className="bg-gray-100 px-6 py-4 flex-shrink-0">
-            <div className="mb-3">
-              <span className="text-xs text-gray-600 mb-2 block">Refine results</span>
-              <div className="flex flex-wrap gap-3">
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All Categories">All Categories</SelectItem>
-                    {filterOptionsReal.topics.map((topic) => (
-                      <SelectItem key={topic} value={topic}>
-                        {topic}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={selectedDataRange} onValueChange={setSelectedDataRange}>
-                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All Years">All Years</SelectItem>
-                    <SelectItem value="2020-2024">2020-2024</SelectItem>
-                    <SelectItem value="2015-2023">2015-2023</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={selectedCommunity} onValueChange={setSelectedCommunity}>
-                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All Region">All Region</SelectItem>
-                    <SelectItem value="Marion County">Marion County</SelectItem>
-                    <SelectItem value="Broad Ripple">Broad Ripple</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select value={selectedReportingArea} onValueChange={setSelectedReportingArea}>
-                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All Reporting Areas">All Reporting Areas</SelectItem>
-                    {filterOptionsReal.reportingLevels.map((level) => (
-                      <SelectItem key={level} value={level}>
-                        {level}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <Select value={selectedDataSource} onValueChange={setSelectedDataSource}>
-                  <SelectTrigger className="w-40 h-8 text-xs bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All Data Sources">All Data Sources</SelectItem>
-                    {filterOptionsReal.sources.map((source) => (
-                      <SelectItem key={source} value={source}>
-                        {source}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Active Filter Chips */}
-            {activeFilterChips.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {activeFilterChips.map((chip) => (
-                  <Badge
-                    key={`${chip.type}-${chip.value}`}
-                    variant="secondary"
-                    className="flex items-center gap-1 text-xs"
+        <div className="flex flex-1 gap-6 min-h-0">
+          {/* Filters Sidebar */}
+          <div className="w-80 flex-shrink-0 space-y-6">
+            {/* Search */}
+            <div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search indicators..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+                {searchTerm && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                    onClick={() => clearFilter("search")}
                   >
-                    {chip.label}
-                    <X
-                      className="h-3 w-3 cursor-pointer hover:text-red-500"
-                      onClick={() => removeFilterChip(chip.type)}
-                    />
-                  </Badge>
-                ))}
+                    <X className="h-3 w-3" />
+                  </Button>
+                )}
               </div>
-            )}
-          </div>
+            </div>
 
-          {/* Results Section */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <Tabs defaultValue="results" className="flex-1 flex flex-col overflow-hidden">
-              <div className="flex items-center justify-between px-6 py-3 border-b flex-shrink-0">
-                <TabsList>
-                  <TabsTrigger value="results" className="flex items-center space-x-2">
-                    <span>Results</span>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                      {filteredIndicators.length}
+            {/* Active Filters */}
+            {getActiveFiltersCount() > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-gray-900">Active Filters ({getActiveFiltersCount()})</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSearchTerm("")
+                      setSelectedCategories([])
+                      setSelectedRegion("all")
+                      setYearRange([2010, 2024])
+                    }}
+                    className="text-xs text-blue-600 hover:text-blue-700"
+                  >
+                    Clear All
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {searchTerm && (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      Search: {searchTerm}
+                      <X className="h-3 w-3 cursor-pointer" onClick={() => clearFilter("search")} />
                     </Badge>
-                  </TabsTrigger>
-                  <TabsTrigger value="selected" className="flex items-center space-x-2">
-                    <span>Selected Indicators</span>
-                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                      {selected.length}
+                  )}
+                  {selectedCategories.map((category) => (
+                    <Badge key={category} variant="secondary" className="flex items-center gap-1">
+                      {category}
+                      <X className="h-3 w-3 cursor-pointer" onClick={() => clearFilter("category", category)} />
                     </Badge>
-                  </TabsTrigger>
-                </TabsList>
-
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Sort:</span>
-                    <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                      <SelectTrigger className="w-28 h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="relevance">Relevance</SelectItem>
-                        <SelectItem value="name">Name</SelectItem>
-                        <SelectItem value="topic">Topic</SelectItem>
-                        <SelectItem value="updated">Updated</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Group:</span>
-                    <Select value={groupBy} onValueChange={(value: any) => setGroupBy(value)}>
-                      <SelectTrigger className="w-28 h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
-                        <SelectItem value="topics">Topics</SelectItem>
-                        <SelectItem value="subtopics">Subtopics</SelectItem>
-                        <SelectItem value="sources">Sources</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  ))}
+                  {selectedRegion !== "all" && (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      {selectedRegionLabel}
+                      <X className="h-3 w-3 cursor-pointer" onClick={() => clearFilter("region")} />
+                    </Badge>
+                  )}
+                  {(yearRange[0] !== 2010 || yearRange[1] !== 2024) && (
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      {yearRange[0]}-{yearRange[1]}
+                      <X className="h-3 w-3 cursor-pointer" onClick={() => clearFilter("year")} />
+                    </Badge>
+                  )}
                 </div>
               </div>
+            )}
 
-              <TabsContent value="results" className="flex-1 overflow-hidden m-0 p-0">
-                <ScrollArea className="h-full w-full">
-                  <div className="p-6">
-                    {filteredIndicators.length === 0 ? (
-                      <div className="text-center py-12 text-gray-500">No indicators found matching your criteria</div>
-                    ) : (
-                      <div className="space-y-0">
-                        {filteredIndicators.map((indicator) => (
-                          <IndicatorCard key={indicator.id} indicator={indicator} />
-                        ))}
+            <Separator />
+
+            {/* Categories */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">Categories</h3>
+              <ScrollArea className="h-48">
+                <div className="space-y-2">
+                  {CATEGORY_OPTIONS.map((category) => (
+                    <div key={category} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={category}
+                        checked={selectedCategories.includes(category)}
+                        onCheckedChange={() => handleCategoryToggle(category)}
+                      />
+                      <label htmlFor={category} className="text-sm text-gray-700 cursor-pointer">
+                        {category}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+
+            <Separator />
+
+            {/* All Years */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">All Years</h3>
+              <div className="space-y-4">
+                <div className="px-2">
+                  <Slider
+                    value={yearRange}
+                    onValueChange={setYearRange}
+                    min={2000}
+                    max={2024}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>{yearRange[0]}</span>
+                  <span>{yearRange[1]}</span>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* All Region */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-900 mb-3">All Region</h3>
+              <Collapsible open={isRegionOpen} onOpenChange={setIsRegionOpen}>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between bg-transparent">
+                    {selectedRegionLabel}
+                    {isRegionOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2">
+                  <div className="space-y-2 border rounded-md p-2 bg-white">
+                    {REGION_OPTIONS.map((region) => (
+                      <div key={region.value} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={region.value}
+                          checked={selectedRegion === region.value}
+                          onCheckedChange={() => setSelectedRegion(region.value)}
+                        />
+                        <label htmlFor={region.value} className="text-sm text-gray-700 cursor-pointer">
+                          {region.label}
+                        </label>
                       </div>
-                    )}
+                    ))}
                   </div>
-                </ScrollArea>
-              </TabsContent>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          </div>
 
-              <TabsContent value="selected" className="flex-1 overflow-hidden m-0 p-0">
-                <ScrollArea className="h-full w-full">
-                  <div className="p-6">
-                    {selected.length > 0 ? (
-                      <div className="space-y-0">
-                        {indicators
-                          .filter((indicator) => selected.includes(indicator.id))
-                          .map((indicator) => (
-                            <IndicatorCard key={indicator.id} indicator={indicator} />
+          {/* Results */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex items-center justify-between mb-4 flex-shrink-0">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-600">{filteredIndicators.length} indicators found</span>
+                <span className="text-sm text-gray-600">{selectedIndicators.length} selected</span>
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm" onClick={handleSelectAll}>
+                  Select All
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleClearAll}>
+                  Clear All
+                </Button>
+              </div>
+            </div>
+
+            <ScrollArea className="flex-1">
+              <div className="space-y-2 pr-4">
+                {filteredIndicators.map((indicator) => (
+                  <div
+                    key={indicator.id}
+                    className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                      selectedIndicators.includes(indicator.id)
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                    onClick={() => handleIndicatorToggle(indicator.id)}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        checked={selectedIndicators.includes(indicator.id)}
+                        onChange={() => handleIndicatorToggle(indicator.id)}
+                        className="mt-1"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-gray-900 mb-1">{indicator.name}</h4>
+                        <p className="text-sm text-gray-600 mb-2">{indicator.description}</p>
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {indicator.categories.map((category) => (
+                            <Badge key={category} variant="secondary" className="text-xs">
+                              {category}
+                            </Badge>
                           ))}
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>Extent: {indicator.extent}</span>
+                          <span>Updated: {new Date(indicator.lastUpdated).toLocaleDateString()}</span>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="text-center py-12 text-gray-500">No indicators selected</div>
-                    )}
+                    </div>
                   </div>
-                </ScrollArea>
-              </TabsContent>
-            </Tabs>
+                ))}
+              </div>
+            </ScrollArea>
           </div>
         </div>
 
-        <DialogFooter className="p-6 pt-4 border-t bg-gray-50 flex-shrink-0">
-          <div className="flex items-center justify-between w-full">
-            <div className="text-sm text-gray-600">
-              {selected.length > 0 && `${selected.length} Indicator${selected.length !== 1 ? "s" : ""} selected`}
-            </div>
-            <div className="flex space-x-3">
-              <Button variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleConfirm}
-                disabled={selected.length === 0}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Confirm Selection ({selected.length})
-              </Button>
-            </div>
+        {/* Footer */}
+        <div className="flex justify-between items-center pt-4 border-t flex-shrink-0">
+          <span className="text-sm text-gray-600">{selectedIndicators.length} indicators selected</span>
+          <div className="flex space-x-2">
+            <Button variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button onClick={onClose} className="bg-blue-600 hover:bg-blue-700">
+              Add Selected Indicators
+            </Button>
           </div>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   )
