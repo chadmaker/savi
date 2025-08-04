@@ -14,10 +14,10 @@ import { Search, X, Filter, Calendar, MapPin } from "lucide-react"
 import { realIndicators } from "@/data/real-indicators"
 
 interface SelectIndicatorsModalEnhancedProps {
-  isOpen: boolean
+  open: boolean
   onClose: () => void
-  onSelectIndicators: (indicators: any[]) => void
-  selectedIndicators: any[]
+  selectedIndicators: string[]
+  onSelectionChange: (indicators: string[]) => void
 }
 
 const categories = [
@@ -72,16 +72,16 @@ const regions = [
 ]
 
 export function SelectIndicatorsModalEnhanced({
-  isOpen,
+  open,
   onClose,
-  onSelectIndicators,
   selectedIndicators,
+  onSelectionChange,
 }: SelectIndicatorsModalEnhancedProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [yearRange, setYearRange] = useState([2010, 2024])
   const [selectedRegion, setSelectedRegion] = useState("all")
-  const [tempSelectedIndicators, setTempSelectedIndicators] = useState<any[]>(selectedIndicators)
+  const [tempSelectedIndicators, setTempSelectedIndicators] = useState<string[]>(selectedIndicators)
 
   const filteredIndicators = useMemo(() => {
     return realIndicators.filter((indicator) => {
@@ -124,19 +124,19 @@ export function SelectIndicatorsModalEnhanced({
     )
   }
 
-  const handleIndicatorToggle = (indicator: any) => {
+  const handleIndicatorToggle = (indicatorId: string) => {
     setTempSelectedIndicators((prev) => {
-      const isSelected = prev.some((i) => i.id === indicator.id)
+      const isSelected = prev.includes(indicatorId)
       if (isSelected) {
-        return prev.filter((i) => i.id !== indicator.id)
+        return prev.filter((id) => id !== indicatorId)
       } else {
-        return [...prev, indicator]
+        return [...prev, indicatorId]
       }
     })
   }
 
   const handleSelectAll = () => {
-    setTempSelectedIndicators(filteredIndicators)
+    setTempSelectedIndicators(filteredIndicators.map((indicator) => indicator.id))
   }
 
   const handleClearAll = () => {
@@ -144,7 +144,7 @@ export function SelectIndicatorsModalEnhanced({
   }
 
   const handleApply = () => {
-    onSelectIndicators(tempSelectedIndicators)
+    onSelectionChange(tempSelectedIndicators)
     onClose()
   }
 
@@ -161,7 +161,7 @@ export function SelectIndicatorsModalEnhanced({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-xl font-semibold">Select Data Indicators</DialogTitle>
@@ -338,7 +338,7 @@ export function SelectIndicatorsModalEnhanced({
             <ScrollArea className="flex-1">
               <div className="space-y-2">
                 {filteredIndicators.map((indicator) => {
-                  const isSelected = tempSelectedIndicators.some((i) => i.id === indicator.id)
+                  const isSelected = tempSelectedIndicators.includes(indicator.id)
                   return (
                     <div
                       key={indicator.id}
@@ -347,12 +347,12 @@ export function SelectIndicatorsModalEnhanced({
                           ? "border-blue-200 bg-blue-50"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       }`}
-                      onClick={() => handleIndicatorToggle(indicator)}
+                      onClick={() => handleIndicatorToggle(indicator.id)}
                     >
                       <div className="flex items-start space-x-3">
                         <Checkbox
                           checked={isSelected}
-                          onChange={() => handleIndicatorToggle(indicator)}
+                          onChange={() => handleIndicatorToggle(indicator.id)}
                           className="mt-1"
                         />
                         <div className="flex-1 min-w-0">
