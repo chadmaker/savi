@@ -2211,7 +2211,7 @@ export function SelectIndicatorsModalEnhanced({
 
         <div className="flex-1 flex overflow-hidden">
           {/* Left Sidebar - Filters */}
-          <div className="w-80 flex-shrink-0 border-r bg-gray-50 p-6 overflow-y-auto">
+          <div className="w-96 flex-shrink-0 border-r bg-gray-50 p-6 overflow-y-auto">
             <div className="space-y-6">
               {/* Clear All Filters */}
               <div className="flex items-center justify-between">
@@ -2228,13 +2228,13 @@ export function SelectIndicatorsModalEnhanced({
 
               {/* Reporting Area */}
               <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-3">Reporting Area</h4>
+                <h4 className="text-sm font-medium text-gray-900 mb-3">Reporting Level</h4>
                 <Select value={selectedReportingArea} onValueChange={setSelectedReportingArea}>
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Reporting Areas</SelectItem>
+                    <SelectItem value="all">All Reporting Levels</SelectItem>
                     {REPORTING_LEVELS.map((level) => (
                       <SelectItem key={level} value={level}>
                         {level}
