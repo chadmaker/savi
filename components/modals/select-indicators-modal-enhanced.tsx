@@ -1833,12 +1833,19 @@ export function SelectIndicatorsModalEnhanced({
   const filteredIndicators = useMemo(() => {
     let filtered = indicators.filter((indicator) => {
       const searchLower = searchTerm.toLowerCase()
-      const matchesSearch =
-        searchTerm === "" ||
-        indicator.name.toLowerCase().includes(searchLower) ||
-        indicator.topic.toLowerCase().includes(searchLower) ||
-        indicator.subtopic.toLowerCase().includes(searchLower) ||
-        indicator.description.toLowerCase().includes(searchLower)
+    
+      // Improved search matching - split search terms and check each word
+      const searchWords = searchTerm.trim().toLowerCase().split(/\s+/)
+      const matchesSearch = searchTerm === "" || searchWords.some(word => 
+        word.length > 0 && (
+          indicator.name.toLowerCase().includes(word) ||
+          indicator.topic.toLowerCase().includes(word) ||
+          indicator.subtopic.toLowerCase().includes(word) ||
+          indicator.description.toLowerCase().includes(word) ||
+          indicator.source.toLowerCase().includes(word) ||
+          indicator.reportingLevel.toLowerCase().includes(word)
+        )
+      )
 
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(indicator.topic)
       const matchesSubcategory = selectedSubcategories.length === 0 || selectedSubcategories.includes(indicator.subtopic)
@@ -1874,19 +1881,24 @@ export function SelectIndicatorsModalEnhanced({
         filtered.sort((a, b) => {
           if (a.starred && !b.starred) return -1
           if (!a.starred && b.starred) return 1
-          
+        
           if (searchTerm) {
-            const aRelevance = (
-              (a.name.toLowerCase().includes(searchTerm.toLowerCase()) ? 2 : 0) +
-              (a.description.toLowerCase().includes(searchTerm.toLowerCase()) ? 1 : 0)
-            )
-            const bRelevance = (
-              (b.name.toLowerCase().includes(searchTerm.toLowerCase()) ? 2 : 0) +
-              (b.description.toLowerCase().includes(searchTerm.toLowerCase()) ? 1 : 0)
-            )
+            const searchWords = searchTerm.toLowerCase().split(/\s+/)
+            const aRelevance = searchWords.reduce((score, word) => {
+              if (a.name.toLowerCase().includes(word)) score += 3
+              if (a.topic.toLowerCase().includes(word)) score += 2
+              if (a.description.toLowerCase().includes(word)) score += 1
+              return score
+            }, 0)
+            const bRelevance = searchWords.reduce((score, word) => {
+              if (b.name.toLowerCase().includes(word)) score += 3
+              if (b.topic.toLowerCase().includes(word)) score += 2
+              if (b.description.toLowerCase().includes(word)) score += 1
+              return score
+            }, 0)
             return bRelevance - aRelevance
           }
-          
+        
           return 0
         })
         break
