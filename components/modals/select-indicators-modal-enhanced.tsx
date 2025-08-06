@@ -178,7 +178,7 @@ export function SelectIndicatorsModalEnhanced({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-6xl h-[80vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-xl font-semibold">Select Data Indicators</DialogTitle>
         </DialogHeader>
@@ -398,20 +398,10 @@ export function SelectIndicatorsModalEnhanced({
                         />
                         <div className="flex-1 min-w-0">
                           {/* Header with star and title */}
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex items-start gap-2 flex-1">
-                              <Star className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
-                              <div className="flex-1">
-                                <h4 className="font-medium text-gray-900 leading-tight">{indicator.name}</h4>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 ml-4">
-                              <Button variant="outline" size="sm" className="text-xs">
-                                View
-                              </Button>
-                              <Button variant="ghost" size="sm" className="p-1">
-                                <X className="h-3 w-3" />
-                              </Button>
+                          <div className="flex items-start gap-2 mb-2">
+                            <Star className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900 leading-tight">{indicator.name}</h4>
                             </div>
                           </div>
 
