@@ -39,38 +39,11 @@ const categories = [
 ]
 
 const regions = [
-  { value: "all", label: "All Regions" },
-  { value: "marion-county", label: "Marion County" },
-  { value: "indianapolis", label: "Indianapolis" },
-  {
-    value: "neighborhoods",
-    label: "Neighborhoods",
-    children: [
-      { value: "broad-ripple", label: "Broad Ripple" },
-      { value: "fountain-square", label: "Fountain Square" },
-      { value: "mass-ave", label: "Mass Ave" },
-      { value: "downtown", label: "Downtown" },
-    ],
-  },
-  {
-    value: "townships",
-    label: "Townships",
-    children: [
-      { value: "center-township", label: "Center Township" },
-      { value: "lawrence-township", label: "Lawrence Township" },
-      { value: "pike-township", label: "Pike Township" },
-      { value: "washington-township", label: "Washington Township" },
-    ],
-  },
-  {
-    value: "school-districts",
-    label: "School Districts",
-    children: [
-      { value: "ips", label: "Indianapolis Public Schools" },
-      { value: "lawrence-township-schools", label: "Lawrence Township Schools" },
-      { value: "pike-township-schools", label: "Pike Township Schools" },
-    ],
-  },
+  { value: "state", label: "State" },
+  { value: "county", label: "County" },
+  { value: "school-corp", label: "School Corp" },
+  { value: "block-group", label: "Block Group" },
+  { value: "census-tract", label: "Census Tract" },
 ]
 
 export function SelectIndicatorsModalEnhanced({
@@ -82,7 +55,7 @@ export function SelectIndicatorsModalEnhanced({
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [yearRange, setYearRange] = useState([2010, 2024])
-  const [selectedRegion, setSelectedRegion] = useState("all")
+  const [selectedRegion, setSelectedRegion] = useState("state")
   const [tempSelectedIndicators, setTempSelectedIndicators] = useState<string[]>(selectedIndicators)
   const [categoriesOpen, setCategoriesOpen] = useState(false)
 
@@ -115,7 +88,7 @@ export function SelectIndicatorsModalEnhanced({
       }
 
       // Region filter (simplified for demo)
-      const matchesRegion = selectedRegion === "all" || true // All indicators available for all regions in demo
+      const matchesRegion = true // All indicators available for all regions in demo
 
       return matchesSearch && matchesCategory && matchesYearRange && matchesRegion
     })
@@ -160,7 +133,7 @@ export function SelectIndicatorsModalEnhanced({
     setSearchTerm("")
     setSelectedCategories([])
     setYearRange([2010, 2024])
-    setSelectedRegion("all")
+    setSelectedRegion("state")
   }
 
   return (
@@ -179,7 +152,7 @@ export function SelectIndicatorsModalEnhanced({
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search by name, description, or category..."
+                  placeholder="Search with AI..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -195,7 +168,7 @@ export function SelectIndicatorsModalEnhanced({
               </div>
             </div>
 
-            {/* Region Filter - Moved to top */}
+            {/* Region Filter - Updated options */}
             <div className="space-y-3">
               <label className="text-sm font-medium flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
@@ -207,24 +180,15 @@ export function SelectIndicatorsModalEnhanced({
                 </SelectTrigger>
                 <SelectContent>
                   {regions.map((region) => (
-                    <div key={region.value}>
-                      <SelectItem value={region.value}>{region.label}</SelectItem>
-                      {region.children && (
-                        <div className="ml-4">
-                          {region.children.map((child) => (
-                            <SelectItem key={child.value} value={child.value} className="text-sm">
-                              {child.label}
-                            </SelectItem>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                    <SelectItem key={region.value} value={region.value}>
+                      {region.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Categories Filter - Changed to multi-select dropdown */}
+            {/* Categories Filter - Multi-select dropdown */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium">Categories</label>
@@ -288,7 +252,7 @@ export function SelectIndicatorsModalEnhanced({
               )}
             </div>
 
-            {/* Year Range Filter - Updated label */}
+            {/* Year Range Filter - Dual handle slider */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium flex items-center gap-2">
@@ -325,7 +289,7 @@ export function SelectIndicatorsModalEnhanced({
                 selectedCategories.length === 0 &&
                 yearRange[0] === 2010 &&
                 yearRange[1] === 2024 &&
-                selectedRegion === "all"
+                selectedRegion === "state"
               }
             >
               <Filter className="h-4 w-4 mr-2" />
