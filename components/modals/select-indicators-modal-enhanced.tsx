@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Search, X, Filter, Calendar, MapPin, ChevronDown } from 'lucide-react'
+import { Search, X, Filter, Calendar, MapPin, ChevronDown, FileText, Star } from 'lucide-react'
 import { realIndicators } from "@/data/real-indicators"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
@@ -45,6 +45,46 @@ const regions = [
   { value: "block-group", label: "Block Group" },
   { value: "census-tract", label: "Census Tract" },
 ]
+
+// Mock data sources for demonstration
+const getDataSource = (indicatorId: string) => {
+  const sources = [
+    "U.S. Census",
+    "American Community Survey",
+    "Department of Education",
+    "Bureau of Labor Statistics",
+    "CDC",
+    "FBI Crime Data",
+    "EPA",
+    "HUD",
+  ]
+  return sources[indicatorId.length % sources.length]
+}
+
+const getReportingLevel = (indicatorId: string) => {
+  const levels = ["Census Tract", "Block Group", "School District", "County", "State"]
+  return levels[indicatorId.length % levels.length]
+}
+
+const getSubcategory = (category: string) => {
+  const subcategories: { [key: string]: string[] } = {
+    "Demographics": ["Population", "Age Distribution", "Race and Ethnicity"],
+    "Economics": ["Income", "Employment", "Economic Status"],
+    "Education": ["Educational Attainment", "School Performance", "Access"],
+    "Health": ["Health Outcomes", "Access to Care", "Behavioral Health"],
+    "Housing": ["Housing Quality", "Affordability", "Availability"],
+    "Transportation": ["Access", "Infrastructure", "Safety"],
+    "Environment": ["Air Quality", "Water Quality", "Green Space"],
+    "Public Safety": ["Crime Rates", "Emergency Services", "Community Safety"],
+    "Arts & Culture": ["Cultural Assets", "Participation", "Access"],
+    "Civic Engagement": ["Voting", "Community Participation", "Government"],
+    "Infrastructure": ["Utilities", "Communications", "Transportation"],
+    "Social Services": ["Support Services", "Access", "Quality"],
+    "Technology": ["Digital Access", "Infrastructure", "Adoption"],
+  }
+  const subs = subcategories[category] || ["General"]
+  return subs[Math.floor(Math.random() * subs.length)]
+}
 
 export function SelectIndicatorsModalEnhanced({
   open,
@@ -333,9 +373,13 @@ export function SelectIndicatorsModalEnhanced({
 
             {/* Results List */}
             <ScrollArea className="flex-1">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {filteredIndicators.map((indicator) => {
                   const isSelected = tempSelectedIndicators.includes(indicator.id)
+                  const dataSource = getDataSource(indicator.id)
+                  const reportingLevel = getReportingLevel(indicator.id)
+                  const subcategory = indicator.category ? getSubcategory(indicator.category) : ""
+                  
                   return (
                     <div
                       key={indicator.id}
@@ -353,21 +397,52 @@ export function SelectIndicatorsModalEnhanced({
                           className="mt-1"
                         />
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="font-medium text-gray-900">{indicator.name}</h4>
-                              <p className="text-sm text-gray-600 mt-1">{indicator.description}</p>
+                          {/* Header with star and title */}
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex items-start gap-2 flex-1">
+                              <Star className="h-4 w-4 text-yellow-500 mt-0.5 flex-shrink-0" />
+                              <div className="flex-1">
+                                <h4 className="font-medium text-gray-900 leading-tight">{indicator.name}</h4>
+                              </div>
                             </div>
-                            <div className="flex flex-col items-end space-y-1 ml-4">
-                              {indicator.category && (
-                                <Badge variant="outline" className="text-xs">
-                                  {indicator.category}
-                                </Badge>
-                              )}
-                              {indicator.availability && (
-                                <span className="text-xs text-gray-500">{indicator.availability}</span>
-                              )}
+                            <div className="flex items-center gap-2 ml-4">
+                              <Button variant="outline" size="sm" className="text-xs">
+                                View
+                              </Button>
+                              <Button variant="ghost" size="sm" className="p-1">
+                                <X className="h-3 w-3" />
+                              </Button>
                             </div>
+                          </div>
+
+                          {/* Category and subcategory */}
+                          {indicator.category && (
+                            <div className="text-sm text-gray-600 mb-3">
+                              {indicator.category} › {subcategory}
+                            </div>
+                          )}
+
+                          {/* Metadata tags */}
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            {/* Data Source */}
+                            <div className="flex items-center gap-1">
+                              <FileText className="h-3 w-3" />
+                              <span>{dataSource}</span>
+                            </div>
+                            
+                            {/* Reporting Level */}
+                            <div className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              <span>{reportingLevel}</span>
+                            </div>
+                            
+                            {/* Data Availability */}
+                            {indicator.availability && (
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                <span>{indicator.availability}</span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
