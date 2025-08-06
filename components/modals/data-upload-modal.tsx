@@ -1,12 +1,29 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Upload, Download, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Progress } from "@/components/ui/progress"
+import { Upload, File, X, CheckCircle, AlertCircle } from 'lucide-react'
+
+interface UploadedFile {
+  id: string
+  name: string
+  size: number
+  type: string
+  status: "uploading" | "success" | "error"
+  progress: number
+  error?: string
+}
 
 interface DataUploadModalProps {
   open: boolean
@@ -14,229 +31,210 @@ interface DataUploadModalProps {
 }
 
 export function DataUploadModal({ open, onClose }: DataUploadModalProps) {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<UploadedFile[]>([])
+  const [isDragOver, setIsDragOver] = useState(false)
 
-  const steps = [
-    { number: 1, title: "CSV Template", description: "Download template and prepare data" },
-    { number: 2, title: "Upload File", description: "Upload your prepared CSV file" },
-    { number: 3, title: "Field Matching", description: "Review and match data fields" },
-    { number: 4, title: "Confirmation", description: "Confirm upload and processing" },
-  ]
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(true)
+  }, [])
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      setUploadedFile(file)
-      setCurrentStep(3)
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+    
+    const droppedFiles = Array.from(e.dataTransfer.files)
+    handleFiles(droppedFiles)
+  }, [])
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const selectedFiles = Array.from(e.target.files)
+      handleFiles(selectedFiles)
     }
   }
 
-  const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1)
+  const handleFiles = (fileList: File[]) => {
+    const newFiles: UploadedFile[] = fileList.map(file => ({
+      id: Math.random().toString(36).substr(2, 9),
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      status: "uploading",
+      progress: 0
+    }))
+
+    setFiles(prev => [...prev, ...newFiles])
+
+    // Simulate upload progress
+    newFiles.forEach(file => {
+      simulateUpload(file.id)
+    })
+  }
+
+  const simulateUpload = (fileId: string) => {
+    const interval = setInterval(() => {
+      setFiles(prev => prev.map(file => {
+        if (file.id === fileId) {
+          const newProgress = Math.min(file.progress + Math.random() * 30, 100)
+          
+          if (newProgress >= 100) {
+            clearInterval(interval)
+            // Randomly simulate success or error
+            const isSuccess = Math.random() > 0.2
+            return {
+              ...file,
+              progress: 100,
+              status: isSuccess ? "success" : "error",
+              error: isSuccess ? undefined : "Upload failed. Please try again."
+            }
+          }
+          
+          return { ...file, progress: newProgress }
+        }
+        return file
+      }))
+    }, 200)
+  }
+
+  const removeFile = (fileId: string) => {
+    setFiles(prev => prev.filter(file => file.id !== fileId))
+  }
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+  }
+
+  const getStatusIcon = (status: UploadedFile['status']) => {
+    switch (status) {
+      case "success":
+        return <CheckCircle className="h-4 w-4 text-green-500" />
+      case "error":
+        return <AlertCircle className="h-4 w-4 text-red-500" />
+      default:
+        return <File className="h-4 w-4 text-gray-500" />
     }
   }
 
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1)
-    }
-  }
-
-  const handleComplete = () => {
+  const handleClose = () => {
+    setFiles([])
     onClose()
-    setCurrentStep(1)
-    setUploadedFile(null)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Data Upload Wizard</DialogTitle>
+          <DialogTitle>Upload Data Files</DialogTitle>
+          <DialogDescription>
+            Upload CSV, Excel, or JSON files to add to your project. Supported formats: .csv, .xlsx, .xls, .json
+          </DialogDescription>
         </DialogHeader>
-
-        {/* Progress Steps */}
-        <div className="flex items-center justify-between mb-6">
-          {steps.map((step, index) => (
-            <div key={step.number} className="flex items-center">
-              <div
-                className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-                  currentStep >= step.number ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
-                }`}
-              >
-                {currentStep > step.number ? <CheckCircle className="h-5 w-5" /> : step.number}
-              </div>
-              {index < steps.length - 1 && (
-                <div className={`w-12 h-0.5 mx-2 ${currentStep > step.number ? "bg-blue-600" : "bg-gray-200"}`} />
-              )}
+        
+        <div className="space-y-4">
+          {/* Upload Area */}
+          <div
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+              isDragOver
+                ? "border-blue-500 bg-blue-50"
+                : "border-gray-300 hover:border-gray-400"
+            }`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <Upload className="h-8 w-8 mx-auto mb-4 text-gray-400" />
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-gray-900">
+                Drag and drop files here, or click to browse
+              </p>
+              <p className="text-xs text-gray-500">
+                Maximum file size: 50MB per file
+              </p>
             </div>
-          ))}
-        </div>
+            <Label htmlFor="file-upload" className="cursor-pointer">
+              <Input
+                id="file-upload"
+                type="file"
+                multiple
+                accept=".csv,.xlsx,.xls,.json"
+                onChange={handleFileInput}
+                className="hidden"
+              />
+              <Button variant="outline" className="mt-4" asChild>
+                <span>Browse Files</span>
+              </Button>
+            </Label>
+          </div>
 
-        {/* Step Content */}
-        <div className="flex-1 min-h-0">
-          {currentStep === 1 && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Download CSV Template</h3>
-                <p className="text-gray-600 mb-6">
-                  Download our CSV template to ensure your data is formatted correctly for import.
-                </p>
-              </div>
-
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <Download className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                  <Button className="mb-4">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download CSV Template
-                  </Button>
-                  <div className="text-sm text-gray-600">
-                    <p className="mb-2">Template includes:</p>
-                    <ul className="text-left max-w-md mx-auto space-y-1">
-                      <li>• Community/Geography column</li>
-                      <li>• Data indicator columns</li>
-                      <li>• Time period columns</li>
-                      <li>• Sample data for reference</li>
-                    </ul>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {currentStep === 2 && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Upload Your Data File</h3>
-                <p className="text-gray-600 mb-6">
-                  Upload your prepared CSV file using the drag & drop area or file browser.
-                </p>
-              </div>
-
-              <Card>
-                <CardContent className="p-8">
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
-                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-lg font-medium text-gray-700 mb-2">Drag and drop your CSV file here</p>
-                    <p className="text-gray-500 mb-4">or</p>
-                    <div>
-                      <input
-                        type="file"
-                        accept=".csv"
-                        onChange={handleFileUpload}
-                        className="hidden"
-                        id="file-upload"
-                      />
-                      <Button asChild>
-                        <label htmlFor="file-upload" className="cursor-pointer">
-                          Browse Files
-                        </label>
+          {/* File List */}
+          {files.length > 0 && (
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              <h4 className="text-sm font-medium text-gray-900">Uploaded Files</h4>
+              {files.map((file) => (
+                <div key={file.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                  {getStatusIcon(file.status)}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {file.name}
+                      </p>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => removeFile(file.id)}
+                      >
+                        <X className="h-3 w-3" />
                       </Button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-4">Supported format: CSV (Max size: 10MB)</p>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                      <span>{formatFileSize(file.size)}</span>
+                      <span className="capitalize">{file.status}</span>
+                    </div>
+                    {file.status === "uploading" && (
+                      <Progress value={file.progress} className="h-1" />
+                    )}
+                    {file.status === "error" && file.error && (
+                      <p className="text-xs text-red-500 mt-1">{file.error}</p>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <h3 className="text-lg font-semibold mb-2">Field Matching & Review</h3>
-                <p className="text-gray-600 mb-6">
-                  Review the automatic field matching and make adjustments if needed.
-                </p>
-              </div>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-green-50 rounded">
-                      <span className="font-medium">File: {uploadedFile?.name}</span>
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                    </div>
-
-                    <div className="border rounded-lg overflow-hidden">
-                      <div className="bg-gray-50 p-3 border-b">
-                        <h4 className="font-medium">Field Mapping Preview</h4>
-                      </div>
-                      <div className="p-4 space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Community → Geography</span>
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Population → Total Population</span>
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Income → Median Household Income</span>
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Year → Time Period</span>
-                          <CheckCircle className="h-4 w-4 text-green-600" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {currentStep === 4 && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Upload Complete!</h3>
-                <p className="text-gray-600 mb-6">Your data has been successfully uploaded and processed.</p>
-              </div>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span>File processed:</span>
-                      <span className="font-medium">{uploadedFile?.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Records imported:</span>
-                      <span className="font-medium">1,247</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>New indicators created:</span>
-                      <span className="font-medium">3</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Communities updated:</span>
-                      <span className="font-medium">8</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              ))}
             </div>
           )}
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between pt-4 border-t">
-          <Button variant="outline" onClick={currentStep === 1 ? onClose : handleBack} disabled={currentStep === 1}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            {currentStep === 1 ? "Cancel" : "Back"}
+        <DialogFooter>
+          <Button variant="outline" onClick={handleClose}>
+            {files.some(f => f.status === "success") ? "Done" : "Cancel"}
           </Button>
-          <Button
-            onClick={currentStep === 4 ? handleComplete : handleNext}
-            disabled={currentStep === 2 && !uploadedFile}
-          >
-            {currentStep === 4 ? "Complete" : "Next"}
-            {currentStep !== 4 && <ArrowRight className="h-4 w-4 ml-2" />}
-          </Button>
-        </div>
+          {files.length > 0 && files.some(f => f.status === "error") && (
+            <Button 
+              onClick={() => {
+                // Retry failed uploads
+                files.filter(f => f.status === "error").forEach(file => {
+                  setFiles(prev => prev.map(f => 
+                    f.id === file.id ? { ...f, status: "uploading", progress: 0, error: undefined } : f
+                  ))
+                  simulateUpload(file.id)
+                })
+              }}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Retry Failed
+            </Button>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

@@ -2,28 +2,15 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-  Grid3X3,
-  List,
-  Star,
-  ChevronLeft,
-  MapPin,
-  BarChart3,
-  Building2,
-  Upload,
-  Eye,
-  Link,
-  Edit,
-  Users,
-  Lock,
-} from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SelectCommunityModal } from "@/components/modals/select-community-modal"
+import { SelectIndicatorsModal } from "@/components/modals/select-indicators-modal"
+import { DataUploadModal } from "@/components/modals/data-upload-modal"
+import { ArrowLeft, MapPin, BarChart3, Database, Upload, Eye, Settings, Share } from "lucide-react"
+import { Grid3X3, List } from "lucide-react"
 import type { ProjectData } from "./modals/create-project-modal"
-import { SelectCommunityModal } from "./modals/select-community-modal"
-import { SelectIndicatorsModal } from "./modals/select-indicators-modal"
-import { DataUploadModal } from "./modals/data-upload-modal"
 import { CreateProjectModal } from "./modals/create-project-modal"
 
 interface ProjectWorkspaceProps {
@@ -45,7 +32,7 @@ export function ProjectWorkspace({
   const [showIndicatorsModal, setShowIndicatorsModal] = useState(false)
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
-  const [selectedCommunities, setSelectedCommunities] = useState<string[]>([])
+  const [selectedCommunity, setSelectedCommunity] = useState<string | null>(null)
   const [selectedIndicators, setSelectedIndicators] = useState<string[]>([])
   const [uploadedDatasets, setUploadedDatasets] = useState<any[]>([])
 
@@ -194,13 +181,13 @@ export function ProjectWorkspace({
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {
       case "private":
-        return <Lock className="h-4 w-4 text-gray-500" />
+        return <ArrowLeft className="h-4 w-4 text-gray-500" />
       case "unlisted":
-        return <Link className="h-4 w-4 text-gray-500" />
+        return <Share className="h-4 w-4 text-gray-500" />
       case "community":
-        return <Users className="h-4 w-4 text-gray-500" />
+        return <Settings className="h-4 w-4 text-gray-500" />
       default:
-        return <Lock className="h-4 w-4 text-gray-500" />
+        return <ArrowLeft className="h-4 w-4 text-gray-500" />
     }
   }
 
@@ -236,634 +223,223 @@ export function ProjectWorkspace({
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Main Content */}
-      <main className="flex-1 py-6 px-6">
-        {/* Project Header */}
-        <div className="mb-8">
-          {/* Back Navigation */}
-          <div className="flex items-center mb-6">
-            <button
-              onClick={onBackToDashboard}
-              className="flex items-center text-sm text-gray-600 hover:text-gray-800 transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              All Projects
-            </button>
-          </div>
-
-          {/* Project Title and Metadata */}
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => {
-                    // Toggle project starred status
-                  }}
-                >
-                  <Star className="h-5 w-5 text-gray-400 hover:text-yellow-400" />
-                </Button>
-                <div>
-                  <h1 className="text-3xl font-bold text-gray-900">{projectName}</h1>
-                  {/* Description aligned under project name */}
-                  {projectData?.description && <p className="text-gray-700 mt-2">{projectData.description}</p>}
-                </div>
+      {/* Header */}
+      <header className="border-b border-gray-200 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="icon" onClick={onBackToDashboard}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-lg font-semibold text-gray-900">{projectName}</h1>
+                <p className="text-sm text-gray-500">Project Workspace</p>
               </div>
             </div>
-
-            <div className="flex items-center space-x-6 ml-8">
-              {/* Visibility and Updated info aligned to left of Edit button */}
-              <div className="flex flex-col items-end space-y-1">
-                {/* Visibility */}
-                {projectData && (
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <span>Visibility:</span>
-                    <div className="flex items-center space-x-1">
-                      {getVisibilityIcon(projectData.visibility)}
-                      <span className="font-medium">{getVisibilityLabel(projectData.visibility)}</span>
-                      {projectData.visibility === "unlisted" && <Link className="h-3 w-3" />}
-                    </div>
-                  </div>
-                )}
-
-                {/* Updated Date */}
-                {projectData && (
-                  <div className="text-sm text-gray-600">
-                    Updated{" "}
-                    {projectData.lastModified
-                      ? new Date(projectData.lastModified).toLocaleDateString()
-                      : new Date(projectData.createdDate).toLocaleDateString()}
-                  </div>
-                )}
-              </div>
-
-              {/* Edit Button */}
-              <Button variant="outline" size="sm" onClick={() => setShowEditModal(true)}>
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
+            <div className="flex items-center space-x-2">
+              <Button variant="outline" size="sm">
+                <Share className="h-4 w-4 mr-2" />
+                Share
+              </Button>
+              <Button variant="outline" size="sm">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
               </Button>
             </div>
           </div>
         </div>
+      </header>
 
-        <div>
-          {/* Communities Section */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-medium text-gray-900">Saved Communities</h4>
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center border rounded-md">
-                  <Button
-                    variant={communitiesViewMode === "card" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setCommunitiesViewMode("card")}
-                    className="rounded-r-none"
-                  >
-                    <Grid3X3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={communitiesViewMode === "list" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setCommunitiesViewMode("list")}
-                    className="rounded-l-none"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Button
-                  variant={communitiesShowStarred ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCommunitiesShowStarred(!communitiesShowStarred)}
-                  className={communitiesShowStarred ? "bg-gray-900 text-white" : ""}
-                >
-                  <Star className={`h-4 w-4 mr-1 ${communitiesShowStarred ? "fill-current text-yellow-400" : ""}`} />
-                  Starred
-                </Button>
-              </div>
-            </div>
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs defaultValue="setup" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="setup">Project Setup</TabsTrigger>
+            <TabsTrigger value="data">Data Management</TabsTrigger>
+            <TabsTrigger value="analysis">Analysis</TabsTrigger>
+            <TabsTrigger value="results">Results</TabsTrigger>
+          </TabsList>
 
-            {communitiesViewMode === "card" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredCommunities.map((community) => (
-                  <Card key={community.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h4 className="font-medium text-gray-900">{community.name}</h4>
-                          <Badge variant="secondary" className="mt-1">
-                            {community.type}
+          <TabsContent value="setup" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Community Selection */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <MapPin className="h-5 w-5 mr-2" />
+                    Select Community
+                  </CardTitle>
+                  <CardDescription>Choose the geographic area for your analysis</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {selectedCommunity ? (
+                    <div className="space-y-3">
+                      <Badge variant="outline" className="text-sm">
+                        {selectedCommunity}
+                      </Badge>
+                      <Button variant="outline" size="sm" onClick={() => setShowCommunityModal(true)}>
+                        Change Community
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button onClick={() => setShowCommunityModal(true)}>Select Community</Button>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Data Indicators */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Database className="h-5 w-5 mr-2" />
+                    Data Indicators
+                  </CardTitle>
+                  <CardDescription>Choose the data points you want to analyze</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {selectedIndicators.length > 0 ? (
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap gap-2">
+                        {selectedIndicators.slice(0, 3).map((indicator, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {indicator}
                           </Badge>
-                        </div>
-                        <Button variant="ghost" size="sm" onClick={() => toggleCommunityStarred(community.id)}>
-                          <Star
-                            className={`h-4 w-4 ${community.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
-                          />
-                        </Button>
-                      </div>
-                      <div className="flex items-center justify-between mt-4">
-                        <span className="text-sm text-gray-500">
-                          Last used: {new Date(community.lastUsed).toLocaleDateString()}
-                        </span>
-                        <Button variant="outline" size="sm">
-                          Use
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-
-                {/* Add Community Action Card */}
-                <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-blue-200 hover:border-blue-300"
-                  onClick={() => setShowCommunityModal(true)}
-                >
-                  <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full min-h-[140px]">
-                    <div className="rounded-full bg-blue-100 p-3 w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                      <Building2 className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <h4 className="font-medium text-gray-900 mb-1">Add Community</h4>
-                    <p className="text-sm text-gray-600">Choose geographic areas</p>
-                  </CardContent>
-                </Card>
-              </div>
-            ) : (
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left p-4 font-medium text-gray-900">Community</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Type</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Last Used</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Starred</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredCommunities.map((community, index) => (
-                      <tr key={community.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                        <td className="p-4 font-medium text-gray-900">{community.name}</td>
-                        <td className="p-4">
-                          <Badge variant="secondary">{community.type}</Badge>
-                        </td>
-                        <td className="p-4 text-gray-600">{new Date(community.lastUsed).toLocaleDateString()}</td>
-                        <td className="p-4">
-                          <Button variant="ghost" size="sm" onClick={() => toggleCommunityStarred(community.id)}>
-                            <Star
-                              className={`h-4 w-4 ${community.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
-                            />
-                          </Button>
-                        </td>
-                        <td className="p-4">
-                          <Button variant="outline" size="sm">
-                            Use
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                    <tr className="bg-gray-50">
-                      <td colSpan={5} className="p-4">
-                        <Button
-                          variant="outline"
-                          className="w-full border-dashed border-blue-200 hover:border-blue-300 text-blue-600 bg-transparent"
-                          onClick={() => setShowCommunityModal(true)}
-                        >
-                          <Building2 className="h-4 w-4 mr-2" />
-                          Add Community
-                        </Button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          {/* Data Indicators Section */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-medium text-gray-900">Saved Indicators</h4>
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center border rounded-md">
-                  <Button
-                    variant={indicatorsViewMode === "card" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setIndicatorsViewMode("card")}
-                    className="rounded-r-none"
-                  >
-                    <Grid3X3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={indicatorsViewMode === "list" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setIndicatorsViewMode("list")}
-                    className="rounded-l-none"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Button
-                  variant={indicatorsShowStarred ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setIndicatorsShowStarred(!indicatorsShowStarred)}
-                  className={indicatorsShowStarred ? "bg-gray-900 text-white" : ""}
-                >
-                  <Star className={`h-4 w-4 mr-1 ${indicatorsShowStarred ? "fill-current text-yellow-400" : ""}`} />
-                  Starred
-                </Button>
-              </div>
-            </div>
-
-            {indicatorsViewMode === "card" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredIndicators.map((indicator) => (
-                  <Card key={indicator.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h4 className="font-medium text-gray-900">{indicator.name}</h4>
-                          <Badge variant="secondary" className="mt-1">
-                            {indicator.category}
+                        ))}
+                        {selectedIndicators.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{selectedIndicators.length - 3} more
                           </Badge>
-                        </div>
-                        <Button variant="ghost" size="sm" onClick={() => toggleIndicatorStarred(indicator.id)}>
-                          <Star
-                            className={`h-4 w-4 ${indicator.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
-                          />
-                        </Button>
+                        )}
                       </div>
-                      <div className="flex items-center justify-between mt-4">
-                        <span className="text-sm text-gray-500">Time Range: {indicator.timeRange}</span>
-                        <Button variant="outline" size="sm">
-                          Use
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-
-                {/* Add Indicators Action Card */}
-                <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-green-200 hover:border-green-300"
-                  onClick={() => setShowIndicatorsModal(true)}
-                >
-                  <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full min-h-[140px]">
-                    <div className="rounded-full bg-green-100 p-3 w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                      <BarChart3 className="h-6 w-6 text-green-600" />
+                      <Button variant="outline" size="sm" onClick={() => setShowIndicatorsModal(true)}>
+                        Modify Selection
+                      </Button>
                     </div>
-                    <h4 className="font-medium text-gray-900 mb-1">Add Indicators</h4>
-                    <p className="text-sm text-gray-600">Choose data points</p>
-                  </CardContent>
-                </Card>
-              </div>
-            ) : (
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left p-4 font-medium text-gray-900">Indicator</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Category</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Time Range</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Starred</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredIndicators.map((indicator, index) => (
-                      <tr key={indicator.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                        <td className="p-4 font-medium text-gray-900">{indicator.name}</td>
-                        <td className="p-4">
-                          <Badge variant="secondary">{indicator.category}</Badge>
-                        </td>
-                        <td className="p-4 text-gray-600">{indicator.timeRange}</td>
-                        <td className="p-4">
-                          <Button variant="ghost" size="sm" onClick={() => toggleIndicatorStarred(indicator.id)}>
-                            <Star
-                              className={`h-4 w-4 ${indicator.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
-                            />
-                          </Button>
-                        </td>
-                        <td className="p-4">
-                          <Button variant="outline" size="sm">
-                            Use
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                    <tr className="bg-gray-50">
-                      <td colSpan={5} className="p-4">
-                        <Button
-                          variant="outline"
-                          className="w-full border-dashed border-green-200 hover:border-green-300 text-green-600 bg-transparent"
-                          onClick={() => setShowIndicatorsModal(true)}
-                        >
-                          <BarChart3 className="h-4 w-4 mr-2" />
-                          Add Indicator
-                        </Button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          {/* Data Upload Section */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-medium text-gray-900">Uploaded Datasets</h4>
-              <div className="flex items-center space-x-2">
-                <div className="flex items-center border rounded-md">
-                  <Button
-                    variant={uploadsViewMode === "card" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setUploadsViewMode("card")}
-                    className="rounded-r-none"
-                  >
-                    <Grid3X3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={uploadsViewMode === "list" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setUploadsViewMode("list")}
-                    className="rounded-l-none"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Button
-                  variant={uploadsShowStarred ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setUploadsShowStarred(!uploadsShowStarred)}
-                  className={uploadsShowStarred ? "bg-gray-900 text-white" : ""}
-                >
-                  <Star className={`h-4 w-4 mr-1 ${uploadsShowStarred ? "fill-current text-yellow-400" : ""}`} />
-                  Starred
-                </Button>
-              </div>
+                  ) : (
+                    <Button onClick={() => setShowIndicatorsModal(true)}>Select Indicators</Button>
+                  )}
+                </CardContent>
+              </Card>
             </div>
 
-            {uploadsViewMode === "card" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {uploadedDatasets.map((dataset) => (
-                  <Card key={dataset.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <h4 className="font-medium text-gray-900">{dataset.name}</h4>
-                          <Badge variant="secondary" className="mt-1">
-                            {dataset.size}
-                          </Badge>
-                        </div>
-                        <Button variant="ghost" size="sm">
-                          <Star className="h-4 w-4 text-gray-400" />
-                        </Button>
+            {/* Project Progress */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Project Progress</CardTitle>
+                <CardDescription>Complete these steps to set up your analysis</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center ${selectedCommunity ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"}`}
+                      >
+                        {selectedCommunity ? "✓" : "1"}
                       </div>
-                      <div className="flex items-center justify-between mt-4">
-                        <span className="text-sm text-gray-500">Records: {dataset.records}</span>
-                        <Button variant="outline" size="sm">
-                          Use
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-
-                {/* Upload Data Action Card */}
-                <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-purple-200 hover:border-purple-300"
-                  onClick={() => setShowUploadModal(true)}
-                >
-                  <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full min-h-[140px]">
-                    <div className="rounded-full bg-purple-100 p-3 w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                      <Upload className="h-6 w-6 text-purple-600" />
+                      <span className="font-medium">Select Community</span>
                     </div>
-                    <h4 className="font-medium text-gray-900 mb-1">Upload Data</h4>
-                    <p className="text-sm text-gray-600">Import datasets</p>
-                  </CardContent>
-                </Card>
-              </div>
-            ) : (
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left p-4 font-medium text-gray-900">Dataset</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Size</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Records</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Starred</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {uploadedDatasets.map((dataset, index) => (
-                      <tr key={dataset.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                        <td className="p-4 font-medium text-gray-900">{dataset.name}</td>
-                        <td className="p-4">
-                          <Badge variant="secondary">{dataset.size}</Badge>
-                        </td>
-                        <td className="p-4 text-gray-600">{dataset.records}</td>
-                        <td className="p-4">
-                          <Star className="h-4 w-4 text-gray-400" />
-                        </td>
-                        <td className="p-4">
-                          <Button variant="outline" size="sm">
-                            Use
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                    <tr className="bg-gray-50">
-                      <td colSpan={5} className="p-4">
-                        <Button
-                          variant="outline"
-                          className="w-full border-dashed border-purple-200 hover:border-purple-300 text-purple-600 bg-transparent"
-                          onClick={() => setShowUploadModal(true)}
-                        >
-                          <Upload className="h-4 w-4 mr-2" />
-                          Upload Data
-                        </Button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          {/* Visualizations Section */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-medium text-gray-900">Saved Visualizations</h4>
-              <div className="flex items-center space-x-2">
-                <Select defaultValue="all">
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">View All</SelectItem>
-                    <SelectItem value="charts">Charts</SelectItem>
-                    <SelectItem value="maps">Maps</SelectItem>
-                    <SelectItem value="tables">Tables</SelectItem>
-                    <SelectItem value="profiles">Profiles</SelectItem>
-                  </SelectContent>
-                </Select>
-                <div className="flex items-center border rounded-md">
-                  <Button
-                    variant={visualizationsViewMode === "card" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setVisualizationsViewMode("card")}
-                    className="rounded-r-none"
-                  >
-                    <Grid3X3 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant={visualizationsViewMode === "list" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setVisualizationsViewMode("list")}
-                    className="rounded-l-none"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
+                    <Badge variant={selectedCommunity ? "default" : "secondary"}>
+                      {selectedCommunity ? "Complete" : "Pending"}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center ${selectedIndicators.length > 0 ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-400"}`}
+                      >
+                        {selectedIndicators.length > 0 ? "✓" : "2"}
+                      </div>
+                      <span className="font-medium">Choose Data Indicators</span>
+                    </div>
+                    <Badge variant={selectedIndicators.length > 0 ? "default" : "secondary"}>
+                      {selectedIndicators.length > 0 ? "Complete" : "Pending"}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-gray-100 text-gray-400">
+                        3
+                      </div>
+                      <span className="font-medium">Create Visualizations</span>
+                    </div>
+                    <Badge variant="secondary">Pending</Badge>
+                  </div>
                 </div>
-                <Button
-                  variant={visualizationsShowStarred ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setVisualizationsShowStarred(!visualizationsShowStarred)}
-                  className={visualizationsShowStarred ? "bg-gray-900 text-white" : ""}
-                >
-                  <Star className={`h-4 w-4 mr-1 ${visualizationsShowStarred ? "fill-current text-yellow-400" : ""}`} />
-                  Starred
-                </Button>
-              </div>
+                {selectedCommunity && selectedIndicators.length > 0 && (
+                  <div className="mt-6">
+                    <Button onClick={onStartVisualization} className="w-full">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Start Creating Visualizations
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="data" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Upload className="h-5 w-5 mr-2" />
+                    Upload Data
+                  </CardTitle>
+                  <CardDescription>Add your own datasets to the project</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button onClick={() => setShowUploadModal(true)}>Upload Files</Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <BarChart3 className="h-5 w-5 mr-2" />
+                    Data Sources
+                  </CardTitle>
+                  <CardDescription>Manage connected data sources</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-500">No external data sources connected</p>
+                </CardContent>
+              </Card>
             </div>
+          </TabsContent>
 
-            {visualizationsViewMode === "card" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredVisualizations.map((item) => (
-                  <Card key={`${item.type}-${item.id}`} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      {/* 4:3 Aspect Ratio Placeholder */}
-                      {getVisualizationPlaceholder(item.type)}
+          <TabsContent value="analysis">
+            <Card>
+              <CardHeader>
+                <CardTitle>Analysis Tools</CardTitle>
+                <CardDescription>Advanced analysis and modeling tools</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-500">Analysis tools will be available once you complete the project setup.</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-                      <div className="mt-3">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h4 className="font-medium text-gray-900">{item.name}</h4>
-                            <Badge variant="secondary" className="mt-1">
-                              {item.type}
-                            </Badge>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              toggleVisualizationStarred(item.id, item.type.toLowerCase() as "chart" | "map")
-                            }
-                          >
-                            <Star
-                              className={`h-4 w-4 ${item.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
-                            />
-                          </Button>
-                        </div>
-                        <div className="flex items-center justify-between mt-4">
-                          <span className="text-sm text-gray-500">
-                            Modified: {new Date(item.lastModified).toLocaleDateString()}
-                          </span>
-                          <Button variant="outline" size="sm">
-                            View
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-
-                {/* Add Visualization Action Card */}
-                <Card
-                  className="hover:shadow-lg transition-shadow cursor-pointer border-2 border-dashed border-indigo-200 hover:border-indigo-300"
-                  onClick={onStartVisualization}
-                >
-                  <CardContent className="p-4 text-center flex flex-col items-center justify-center h-full min-h-[140px]">
-                    <div className="rounded-full bg-indigo-100 p-3 w-12 h-12 mx-auto mb-3 flex items-center justify-center">
-                      <Eye className="h-6 w-6 text-indigo-600" />
-                    </div>
-                    <h4 className="font-medium text-gray-900 mb-1">Add Visualization</h4>
-                    <p className="text-sm text-gray-600">Create charts & maps</p>
-                  </CardContent>
-                </Card>
-              </div>
-            ) : (
-              <div className="border rounded-lg overflow-hidden">
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-left p-4 font-medium text-gray-900">Visualization</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Type</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Modified</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Starred</th>
-                      <th className="text-left p-4 font-medium text-gray-900">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredVisualizations.map((item, index) => (
-                      <tr key={`${item.type}-${item.id}`} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                        <td className="p-4">
-                          <div className="flex items-center space-x-3">
-                            {getVisualizationListPlaceholder(item.type)}
-                            <span className="font-medium text-gray-900">{item.name}</span>
-                          </div>
-                        </td>
-                        <td className="p-4">
-                          <Badge variant="secondary">{item.type}</Badge>
-                        </td>
-                        <td className="p-4 text-gray-600">{new Date(item.lastModified).toLocaleDateString()}</td>
-                        <td className="p-4">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              toggleVisualizationStarred(item.id, item.type.toLowerCase() as "chart" | "map")
-                            }
-                          >
-                            <Star
-                              className={`h-4 w-4 ${item.starred ? "fill-current text-yellow-400" : "text-gray-400"}`}
-                            />
-                          </Button>
-                        </td>
-                        <td className="p-4">
-                          <Button variant="outline" size="sm">
-                            View
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                    <tr className="bg-gray-50">
-                      <td colSpan={5} className="p-4">
-                        <Button
-                          variant="outline"
-                          className="w-full border-dashed border-indigo-200 hover:border-indigo-300 text-indigo-600 bg-transparent"
-                          onClick={onStartVisualization}
-                        >
-                          <Eye className="h-4 w-4 mr-2" />
-                          Add Visualization
-                        </Button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
+          <TabsContent value="results">
+            <Card>
+              <CardHeader>
+                <CardTitle>Results & Reports</CardTitle>
+                <CardDescription>View and export your analysis results</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-500">Results will appear here once you complete your analysis.</p>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
 
+      {/* Modals */}
       <SelectCommunityModal
         open={showCommunityModal}
         onClose={() => setShowCommunityModal(false)}
-        selectedCommunities={selectedCommunities}
-        onSelectionChange={setSelectedCommunities}
+        onSelectCommunity={setSelectedCommunity}
+        selectedCommunity={selectedCommunity}
       />
 
       <SelectIndicatorsModal
