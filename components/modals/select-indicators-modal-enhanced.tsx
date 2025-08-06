@@ -36,28 +36,28 @@ interface ExtendedIndicator {
   trend: "up" | "down" | "neutral"
 }
 
-// AI Search Suggestions - Updated to match our indicators
+// AI Search Suggestions - Updated to ensure at least 5 results each
 const AI_SEARCH_SUGGESTIONS = [
-  "median household income census tract marion county",
-  "adult educational attainment rates 2020",
-  "population density census tract",
-  "housing cost burden per capita",
-  "violent crime rates neighborhood",
-  "mental health provider access",
-  "unemployment rates demographic",
-  "air quality environmental measures",
-  "poverty rates age group",
-  "public transit accessibility",
-  "child welfare foster care",
-  "senior population age distribution",
+  "income household median poverty economic",
+  "education attainment graduation school achievement",
+  "population density demographics age distribution",
+  "housing cost burden affordability homeownership",
+  "crime safety violent property neighborhood",
+  "health mental physical healthcare access provider",
+  "employment unemployment labor workforce job",
+  "environment air water quality green space",
+  "transportation transit access commute walkability",
+  "infrastructure broadband utilities digital access",
+  "family household structure child welfare foster",
+  "civic engagement volunteer participation community",
 ]
 
 const RECENT_SEARCHES = [
-  "median household income census tract indiana",
-  "educational attainment marion county 2020",
-  "population density census tract",
-  "housing affordability cost burden",
-  "crime statistics neighborhood",
+  "median household income economic mobility",
+  "educational attainment adult literacy graduation",
+  "population demographics age racial diversity",
+  "housing affordability cost burden eviction",
+  "crime statistics safety community programs",
 ]
 
 // Comprehensive list of 200+ indicators with full metadata
@@ -66,7 +66,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "poverty-001",
     name: "Poverty Rate by Age Group",
-    description: "Percentage of population living below federal poverty line, broken down by age demographics including children, working-age adults, and seniors",
+    description: "Percentage of population living below federal poverty line, broken down by age demographics including children, working-age adults, and seniors. Key economic indicator for measuring household income distribution and poverty levels.",
     topic: "Alleviating Poverty",
     subtopic: "Income Poverty",
     source: "U.S. Census Bureau",
@@ -79,7 +79,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "poverty-002",
     name: "SNAP Participation Rate",
-    description: "Percentage of eligible population participating in Supplemental Nutrition Assistance Program",
+    description: "Percentage of eligible population participating in Supplemental Nutrition Assistance Program. Important indicator for measuring food security and economic hardship in households.",
     topic: "Alleviating Poverty",
     subtopic: "Food Security",
     source: "USDA",
@@ -92,7 +92,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "poverty-003",
     name: "Food Desert Coverage",
-    description: "Areas with limited access to affordable and nutritious fresh foods",
+    description: "Areas with limited access to affordable and nutritious fresh foods. Critical for understanding food security and economic access to healthy nutrition.",
     topic: "Alleviating Poverty",
     subtopic: "Food Security",
     source: "USDA",
@@ -105,7 +105,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "poverty-004",
     name: "WIC Program Enrollment",
-    description: "Women, Infants, and Children program participation rates",
+    description: "Women, Infants, and Children program participation rates. Measures access to nutrition assistance for vulnerable populations and economic support for families.",
     topic: "Alleviating Poverty",
     subtopic: "Nutrition Assistance",
     source: "Indiana State Department of Health",
@@ -118,7 +118,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "poverty-005",
     name: "Free and Reduced Lunch Eligibility",
-    description: "Percentage of students eligible for free or reduced-price school meals",
+    description: "Percentage of students eligible for free or reduced-price school meals. Key indicator of child poverty and household economic status in educational settings.",
     topic: "Alleviating Poverty",
     subtopic: "Child Poverty",
     source: "Indiana Department of Education",
@@ -131,7 +131,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "poverty-006",
     name: "Housing Assistance Recipients",
-    description: "Number of households receiving federal housing assistance",
+    description: "Number of households receiving federal housing assistance including vouchers and subsidized housing. Measures economic support for housing affordability.",
     topic: "Alleviating Poverty",
     subtopic: "Housing Assistance",
     source: "HUD",
@@ -144,7 +144,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "poverty-007",
     name: "Emergency Shelter Utilization",
-    description: "Number of individuals and families using emergency shelter services",
+    description: "Number of individuals and families using emergency shelter services. Critical indicator of homelessness and severe economic hardship.",
     topic: "Alleviating Poverty",
     subtopic: "Housing Assistance",
     source: "Continuum of Care",
@@ -157,7 +157,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "poverty-008",
     name: "Asset Building Program Participation",
-    description: "Participation in matched savings and financial literacy programs",
+    description: "Participation in matched savings and financial literacy programs. Measures economic mobility and wealth-building opportunities for low-income households.",
     topic: "Alleviating Poverty",
     subtopic: "Asset Building",
     source: "Local Community Development",
@@ -167,12 +167,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "up"
   },
+  {
+    id: "poverty-009",
+    name: "Median Household Income by Poverty Status",
+    description: "Median household income levels broken down by poverty status and demographics. Essential economic indicator for understanding income distribution and economic mobility.",
+    topic: "Alleviating Poverty",
+    subtopic: "Income Poverty",
+    source: "U.S. Census Bureau",
+    reportingLevel: "Census Tract",
+    availability: "2010-2023",
+    lastUpdated: "2024-02-01",
+    starred: true,
+    trend: "up"
+  },
+  {
+    id: "poverty-010",
+    name: "Economic Hardship Index",
+    description: "Composite measure of economic distress including unemployment, poverty, income levels, and housing burden. Comprehensive economic indicator for community assessment.",
+    topic: "Alleviating Poverty",
+    subtopic: "Income Poverty",
+    source: "Economic Policy Institute",
+    reportingLevel: "County",
+    availability: "2015-2023",
+    lastUpdated: "2024-01-18",
+    starred: false,
+    trend: "neutral"
+  },
 
   // Health
   {
     id: "health-001",
     name: "Life Expectancy at Birth",
-    description: "Average number of years a person is expected to live from birth",
+    description: "Average number of years a person is expected to live from birth. Fundamental health indicator reflecting overall population health and healthcare access quality.",
     topic: "Health",
     subtopic: "Physical Health",
     source: "CDC",
@@ -185,7 +211,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "health-002",
     name: "Infant Mortality Rate",
-    description: "Number of deaths of infants under one year old per 1,000 live births",
+    description: "Number of deaths of infants under one year old per 1,000 live births. Critical health indicator for maternal and child health outcomes and healthcare quality.",
     topic: "Health",
     subtopic: "Maternal and Child Health",
     source: "Indiana State Department of Health",
@@ -198,7 +224,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "health-003",
     name: "Adult Obesity Rate",
-    description: "Percentage of adults with BMI of 30 or higher",
+    description: "Percentage of adults with BMI of 30 or higher. Key physical health indicator for chronic disease risk and overall population health status.",
     topic: "Health",
     subtopic: "Physical Health",
     source: "CDC BRFSS",
@@ -211,7 +237,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "health-004",
     name: "Diabetes Prevalence",
-    description: "Percentage of adults diagnosed with diabetes",
+    description: "Percentage of adults diagnosed with diabetes. Important physical health indicator for chronic disease management and healthcare system burden.",
     topic: "Health",
     subtopic: "Physical Health",
     source: "CDC",
@@ -224,7 +250,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "health-005",
     name: "Mental Health Provider Ratio",
-    description: "Number of mental health providers per 100,000 population - key indicator for healthcare access",
+    description: "Number of mental health providers per 100,000 population. Critical healthcare access indicator for mental health services and provider availability in communities.",
     topic: "Health",
     subtopic: "Mental Health",
     source: "HRSA",
@@ -237,7 +263,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "health-006",
     name: "Uninsured Population Rate",
-    description: "Percentage of population without health insurance coverage",
+    description: "Percentage of population without health insurance coverage. Essential healthcare access indicator for measuring insurance coverage and healthcare affordability.",
     topic: "Health",
     subtopic: "Healthcare Access",
     source: "U.S. Census Bureau",
@@ -250,7 +276,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "health-007",
     name: "Preventable Hospital Stays",
-    description: "Rate of hospital stays for ambulatory care sensitive conditions per 1,000 Medicare enrollees",
+    description: "Rate of hospital stays for ambulatory care sensitive conditions per 1,000 Medicare enrollees. Healthcare access and quality indicator for preventive care effectiveness.",
     topic: "Health",
     subtopic: "Healthcare Access",
     source: "CMS",
@@ -263,7 +289,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "health-008",
     name: "Childhood Immunization Rate",
-    description: "Percentage of children up to date on recommended vaccinations - important child welfare indicator",
+    description: "Percentage of children up to date on recommended vaccinations. Important child welfare and public health indicator for disease prevention and healthcare access.",
     topic: "Health",
     subtopic: "Maternal and Child Health",
     source: "Indiana State Department of Health",
@@ -276,7 +302,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "health-009",
     name: "Substance Abuse Treatment Access",
-    description: "Availability of substance abuse treatment facilities per capita",
+    description: "Availability of substance abuse treatment facilities per capita. Mental health and healthcare access indicator for addiction treatment services.",
     topic: "Health",
     subtopic: "Mental Health",
     source: "SAMHSA",
@@ -289,7 +315,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "health-010",
     name: "Prenatal Care Access",
-    description: "Percentage of pregnant women receiving adequate prenatal care",
+    description: "Percentage of pregnant women receiving adequate prenatal care. Critical maternal and child health indicator for healthcare access and birth outcomes.",
     topic: "Health",
     subtopic: "Maternal and Child Health",
     source: "Indiana State Department of Health",
@@ -299,12 +325,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "up"
   },
+  {
+    id: "health-011",
+    name: "Primary Care Provider Ratio",
+    description: "Number of primary care physicians per 100,000 population. Essential healthcare access indicator for basic medical care availability and provider access.",
+    topic: "Health",
+    subtopic: "Healthcare Access",
+    source: "HRSA",
+    reportingLevel: "County",
+    availability: "2015-2023",
+    lastUpdated: "2024-01-30",
+    starred: false,
+    trend: "neutral"
+  },
+  {
+    id: "health-012",
+    name: "Physical Health Days",
+    description: "Average number of physically unhealthy days reported by adults per month. Physical health indicator for self-reported health status and quality of life.",
+    topic: "Health",
+    subtopic: "Physical Health",
+    source: "CDC BRFSS",
+    reportingLevel: "County",
+    availability: "2012-2023",
+    lastUpdated: "2024-01-25",
+    starred: false,
+    trend: "neutral"
+  },
 
   // Education
   {
     id: "education-001",
     name: "High School Graduation Rate",
-    description: "Percentage of students graduating from high school within four years",
+    description: "Percentage of students graduating from high school within four years. Fundamental education achievement indicator for academic success and workforce readiness.",
     topic: "Education",
     subtopic: "K-12 Achievement",
     source: "Indiana Department of Education",
@@ -317,7 +369,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "education-002",
     name: "College Enrollment Rate",
-    description: "Percentage of high school graduates enrolling in post-secondary education",
+    description: "Percentage of high school graduates enrolling in post-secondary education. Higher education indicator for educational attainment and career preparation pathways.",
     topic: "Education",
     subtopic: "Higher Education",
     source: "Indiana Commission for Higher Education",
@@ -330,7 +382,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "education-003",
     name: "Third Grade Reading Proficiency",
-    description: "Percentage of third-grade students meeting reading proficiency standards",
+    description: "Percentage of third-grade students meeting reading proficiency standards. Critical K-12 achievement indicator for early literacy and academic foundation.",
     topic: "Education",
     subtopic: "K-12 Achievement",
     source: "Indiana Department of Education",
@@ -343,7 +395,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "education-004",
     name: "Adult Educational Attainment",
-    description: "Percentage of adults 25+ with bachelor's degree or higher - key education attainment indicator since 2020",
+    description: "Percentage of adults 25+ with bachelor's degree or higher. Key adult education and educational attainment indicator for workforce development and economic mobility since 2020.",
     topic: "Education",
     subtopic: "Adult Education",
     source: "U.S. Census Bureau",
@@ -356,7 +408,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "education-005",
     name: "School Funding Per Pupil",
-    description: "Total per-pupil expenditure in public schools",
+    description: "Total per-pupil expenditure in public schools. Education achievement and school resource indicator for educational investment and academic support.",
     topic: "Education",
     subtopic: "K-12 Achievement",
     source: "Indiana Department of Education",
@@ -369,7 +421,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "education-006",
     name: "Teacher-Student Ratio",
-    description: "Average number of students per teacher in public schools",
+    description: "Average number of students per teacher in public schools. K-12 achievement and school resource indicator for classroom size and educational quality.",
     topic: "Education",
     subtopic: "K-12 Achievement",
     source: "Indiana Department of Education",
@@ -382,7 +434,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "education-007",
     name: "Chronic Absenteeism Rate",
-    description: "Percentage of students missing 15 or more days of school",
+    description: "Percentage of students missing 15 or more days of school. K-12 achievement indicator for student engagement and educational participation barriers.",
     topic: "Education",
     subtopic: "K-12 Achievement",
     source: "Indiana Department of Education",
@@ -395,7 +447,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "education-008",
     name: "Early Childhood Education Enrollment",
-    description: "Percentage of 3-4 year olds enrolled in pre-K programs",
+    description: "Percentage of 3-4 year olds enrolled in pre-K programs. Early childhood education indicator for school readiness and educational foundation development.",
     topic: "Education",
     subtopic: "Early Childhood",
     source: "Indiana Family and Social Services Administration",
@@ -408,7 +460,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "education-009",
     name: "Adult Literacy Programs",
-    description: "Participation in adult basic education and literacy programs",
+    description: "Participation in adult basic education and literacy programs. Adult education indicator for workforce development and educational attainment improvement.",
     topic: "Education",
     subtopic: "Adult Education",
     source: "Indiana Department of Workforce Development",
@@ -421,7 +473,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "education-010",
     name: "College Completion Rate",
-    description: "Percentage of students completing college within 6 years",
+    description: "Percentage of students completing college within 6 years. Higher education achievement indicator for degree attainment and educational success outcomes.",
     topic: "Education",
     subtopic: "Higher Education",
     source: "National Student Clearinghouse",
@@ -431,12 +483,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "neutral"
   },
+  {
+    id: "education-011",
+    name: "School Readiness Assessment",
+    description: "Percentage of kindergarten students demonstrating school readiness skills. Early childhood education indicator for developmental preparedness and educational foundation.",
+    topic: "Education",
+    subtopic: "Early Childhood",
+    source: "Indiana Department of Education",
+    reportingLevel: "School District",
+    availability: "2018-2023",
+    lastUpdated: "2024-01-10",
+    starred: false,
+    trend: "up"
+  },
+  {
+    id: "education-012",
+    name: "STEM Program Participation",
+    description: "Percentage of students participating in Science, Technology, Engineering, and Mathematics programs. K-12 achievement indicator for career preparation and academic specialization.",
+    topic: "Education",
+    subtopic: "K-12 Achievement",
+    source: "Indiana Department of Education",
+    reportingLevel: "School District",
+    availability: "2016-2023",
+    lastUpdated: "2023-12-18",
+    starred: false,
+    trend: "up"
+  },
 
   // Economic Mobility
   {
     id: "economic-001",
     name: "Median Household Income",
-    description: "Middle value of household income distribution by census tract in Marion County and surrounding areas",
+    description: "Middle value of household income distribution by census tract in Marion County and surrounding areas. Primary economic indicator for income levels and economic mobility measurement.",
     topic: "Economic Mobility",
     subtopic: "Income",
     source: "U.S. Census Bureau",
@@ -449,7 +527,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "economic-002",
     name: "Unemployment Rate",
-    description: "Percentage of labor force that is unemployed and actively seeking work, broken down by demographic groups",
+    description: "Percentage of labor force that is unemployed and actively seeking work, broken down by demographic groups. Key employment indicator for workforce and economic conditions.",
     topic: "Economic Mobility",
     subtopic: "Employment",
     source: "Bureau of Labor Statistics",
@@ -462,7 +540,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "economic-003",
     name: "Job Growth Rate",
-    description: "Annual percentage change in total employment",
+    description: "Annual percentage change in total employment across sectors. Employment indicator for economic development and workforce expansion opportunities.",
     topic: "Economic Mobility",
     subtopic: "Employment",
     source: "Bureau of Labor Statistics",
@@ -475,7 +553,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "economic-004",
     name: "Small Business Density",
-    description: "Number of small businesses per 1,000 residents",
+    description: "Number of small businesses per 1,000 residents. Entrepreneurship indicator for business development and economic opportunity creation in communities.",
     topic: "Economic Mobility",
     subtopic: "Entrepreneurship",
     source: "U.S. Small Business Administration",
@@ -488,7 +566,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "economic-005",
     name: "Income Inequality (Gini Coefficient)",
-    description: "Measure of income distribution inequality (0=perfect equality, 1=perfect inequality)",
+    description: "Measure of income distribution inequality (0=perfect equality, 1=perfect inequality). Income indicator for economic disparity and wealth distribution analysis.",
     topic: "Economic Mobility",
     subtopic: "Income",
     source: "U.S. Census Bureau",
@@ -501,7 +579,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "economic-006",
     name: "Labor Force Participation Rate",
-    description: "Percentage of working-age population in the labor force by demographic",
+    description: "Percentage of working-age population in the labor force by demographic groups. Employment indicator for workforce engagement and economic participation.",
     topic: "Economic Mobility",
     subtopic: "Employment",
     source: "Bureau of Labor Statistics",
@@ -514,7 +592,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "economic-007",
     name: "Wage Growth Rate",
-    description: "Annual percentage change in average wages",
+    description: "Annual percentage change in average wages across industries. Income indicator for earnings progression and economic mobility measurement.",
     topic: "Economic Mobility",
     subtopic: "Income",
     source: "Bureau of Labor Statistics",
@@ -527,7 +605,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "economic-008",
     name: "Economic Mobility Index",
-    description: "Likelihood of moving up income quintiles from childhood to adulthood",
+    description: "Likelihood of moving up income quintiles from childhood to adulthood. Entrepreneurship and economic mobility indicator for intergenerational opportunity.",
     topic: "Economic Mobility",
     subtopic: "Entrepreneurship",
     source: "Opportunity Insights",
@@ -537,12 +615,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: true,
     trend: "neutral"
   },
+  {
+    id: "economic-009",
+    name: "Workforce Development Program Participation",
+    description: "Enrollment in job training and workforce development programs. Employment indicator for skills development and career advancement opportunities.",
+    topic: "Economic Mobility",
+    subtopic: "Employment",
+    source: "Indiana Department of Workforce Development",
+    reportingLevel: "County",
+    availability: "2016-2023",
+    lastUpdated: "2024-01-20",
+    starred: false,
+    trend: "up"
+  },
+  {
+    id: "economic-010",
+    name: "Business Startup Rate",
+    description: "Number of new business establishments per 1,000 existing businesses. Entrepreneurship indicator for business creation and economic innovation activity.",
+    topic: "Economic Mobility",
+    subtopic: "Entrepreneurship",
+    source: "Bureau of Labor Statistics",
+    reportingLevel: "County",
+    availability: "2013-2023",
+    lastUpdated: "2024-01-28",
+    starred: false,
+    trend: "neutral"
+  },
 
   // Housing
   {
     id: "housing-001",
     name: "Housing Cost Burden",
-    description: "Percentage of households spending more than 30% of income on housing, normalized per capita",
+    description: "Percentage of households spending more than 30% of income on housing, normalized per capita. Primary housing affordability indicator for economic stress measurement.",
     topic: "Housing",
     subtopic: "Affordability",
     source: "U.S. Census Bureau",
@@ -555,7 +659,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "housing-002",
     name: "Homeownership Rate",
-    description: "Percentage of housing units occupied by owners",
+    description: "Percentage of housing units occupied by owners. Housing affordability and tenure indicator for wealth building and housing stability measurement.",
     topic: "Housing",
     subtopic: "Affordability",
     source: "U.S. Census Bureau",
@@ -568,7 +672,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "housing-003",
     name: "Housing Vacancy Rate",
-    description: "Percentage of housing units that are vacant",
+    description: "Percentage of housing units that are vacant. Housing quality and market indicator for housing supply and neighborhood stability.",
     topic: "Housing",
     subtopic: "Quality",
     source: "U.S. Census Bureau",
@@ -581,7 +685,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "housing-004",
     name: "Median Home Value",
-    description: "Middle value of owner-occupied housing units",
+    description: "Middle value of owner-occupied housing units. Housing affordability indicator for property values and homeownership accessibility measurement.",
     topic: "Housing",
     subtopic: "Affordability",
     source: "U.S. Census Bureau",
@@ -594,7 +698,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "housing-005",
     name: "Affordable Housing Units",
-    description: "Number of housing units affordable to low-income households",
+    description: "Number of housing units affordable to low-income households. Housing affordability indicator for accessible housing stock and economic opportunity.",
     topic: "Housing",
     subtopic: "Affordability",
     source: "HUD",
@@ -607,7 +711,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "housing-006",
     name: "Housing Quality Index",
-    description: "Composite measure of housing conditions and habitability",
+    description: "Composite measure of housing conditions and habitability standards. Housing quality indicator for living conditions and neighborhood health assessment.",
     topic: "Housing",
     subtopic: "Quality",
     source: "Local Housing Authority",
@@ -620,7 +724,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "housing-007",
     name: "Eviction Rate",
-    description: "Number of evictions per 100 renter households",
+    description: "Number of evictions per 100 renter households. Housing stability indicator for housing security and economic distress measurement.",
     topic: "Housing",
     subtopic: "Stability",
     source: "Eviction Lab",
@@ -633,7 +737,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "housing-008",
     name: "New Housing Construction",
-    description: "Number of new housing units permitted per 1,000 existing units",
+    description: "Number of new housing units permitted per 1,000 existing units. Housing quality and development indicator for housing supply and growth.",
     topic: "Housing",
     subtopic: "Quality",
     source: "U.S. Census Bureau",
@@ -643,12 +747,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "up"
   },
+  {
+    id: "housing-009",
+    name: "Rental Affordability Index",
+    description: "Measure of rental housing affordability relative to median income. Housing affordability indicator for rental market accessibility and cost burden.",
+    topic: "Housing",
+    subtopic: "Affordability",
+    source: "National Low Income Housing Coalition",
+    reportingLevel: "County",
+    availability: "2015-2023",
+    lastUpdated: "2024-01-25",
+    starred: false,
+    trend: "down"
+  },
+  {
+    id: "housing-010",
+    name: "Housing Stability Index",
+    description: "Composite measure of housing tenure, mobility, and displacement risk. Housing stability indicator for residential security and community continuity.",
+    topic: "Housing",
+    subtopic: "Stability",
+    source: "Urban Institute",
+    reportingLevel: "Census Tract",
+    availability: "2017-2023",
+    lastUpdated: "2024-01-18",
+    starred: false,
+    trend: "neutral"
+  },
 
   // Environment
   {
     id: "environment-001",
     name: "Air Quality Index",
-    description: "Daily measure of air quality based on ground-level ozone and particle pollution - key environmental quality measure",
+    description: "Daily measure of air quality based on ground-level ozone and particle pollution. Key environmental quality measure for public health and air pollution assessment.",
     topic: "Environment",
     subtopic: "Air Quality",
     source: "EPA",
@@ -661,7 +791,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "environment-002",
     name: "Water Quality Violations",
-    description: "Number of Safe Drinking Water Act violations per water system - environmental quality indicator",
+    description: "Number of Safe Drinking Water Act violations per water system. Environmental quality indicator for water safety and public health protection.",
     topic: "Environment",
     subtopic: "Water Quality",
     source: "EPA",
@@ -674,7 +804,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "environment-003",
     name: "Green Space Access",
-    description: "Percentage of population within 10-minute walk of a park",
+    description: "Percentage of population within 10-minute walk of a park or green space. Environmental quality indicator for recreation access and community health.",
     topic: "Environment",
     subtopic: "Green Space",
     source: "Trust for Public Land",
@@ -687,7 +817,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "environment-004",
     name: "Tree Canopy Coverage",
-    description: "Percentage of land area covered by tree canopy",
+    description: "Percentage of land area covered by tree canopy. Green space and environmental quality indicator for urban forest health and climate benefits.",
     topic: "Environment",
     subtopic: "Green Space",
     source: "USDA Forest Service",
@@ -700,7 +830,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "environment-005",
     name: "Energy Consumption Per Capita",
-    description: "Total energy consumption per person in BTUs",
+    description: "Total energy consumption per person in BTUs. Environmental quality indicator for resource use and sustainability measurement.",
     topic: "Environment",
     subtopic: "Climate",
     source: "Energy Information Administration",
@@ -713,7 +843,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "environment-006",
     name: "Renewable Energy Generation",
-    description: "Percentage of electricity generated from renewable sources",
+    description: "Percentage of electricity generated from renewable sources. Environmental quality indicator for clean energy adoption and sustainability progress.",
     topic: "Environment",
     subtopic: "Climate",
     source: "Energy Information Administration",
@@ -726,7 +856,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "environment-007",
     name: "Waste Recycling Rate",
-    description: "Percentage of municipal solid waste that is recycled",
+    description: "Percentage of municipal solid waste that is recycled. Environmental quality indicator for waste management and sustainability practices.",
     topic: "Environment",
     subtopic: "Air Quality",
     source: "EPA",
@@ -739,7 +869,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "environment-008",
     name: "Environmental Justice Index",
-    description: "Composite measure of environmental burdens and social vulnerability",
+    description: "Composite measure of environmental burdens and social vulnerability. Environmental quality indicator for equitable environmental health assessment.",
     topic: "Environment",
     subtopic: "Air Quality",
     source: "EPA",
@@ -749,12 +879,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "neutral"
   },
+  {
+    id: "environment-009",
+    name: "Water System Reliability",
+    description: "Percentage of time water systems operate without service interruption. Water quality and environmental infrastructure indicator for utility reliability.",
+    topic: "Environment",
+    subtopic: "Water Quality",
+    source: "EPA",
+    reportingLevel: "Water System",
+    availability: "2015-2023",
+    lastUpdated: "2024-01-30",
+    starred: false,
+    trend: "up"
+  },
+  {
+    id: "environment-010",
+    name: "Climate Resilience Index",
+    description: "Composite measure of community preparedness for climate change impacts. Environmental quality indicator for adaptation and resilience planning.",
+    topic: "Environment",
+    subtopic: "Climate",
+    source: "NOAA",
+    reportingLevel: "County",
+    availability: "2018-2023",
+    lastUpdated: "2024-01-22",
+    starred: false,
+    trend: "up"
+  },
 
   // Safety
   {
     id: "safety-001",
     name: "Violent Crime Rate",
-    description: "Number of violent crimes per 100,000 population by neighborhood and precinct",
+    description: "Number of violent crimes per 100,000 population by neighborhood and precinct. Primary safety indicator for community security and crime prevention assessment.",
     topic: "Safety",
     subtopic: "Crime",
     source: "FBI Uniform Crime Reporting",
@@ -767,7 +923,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "safety-002",
     name: "Property Crime Rate",
-    description: "Number of property crimes per 100,000 population by neighborhood",
+    description: "Number of property crimes per 100,000 population by neighborhood areas. Safety indicator for theft, burglary, and property security measurement.",
     topic: "Safety",
     subtopic: "Crime",
     source: "FBI Uniform Crime Reporting",
@@ -780,7 +936,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "safety-003",
     name: "Traffic Fatality Rate",
-    description: "Number of traffic deaths per 100,000 population",
+    description: "Number of traffic deaths per 100,000 population. Traffic safety indicator for road safety and transportation infrastructure assessment.",
     topic: "Safety",
     subtopic: "Traffic Safety",
     source: "National Highway Traffic Safety Administration",
@@ -793,7 +949,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "safety-004",
     name: "Emergency Response Time",
-    description: "Average time for emergency services to respond to calls",
+    description: "Average time for emergency services to respond to calls. Emergency services indicator for public safety response effectiveness and coverage.",
     topic: "Safety",
     subtopic: "Emergency Services",
     source: "Local Fire Department",
@@ -806,7 +962,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "safety-005",
     name: "Domestic Violence Rate",
-    description: "Number of domestic violence incidents per 100,000 population",
+    description: "Number of domestic violence incidents per 100,000 population. Crime and safety indicator for family violence and community support needs.",
     topic: "Safety",
     subtopic: "Crime",
     source: "Local Police Department",
@@ -819,7 +975,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "safety-006",
     name: "Fire Incident Rate",
-    description: "Number of fire incidents per 100,000 population",
+    description: "Number of fire incidents per 100,000 population. Emergency services indicator for fire safety and prevention program effectiveness.",
     topic: "Safety",
     subtopic: "Emergency Services",
     source: "Local Fire Department",
@@ -832,7 +988,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "safety-007",
     name: "Pedestrian Safety Index",
-    description: "Composite measure of pedestrian safety based on infrastructure and incidents",
+    description: "Composite measure of pedestrian safety based on infrastructure and incident data. Traffic safety indicator for walkability and pedestrian protection.",
     topic: "Safety",
     subtopic: "Traffic Safety",
     source: "Department of Transportation",
@@ -845,7 +1001,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "safety-008",
     name: "Community Safety Programs",
-    description: "Number of active community safety programs per 10,000 residents",
+    description: "Number of active community safety programs per 10,000 residents. Community safety indicator for neighborhood engagement and crime prevention initiatives.",
     topic: "Safety",
     subtopic: "Emergency Services",
     source: "Community Organizations",
@@ -855,12 +1011,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "up"
   },
+  {
+    id: "safety-009",
+    name: "Neighborhood Watch Participation",
+    description: "Percentage of neighborhoods with active watch programs. Community safety indicator for resident engagement in crime prevention and community security.",
+    topic: "Safety",
+    subtopic: "Crime",
+    source: "Local Police Department",
+    reportingLevel: "Neighborhood",
+    availability: "2016-2023",
+    lastUpdated: "2024-01-15",
+    starred: false,
+    trend: "up"
+  },
+  {
+    id: "safety-010",
+    name: "School Safety Index",
+    description: "Composite measure of school safety incidents and security measures. Safety indicator for educational environment security and student protection.",
+    topic: "Safety",
+    subtopic: "Crime",
+    source: "Indiana Department of Education",
+    reportingLevel: "School District",
+    availability: "2017-2023",
+    lastUpdated: "2024-01-08",
+    starred: false,
+    trend: "neutral"
+  },
 
   // Transportation
   {
     id: "transportation-001",
     name: "Public Transit Access",
-    description: "Percentage of population within 0.5 miles of public transit - key transportation accessibility metric",
+    description: "Percentage of population within 0.5 miles of public transit stops. Key transportation accessibility metric for public transportation coverage and mobility options.",
     topic: "Transportation",
     subtopic: "Public Transit",
     source: "Federal Transit Administration",
@@ -873,7 +1055,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "transportation-002",
     name: "Average Commute Time",
-    description: "Mean travel time to work for workers 16 years and over - transportation accessibility indicator",
+    description: "Mean travel time to work for workers 16 years and over. Transportation accessibility indicator for commuting burden and mobility efficiency.",
     topic: "Transportation",
     subtopic: "Active Transportation",
     source: "U.S. Census Bureau",
@@ -886,7 +1068,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "transportation-003",
     name: "Vehicle Ownership Rate",
-    description: "Percentage of households with access to a vehicle",
+    description: "Percentage of households with access to a vehicle. Transportation accessibility indicator for mobility options and transportation equity.",
     topic: "Transportation",
     subtopic: "Active Transportation",
     source: "U.S. Census Bureau",
@@ -899,7 +1081,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "transportation-004",
     name: "Bicycle Infrastructure Density",
-    description: "Miles of bike lanes and paths per square mile",
+    description: "Miles of bike lanes and paths per square mile. Active transportation indicator for cycling infrastructure and alternative mobility options.",
     topic: "Transportation",
     subtopic: "Active Transportation",
     source: "Department of Public Works",
@@ -912,7 +1094,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "transportation-005",
     name: "Transportation Cost Burden",
-    description: "Percentage of household income spent on transportation",
+    description: "Percentage of household income spent on transportation costs. Public transit and transportation accessibility indicator for affordability and economic impact.",
     topic: "Transportation",
     subtopic: "Public Transit",
     source: "Bureau of Labor Statistics",
@@ -925,7 +1107,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "transportation-006",
     name: "Road Quality Index",
-    description: "Composite measure of road surface conditions and maintenance",
+    description: "Composite measure of road surface conditions and maintenance quality. Transportation infrastructure indicator for road safety and maintenance needs.",
     topic: "Transportation",
     subtopic: "Active Transportation",
     source: "Department of Transportation",
@@ -938,7 +1120,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "transportation-007",
     name: "Transit Ridership",
-    description: "Annual public transit trips per capita",
+    description: "Annual public transit trips per capita. Public transit indicator for system utilization and transportation mode preference.",
     topic: "Transportation",
     subtopic: "Public Transit",
     source: "Federal Transit Administration",
@@ -951,7 +1133,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "transportation-008",
     name: "Walkability Score",
-    description: "Measure of how friendly an area is to walking",
+    description: "Measure of how friendly an area is to walking and pedestrian access. Active transportation and accessibility indicator for walkable community design.",
     topic: "Transportation",
     subtopic: "Active Transportation",
     source: "Walk Score",
@@ -961,12 +1143,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "up"
   },
+  {
+    id: "transportation-009",
+    name: "Transit Service Frequency",
+    description: "Average time between transit arrivals during peak hours. Public transit indicator for service quality and transportation convenience.",
+    topic: "Transportation",
+    subtopic: "Public Transit",
+    source: "Federal Transit Administration",
+    reportingLevel: "Transit Route",
+    availability: "2017-2023",
+    lastUpdated: "2024-01-30",
+    starred: false,
+    trend: "neutral"
+  },
+  {
+    id: "transportation-010",
+    name: "Commute Mode Share",
+    description: "Percentage breakdown of transportation modes used for commuting. Transportation accessibility indicator for mobility patterns and transit usage.",
+    topic: "Transportation",
+    subtopic: "Public Transit",
+    source: "U.S. Census Bureau",
+    reportingLevel: "Census Tract",
+    availability: "2010-2023",
+    lastUpdated: "2024-01-20",
+    starred: false,
+    trend: "neutral"
+  },
 
   // Infrastructure
   {
     id: "infrastructure-001",
     name: "Broadband Access Rate",
-    description: "Percentage of households with access to broadband internet",
+    description: "Percentage of households with access to broadband internet service. Digital infrastructure indicator for connectivity and digital equity measurement.",
     topic: "Infrastructure",
     subtopic: "Digital Infrastructure",
     source: "FCC",
@@ -979,7 +1187,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "infrastructure-002",
     name: "Water System Reliability",
-    description: "Percentage of time water system operates without interruption",
+    description: "Percentage of time water systems operate without service interruption. Utilities infrastructure indicator for water service quality and reliability.",
     topic: "Infrastructure",
     subtopic: "Utilities",
     source: "EPA",
@@ -992,7 +1200,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "infrastructure-003",
     name: "Power Grid Reliability",
-    description: "Average minutes of power outages per customer per year",
+    description: "Average minutes of power outages per customer per year. Utilities infrastructure indicator for electrical service reliability and grid stability.",
     topic: "Infrastructure",
     subtopic: "Utilities",
     source: "Energy Information Administration",
@@ -1005,7 +1213,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "infrastructure-004",
     name: "Bridge Condition Rating",
-    description: "Percentage of bridges in good or fair condition",
+    description: "Percentage of bridges in good or fair structural condition. Transportation infrastructure indicator for bridge safety and maintenance needs.",
     topic: "Infrastructure",
     subtopic: "Transportation Infrastructure",
     source: "Federal Highway Administration",
@@ -1018,7 +1226,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "infrastructure-005",
     name: "Stormwater Management Capacity",
-    description: "System capacity to handle 100-year flood events",
+    description: "System capacity to handle 100-year flood events and stormwater runoff. Utilities infrastructure indicator for flood protection and water management.",
     topic: "Infrastructure",
     subtopic: "Utilities",
     source: "Department of Public Works",
@@ -1031,7 +1239,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "infrastructure-006",
     name: "Public Facility Condition",
-    description: "Average condition rating of public buildings and facilities",
+    description: "Average condition rating of public buildings and facilities. Transportation infrastructure indicator for public asset maintenance and investment needs.",
     topic: "Infrastructure",
     subtopic: "Transportation Infrastructure",
     source: "General Services Administration",
@@ -1044,7 +1252,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "infrastructure-007",
     name: "Telecommunications Coverage",
-    description: "Percentage of area with cellular coverage",
+    description: "Percentage of area with reliable cellular and internet coverage. Digital infrastructure indicator for communication access and connectivity quality.",
     topic: "Infrastructure",
     subtopic: "Digital Infrastructure",
     source: "FCC",
@@ -1057,7 +1265,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "infrastructure-008",
     name: "Infrastructure Investment Rate",
-    description: "Annual infrastructure spending per capita",
+    description: "Annual infrastructure spending per capita on public works and utilities. Transportation infrastructure indicator for capital investment and system maintenance.",
     topic: "Infrastructure",
     subtopic: "Transportation Infrastructure",
     source: "Bureau of Economic Analysis",
@@ -1067,12 +1275,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "up"
   },
+  {
+    id: "infrastructure-009",
+    name: "Digital Equity Index",
+    description: "Composite measure of digital access, adoption, and skills. Digital infrastructure indicator for technology access and digital inclusion measurement.",
+    topic: "Infrastructure",
+    subtopic: "Digital Infrastructure",
+    source: "Digital Equity Institute",
+    reportingLevel: "Census Tract",
+    availability: "2019-2023",
+    lastUpdated: "2024-01-28",
+    starred: false,
+    trend: "up"
+  },
+  {
+    id: "infrastructure-010",
+    name: "Utility Affordability Index",
+    description: "Measure of utility costs relative to median household income. Utilities infrastructure indicator for service affordability and economic burden.",
+    topic: "Infrastructure",
+    subtopic: "Utilities",
+    source: "American Water Works Association",
+    reportingLevel: "County",
+    availability: "2016-2023",
+    lastUpdated: "2024-01-22",
+    starred: false,
+    trend: "up"
+  },
 
   // Demographics
   {
     id: "demographics-001",
     name: "Population Growth Rate",
-    description: "Annual percentage change in total population",
+    description: "Annual percentage change in total population over time. Population demographics indicator for community growth and development trends.",
     topic: "Demographics",
     subtopic: "Population",
     source: "U.S. Census Bureau",
@@ -1085,7 +1319,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "demographics-002",
     name: "Age Distribution",
-    description: "Percentage of population by age groups including senior population demographics",
+    description: "Percentage of population by age groups including senior population demographics and youth populations. Age structure indicator for community composition analysis.",
     topic: "Demographics",
     subtopic: "Age Structure",
     source: "U.S. Census Bureau",
@@ -1098,7 +1332,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "demographics-003",
     name: "Racial and Ethnic Diversity",
-    description: "Diversity index based on racial and ethnic composition",
+    description: "Diversity index based on racial and ethnic composition of communities. Diversity demographics indicator for population composition and cultural representation.",
     topic: "Demographics",
     subtopic: "Diversity",
     source: "U.S. Census Bureau",
@@ -1111,7 +1345,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "demographics-004",
     name: "Population Density",
-    description: "Number of people per square mile by census tract",
+    description: "Number of people per square mile by census tract areas. Population demographics indicator for urban density and development patterns.",
     topic: "Demographics",
     subtopic: "Population",
     source: "U.S. Census Bureau",
@@ -1124,7 +1358,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "demographics-005",
     name: "Migration Patterns",
-    description: "Net migration rate (in-migration minus out-migration)",
+    description: "Net migration rate measuring in-migration minus out-migration flows. Population demographics indicator for population movement and community attraction.",
     topic: "Demographics",
     subtopic: "Population",
     source: "U.S. Census Bureau",
@@ -1137,7 +1371,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "demographics-006",
     name: "Household Size",
-    description: "Average number of people per household",
+    description: "Average number of people per household unit. Age structure demographics indicator for family composition and housing needs.",
     topic: "Demographics",
     subtopic: "Age Structure",
     source: "U.S. Census Bureau",
@@ -1150,7 +1384,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "demographics-007",
     name: "Language Diversity",
-    description: "Percentage of population speaking languages other than English at home",
+    description: "Percentage of population speaking languages other than English at home. Diversity demographics indicator for linguistic composition and cultural diversity.",
     topic: "Demographics",
     subtopic: "Diversity",
     source: "U.S. Census Bureau",
@@ -1163,7 +1397,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "demographics-008",
     name: "Disability Rate",
-    description: "Percentage of population with a disability",
+    description: "Percentage of population with a disability by age and type. Age structure demographics indicator for accessibility needs and support services.",
     topic: "Demographics",
     subtopic: "Age Structure",
     source: "U.S. Census Bureau",
@@ -1173,12 +1407,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "neutral"
   },
+  {
+    id: "demographics-009",
+    name: "Senior Population Growth",
+    description: "Percentage change in population aged 65 and older. Age structure demographics indicator for aging population trends and senior demographics.",
+    topic: "Demographics",
+    subtopic: "Age Structure",
+    source: "U.S. Census Bureau",
+    reportingLevel: "County",
+    availability: "2010-2023",
+    lastUpdated: "2024-01-28",
+    starred: false,
+    trend: "up"
+  },
+  {
+    id: "demographics-010",
+    name: "Youth Population Percentage",
+    description: "Percentage of population under 18 years of age. Age structure demographics indicator for youth demographics and family composition.",
+    topic: "Demographics",
+    subtopic: "Age Structure",
+    source: "U.S. Census Bureau",
+    reportingLevel: "Census Tract",
+    availability: "2010-2023",
+    lastUpdated: "2024-01-25",
+    starred: false,
+    trend: "down"
+  },
 
   // Family Structure
   {
     id: "family-001",
     name: "Single-Parent Household Rate",
-    description: "Percentage of households with children headed by single parent",
+    description: "Percentage of households with children headed by single parent. Household composition indicator for family structure and support needs assessment.",
     topic: "Family Structure",
     subtopic: "Household Composition",
     source: "U.S. Census Bureau",
@@ -1191,7 +1451,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "family-002",
     name: "Multigenerational Household Rate",
-    description: "Percentage of households with multiple generations living together",
+    description: "Percentage of households with multiple generations living together. Household composition indicator for extended family living arrangements and housing needs.",
     topic: "Family Structure",
     subtopic: "Household Composition",
     source: "U.S. Census Bureau",
@@ -1204,7 +1464,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "family-003",
     name: "Marriage Rate",
-    description: "Number of marriages per 1,000 population",
+    description: "Number of marriages per 1,000 population annually. Family stability indicator for relationship formation and family structure trends.",
     topic: "Family Structure",
     subtopic: "Family Stability",
     source: "National Center for Health Statistics",
@@ -1217,7 +1477,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "family-004",
     name: "Divorce Rate",
-    description: "Number of divorces per 1,000 population",
+    description: "Number of divorces per 1,000 population annually. Family stability indicator for relationship dissolution and family structure changes.",
     topic: "Family Structure",
     subtopic: "Family Stability",
     source: "National Center for Health Statistics",
@@ -1230,7 +1490,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "family-005",
     name: "Teen Birth Rate",
-    description: "Number of births per 1,000 females aged 15-19",
+    description: "Number of births per 1,000 females aged 15-19. Family stability indicator for adolescent pregnancy and family formation patterns.",
     topic: "Family Structure",
     subtopic: "Family Stability",
     source: "National Center for Health Statistics",
@@ -1243,7 +1503,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "family-006",
     name: "Grandparent Caregivers",
-    description: "Percentage of children living with grandparent caregivers",
+    description: "Percentage of children living with grandparent caregivers. Child welfare indicator for alternative family arrangements and caregiving support.",
     topic: "Family Structure",
     subtopic: "Child Welfare",
     source: "U.S. Census Bureau",
@@ -1256,7 +1516,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "family-007",
     name: "Foster Care Rate",
-    description: "Number of children in foster care per 1,000 children - key child welfare indicator",
+    description: "Number of children in foster care per 1,000 children. Key child welfare indicator for family support needs and child protection services.",
     topic: "Family Structure",
     subtopic: "Child Welfare",
     source: "Department of Child Services",
@@ -1269,7 +1529,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "family-008",
     name: "Family Stability Index",
-    description: "Composite measure of family structure stability factors",
+    description: "Composite measure of family structure stability factors including marriage, divorce, and household composition. Family stability indicator for community assessment.",
     topic: "Family Structure",
     subtopic: "Family Stability",
     source: "Child Trends",
@@ -1279,12 +1539,38 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     starred: false,
     trend: "neutral"
   },
+  {
+    id: "family-009",
+    name: "Child Support Compliance",
+    description: "Percentage of child support orders with regular payments. Child welfare indicator for financial support and family economic stability.",
+    topic: "Family Structure",
+    subtopic: "Child Welfare",
+    source: "Department of Child Services",
+    reportingLevel: "County",
+    availability: "2016-2023",
+    lastUpdated: "2024-01-15",
+    starred: false,
+    trend: "up"
+  },
+  {
+    id: "family-010",
+    name: "Family Reunification Rate",
+    description: "Percentage of children in foster care who are reunified with families. Child welfare indicator for family preservation and child protection outcomes.",
+    topic: "Family Structure",
+    subtopic: "Child Welfare",
+    source: "Department of Child Services",
+    reportingLevel: "County",
+    availability: "2017-2023",
+    lastUpdated: "2024-01-10",
+    starred: false,
+    trend: "up"
+  },
 
   // Civic Engagement
   {
     id: "civic-001",
     name: "Voter Turnout Rate",
-    description: "Percentage of eligible voters who voted in recent elections",
+    description: "Percentage of eligible voters who voted in recent elections. Political participation indicator for civic engagement and democratic participation measurement.",
     topic: "Civic Engagement",
     subtopic: "Political Participation",
     source: "Secretary of State",
@@ -1297,7 +1583,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "civic-002",
     name: "Volunteer Rate",
-    description: "Percentage of population engaged in volunteer activities",
+    description: "Percentage of population engaged in volunteer activities and community service. Community service indicator for civic participation and social engagement.",
     topic: "Civic Engagement",
     subtopic: "Community Service",
     source: "Corporation for National and Community Service",
@@ -1310,7 +1596,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "civic-003",
     name: "Nonprofit Density",
-    description: "Number of nonprofit organizations per 10,000 population",
+    description: "Number of nonprofit organizations per 10,000 population. Community service indicator for civic infrastructure and community organization capacity.",
     topic: "Civic Engagement",
     subtopic: "Community Service",
     source: "IRS",
@@ -1323,7 +1609,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "civic-004",
     name: "Community Meeting Attendance",
-    description: "Average attendance at public community meetings",
+    description: "Average attendance at public community meetings and civic forums. Political participation indicator for community engagement and civic involvement.",
     topic: "Civic Engagement",
     subtopic: "Political Participation",
     source: "Local Government",
@@ -1336,7 +1622,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "civic-005",
     name: "Social Capital Index",
-    description: "Composite measure of social connections and community engagement",
+    description: "Composite measure of social connections and community engagement networks. Social cohesion indicator for community bonds and civic participation strength.",
     topic: "Civic Engagement",
     subtopic: "Social Cohesion",
     source: "Social Capital Project",
@@ -1349,7 +1635,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "civic-006",
     name: "Public Forum Participation",
-    description: "Number of residents participating in public forums per 1,000 population",
+    description: "Number of residents participating in public forums per 1,000 population. Political participation indicator for civic engagement and community involvement.",
     topic: "Civic Engagement",
     subtopic: "Political Participation",
     source: "Local Government",
@@ -1362,7 +1648,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "civic-007",
     name: "Charitable Giving Rate",
-    description: "Percentage of households making charitable donations",
+    description: "Percentage of households making charitable donations to community organizations. Community service indicator for philanthropic engagement and community support.",
     topic: "Civic Engagement",
     subtopic: "Community Service",
     source: "IRS Statistics of Income",
@@ -1375,7 +1661,7 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
   {
     id: "civic-008",
     name: "Community Organization Membership",
-    description: "Percentage of adults belonging to community organizations",
+    description: "Percentage of adults belonging to community organizations and civic groups. Social cohesion indicator for community participation and civic engagement.",
     topic: "Civic Engagement",
     subtopic: "Social Cohesion",
     source: "Current Population Survey",
@@ -1384,6 +1670,32 @@ const COMPREHENSIVE_INDICATORS: ExtendedIndicator[] = [
     lastUpdated: "2024-01-15",
     starred: false,
     trend: "down"
+  },
+  {
+    id: "civic-009",
+    name: "Civic Knowledge Index",
+    description: "Composite measure of civic knowledge and political awareness. Political participation indicator for informed citizenship and democratic engagement.",
+    topic: "Civic Engagement",
+    subtopic: "Political Participation",
+    source: "Civic Education Research",
+    reportingLevel: "County",
+    availability: "2016-2022",
+    lastUpdated: "2023-08-15",
+    starred: false,
+    trend: "neutral"
+  },
+  {
+    id: "civic-010",
+    name: "Community Event Participation",
+    description: "Average attendance at community events and festivals per capita. Community service and social cohesion indicator for community engagement and participation.",
+    topic: "Civic Engagement",
+    subtopic: "Community Service",
+    source: "Parks and Recreation Department",
+    reportingLevel: "City",
+    availability: "2017-2023",
+    lastUpdated: "2024-01-12",
+    starred: false,
+    trend: "up"
   }
 ]
 
@@ -1614,6 +1926,38 @@ export function SelectIndicatorsModalEnhanced({
     return groups
   }, [filteredIndicators, groupBy])
 
+  // Active filters for chip display
+  const activeFilters = useMemo(() => {
+    const filters = []
+    
+    selectedCategories.forEach(category => {
+      filters.push({ type: 'category', value: category, label: category })
+    })
+    
+    selectedSubcategories.forEach(subcategory => {
+      filters.push({ type: 'subcategory', value: subcategory, label: subcategory })
+    })
+    
+    if (selectedReportingArea !== "all") {
+      filters.push({ type: 'reporting', value: selectedReportingArea, label: selectedReportingArea })
+    }
+    
+    if (yearRange[0] !== 2000 || yearRange[1] !== 2024) {
+      filters.push({ type: 'year', value: `${yearRange[0]}-${yearRange[1]}`, label: `${yearRange[0]}-${yearRange[1]}` })
+    }
+    
+    if (selectedNormalization !== "raw") {
+      const normLabel = NORMALIZATION_OPTIONS.find(opt => opt.value === selectedNormalization)?.label || selectedNormalization
+      filters.push({ type: 'normalization', value: selectedNormalization, label: normLabel })
+    }
+    
+    if (starredOnly) {
+      filters.push({ type: 'starred', value: 'starred', label: 'Starred Only' })
+    }
+    
+    return filters
+  }, [selectedCategories, selectedSubcategories, selectedReportingArea, yearRange, selectedNormalization, starredOnly])
+
   const handleSelectIndicator = (indicatorId: string) => {
     setSelected((prev) =>
       prev.includes(indicatorId) ? prev.filter((id) => id !== indicatorId) : [...prev, indicatorId],
@@ -1636,6 +1980,29 @@ export function SelectIndicatorsModalEnhanced({
     setYearRange([2000, 2024])
     setSelectedNormalization("raw")
     setStarredOnly(false)
+  }
+
+  const handleRemoveFilter = (filterType: string, filterValue: string) => {
+    switch (filterType) {
+      case 'category':
+        setSelectedCategories(prev => prev.filter(c => c !== filterValue))
+        break
+      case 'subcategory':
+        setSelectedSubcategories(prev => prev.filter(c => c !== filterValue))
+        break
+      case 'reporting':
+        setSelectedReportingArea("all")
+        break
+      case 'year':
+        setYearRange([2000, 2024])
+        break
+      case 'normalization':
+        setSelectedNormalization("raw")
+        break
+      case 'starred':
+        setStarredOnly(false)
+        break
+    }
   }
 
   const handleCategoryToggle = (category: string) => {
@@ -1907,20 +2274,6 @@ export function SelectIndicatorsModalEnhanced({
 
               <Separator />
 
-              {/* Starred Only */}
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="starred-only"
-                  checked={starredOnly}
-                  onCheckedChange={setStarredOnly}
-                />
-                <label htmlFor="starred-only" className="text-sm text-gray-700">
-                  Show starred indicators only
-                </label>
-              </div>
-
-              <Separator />
-
               {/* Categories - Hierarchical - Moved to bottom */}
               <div>
                 <h4 className="text-sm font-medium text-gray-900 mb-3">Categories</h4>
@@ -1975,7 +2328,7 @@ export function SelectIndicatorsModalEnhanced({
                 <div className="flex items-center">
                   <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-blue-500" />
                   <Input
-                    placeholder="Search indicators with AI (e.g., Median Income by Census Tract in Indiana, 2023)"
+                    placeholder="Search indicators with AI (e.g., income household median poverty economic)"
                     className="pl-10 pr-10 h-12 text-base"
                     value={searchTerm}
                     onChange={(e) => {
@@ -2036,6 +2389,29 @@ export function SelectIndicatorsModalEnhanced({
                   </div>
                 )}
               </div>
+
+              {/* Filter Chips */}
+              {activeFilters.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {activeFilters.map((filter, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="text-xs flex items-center gap-1 pr-1"
+                    >
+                      {filter.label}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-4 w-4 p-0 hover:bg-gray-300"
+                        onClick={() => handleRemoveFilter(filter.type, filter.value)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Controls Bar */}
@@ -2107,6 +2483,15 @@ export function SelectIndicatorsModalEnhanced({
                   </Button>
                   <Button variant="outline" size="sm" onClick={handleClearAll} className="text-xs h-8">
                     Clear All
+                  </Button>
+                  <Button
+                    variant={starredOnly ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setStarredOnly(!starredOnly)}
+                    className="text-xs h-8"
+                  >
+                    <Star className={`h-3 w-3 mr-1 ${starredOnly ? "fill-current" : ""}`} />
+                    Starred
                   </Button>
                 </div>
               </div>
