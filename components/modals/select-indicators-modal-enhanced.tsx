@@ -10,8 +10,10 @@ import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Search, X, Filter, Calendar, MapPin } from 'lucide-react'
+import { Search, X, Filter, Calendar, MapPin, ChevronDown } from 'lucide-react'
 import { realIndicators } from "@/data/real-indicators"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command"
 
 interface SelectIndicatorsModalEnhancedProps {
   open: boolean
@@ -82,6 +84,7 @@ export function SelectIndicatorsModalEnhanced({
   const [yearRange, setYearRange] = useState([2010, 2024])
   const [selectedRegion, setSelectedRegion] = useState("all")
   const [tempSelectedIndicators, setTempSelectedIndicators] = useState<string[]>(selectedIndicators)
+  const [categoriesOpen, setCategoriesOpen] = useState(false)
 
   const filteredIndicators = useMemo(() => {
     return realIndicators.filter((indicator) => {
@@ -192,7 +195,36 @@ export function SelectIndicatorsModalEnhanced({
               </div>
             </div>
 
-            {/* Categories Filter */}
+            {/* Region Filter - Moved to top */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                Reporting Level
+              </label>
+              <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select reporting level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {regions.map((region) => (
+                    <div key={region.value}>
+                      <SelectItem value={region.value}>{region.label}</SelectItem>
+                      {region.children && (
+                        <div className="ml-4">
+                          {region.children.map((child) => (
+                            <SelectItem key={child.value} value={child.value} className="text-sm">
+                              {child.label}
+                            </SelectItem>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Categories Filter - Changed to multi-select dropdown */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium">Categories</label>
@@ -205,33 +237,63 @@ export function SelectIndicatorsModalEnhanced({
                   Clear
                 </Button>
               </div>
-              <ScrollArea className="h-48">
-                <div className="space-y-2">
-                  {categories.map((category) => (
-                    <div key={category} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={category}
-                        checked={selectedCategories.includes(category)}
-                        onCheckedChange={() => handleCategoryToggle(category)}
-                      />
-                      <label
-                        htmlFor={category}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                      >
-                        {category}
-                      </label>
-                    </div>
+              <Popover open={categoriesOpen} onOpenChange={setCategoriesOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={categoriesOpen}
+                    className="w-full justify-between"
+                  >
+                    {selectedCategories.length === 0
+                      ? "Select categories..."
+                      : `${selectedCategories.length} selected`}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-0">
+                  <Command>
+                    <CommandInput placeholder="Search categories..." />
+                    <CommandEmpty>No category found.</CommandEmpty>
+                    <CommandGroup>
+                      <ScrollArea className="h-48">
+                        {categories.map((category) => (
+                          <CommandItem
+                            key={category}
+                            onSelect={() => handleCategoryToggle(category)}
+                          >
+                            <Checkbox
+                              checked={selectedCategories.includes(category)}
+                              className="mr-2"
+                            />
+                            {category}
+                          </CommandItem>
+                        ))}
+                      </ScrollArea>
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {selectedCategories.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {selectedCategories.map((category) => (
+                    <Badge key={category} variant="secondary" className="text-xs">
+                      {category}
+                      <button onClick={() => handleCategoryToggle(category)} className="ml-1 hover:text-red-600">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
                   ))}
                 </div>
-              </ScrollArea>
+              )}
             </div>
 
-            {/* Year Range Filter */}
+            {/* Year Range Filter - Updated label */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  All Years
+                  Data Years
                 </label>
                 <span className="text-xs text-gray-500">
                   {yearRange[0]} - {yearRange[1]}
@@ -251,35 +313,6 @@ export function SelectIndicatorsModalEnhanced({
                   <span>2024</span>
                 </div>
               </div>
-            </div>
-
-            {/* Region Filter */}
-            <div className="space-y-3">
-              <label className="text-sm font-medium flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                All Region
-              </label>
-              <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select region" />
-                </SelectTrigger>
-                <SelectContent>
-                  {regions.map((region) => (
-                    <div key={region.value}>
-                      <SelectItem value={region.value}>{region.label}</SelectItem>
-                      {region.children && (
-                        <div className="ml-4">
-                          {region.children.map((child) => (
-                            <SelectItem key={child.value} value={child.value} className="text-sm">
-                              {child.label}
-                            </SelectItem>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
             {/* Clear Filters */}
