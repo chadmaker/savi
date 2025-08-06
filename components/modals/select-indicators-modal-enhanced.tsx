@@ -10,7 +10,7 @@ import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Search, X, Filter, Calendar, MapPin } from "lucide-react"
+import { Search, X, Filter, Calendar, MapPin } from 'lucide-react'
 import { realIndicators } from "@/data/real-indicators"
 
 interface SelectIndicatorsModalEnhancedProps {

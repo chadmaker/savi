@@ -1,182 +1,167 @@
 "use client"
 
 import { useState } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Search, MapPin } from 'lucide-react'
-
-interface Community {
-  id: string
-  name: string
-  type: string
-  population: string
-  description: string
-}
+import { Search, X, Map } from "lucide-react"
 
 interface SelectCommunityModalProps {
   open: boolean
   onClose: () => void
-  onSelectCommunity: (community: string) => void
-  selectedCommunity: string | null
+  selectedCommunities: string[]
+  onSelectionChange: (communities: string[]) => void
 }
 
-export function SelectCommunityModal({ open, onClose, onSelectCommunity, selectedCommunity }: SelectCommunityModalProps) {
+const availableCommunities = [
+  { id: "marion-county", name: "Marion County", type: "County" },
+  { id: "broad-ripple", name: "Broad Ripple", type: "Neighborhood" },
+  { id: "fountain-square", name: "Fountain Square", type: "Neighborhood" },
+  { id: "downtown", name: "Downtown Indianapolis", type: "District" },
+  { id: "carmel", name: "Carmel", type: "City" },
+  { id: "fishers", name: "Fishers", type: "City" },
+  { id: "noblesville", name: "Noblesville", type: "City" },
+  { id: "westfield", name: "Westfield", type: "City" },
+]
+
+export function SelectCommunityModal({
+  open,
+  onClose,
+  selectedCommunities,
+  onSelectionChange,
+}: SelectCommunityModalProps) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [tempSelected, setTempSelected] = useState<string | null>(selectedCommunity)
+  const [filterType, setFilterType] = useState("all")
 
-  const communities: Community[] = [
-    {
-      id: "marion-county",
-      name: "Marion County",
-      type: "County",
-      population: "964,582",
-      description: "The most populous county in Indiana, containing Indianapolis"
-    },
-    {
-      id: "broad-ripple",
-      name: "Broad Ripple",
-      type: "Neighborhood",
-      population: "12,500",
-      description: "Arts and entertainment district in Indianapolis"
-    },
-    {
-      id: "fountain-square",
-      name: "Fountain Square",
-      type: "Neighborhood",
-      population: "8,200",
-      description: "Historic cultural district southeast of downtown Indianapolis"
-    },
-    {
-      id: "downtown-indy",
-      name: "Downtown Indianapolis",
-      type: "District",
-      population: "15,400",
-      description: "Central business district and urban core"
-    },
-    {
-      id: "carmel",
-      name: "Carmel",
-      type: "City",
-      population: "99,757",
-      description: "Suburban city north of Indianapolis"
-    },
-    {
-      id: "fishers",
-      name: "Fishers",
-      type: "City",
-      population: "95,310",
-      description: "Fast-growing suburban city northeast of Indianapolis"
+  const filteredCommunities = availableCommunities.filter((community) => {
+    const matchesSearch = community.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesFilter = filterType === "all" || community.type.toLowerCase() === filterType
+    return matchesSearch && matchesFilter
+  })
+
+  const handleToggleCommunity = (communityName: string) => {
+    if (selectedCommunities.includes(communityName)) {
+      onSelectionChange(selectedCommunities.filter((c) => c !== communityName))
+    } else {
+      onSelectionChange([...selectedCommunities, communityName])
     }
-  ]
-
-  const filteredCommunities = communities.filter(community =>
-    community.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    community.type.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
-  const handleSelect = () => {
-    if (tempSelected) {
-      const community = communities.find(c => c.id === tempSelected)
-      if (community) {
-        onSelectCommunity(community.name)
-      }
-    }
-    onClose()
   }
 
-  const handleClose = () => {
-    setTempSelected(selectedCommunity)
-    setSearchTerm("")
+  const handleRemoveCommunity = (communityName: string) => {
+    onSelectionChange(selectedCommunities.filter((c) => c !== communityName))
+  }
+
+  const handleConfirm = () => {
     onClose()
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh]">
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Select Community</DialogTitle>
-          <DialogDescription>
-            Choose a geographic area for your analysis. You can select counties, cities, neighborhoods, or districts.
-          </DialogDescription>
+          <DialogTitle>Select Community (Geography)</DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search communities..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
 
-          {/* Community List */}
-          <div className="max-h-[400px] overflow-y-auto space-y-2">
-            {filteredCommunities.map((community) => (
-              <div
-                key={community.id}
-                className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                  tempSelected === community.id
-                    ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                }`}
-                onClick={() => setTempSelected(community.id)}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <MapPin className="h-4 w-4 text-gray-500" />
-                      <h3 className="font-medium text-gray-900">{community.name}</h3>
-                      <Badge variant="secondary" className="text-xs">
-                        {community.type}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">{community.description}</p>
-                    <p className="text-xs text-gray-500">Population: {community.population}</p>
-                  </div>
-                  {tempSelected === community.id && (
-                    <div className="ml-2">
-                      <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-white rounded-full"></div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+        <div className="flex-1 flex gap-6 min-h-0">
+          {/* Left Panel - Controls */}
+          <div className="w-1/2 space-y-4">
+            <div>
+              <Label htmlFor="search">Search Communities</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  id="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search communities..."
+                  className="pl-10"
+                />
               </div>
-            ))}
+            </div>
+
+            <div>
+              <Label htmlFor="filter">Filter by Type</Label>
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="county">County</SelectItem>
+                  <SelectItem value="city">City</SelectItem>
+                  <SelectItem value="neighborhood">Neighborhood</SelectItem>
+                  <SelectItem value="district">District</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex-1 min-h-0">
+              <Label>Available Communities</Label>
+              <div className="mt-2 space-y-2 max-h-64 overflow-y-auto border rounded-md p-2">
+                {filteredCommunities.map((community) => (
+                  <div
+                    key={community.id}
+                    className={`flex items-center justify-between p-2 rounded cursor-pointer hover:bg-gray-50 ${
+                      selectedCommunities.includes(community.name) ? "bg-blue-50 border border-blue-200" : ""
+                    }`}
+                    onClick={() => handleToggleCommunity(community.name)}
+                  >
+                    <div>
+                      <div className="font-medium">{community.name}</div>
+                      <div className="text-sm text-gray-500">{community.type}</div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={selectedCommunities.includes(community.name)}
+                      onChange={() => handleToggleCommunity(community.name)}
+                      className="rounded"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {filteredCommunities.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              <MapPin className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-              <p>No communities found matching your search.</p>
+          {/* Right Panel - Map */}
+          <div className="w-1/2">
+            <Label>Interactive Map</Label>
+            <div className="mt-2 h-64 bg-gradient-to-br from-blue-50 to-green-50 rounded-lg border flex items-center justify-center">
+              <div className="text-center">
+                <Map className="h-12 w-12 text-blue-400 mx-auto mb-2" />
+                <p className="text-gray-600 text-sm">Interactive map selection</p>
+                <p className="text-gray-500 text-xs">Click on areas to select</p>
+              </div>
             </div>
-          )}
+          </div>
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
+        {/* Selected Communities */}
+        {selectedCommunities.length > 0 && (
+          <div className="border-t pt-4">
+            <Label>Selected Communities ({selectedCommunities.length})</Label>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {selectedCommunities.map((community) => (
+                <Badge key={community} variant="secondary" className="flex items-center gap-1">
+                  {community}
+                  <X
+                    className="h-3 w-3 cursor-pointer hover:text-red-500"
+                    onClick={() => handleRemoveCommunity(community)}
+                  />
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="flex justify-end space-x-2 pt-4 border-t">
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleSelect} 
-            disabled={!tempSelected}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            Select Community
-          </Button>
-        </DialogFooter>
+          <Button onClick={handleConfirm}>Confirm Selection ({selectedCommunities.length})</Button>
+        </div>
       </DialogContent>
     </Dialog>
   )

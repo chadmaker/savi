@@ -15,7 +15,7 @@ export default function Home() {
     name: string
     description: string
   }) => {
-    setCurrentProject(project.name)
+    setCurrentProject(project.name) // project is an object now
     setCurrentScreen("workspace")
   }
 
