@@ -107,16 +107,16 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
     })
 
   const gridContainerClass =
-    "grid grid-cols-12 gap-4 md:gap-6 max-w-[960px] w-full"
+    "grid grid-cols-12 gap-4 md:gap-6 max-w-[1280px] w-full"
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         aria-label={title}
         className={cn(
-          // Centered modal, 960px max content, internal padding 32 desktop / 16 mobile
-          "p-4 md:p-8 rounded-xl",
-          "w-[min(960px,calc(100vw-2rem))]"
+          // Centered modal, 1280px max content, internal padding 32 desktop / 16 mobile
+          "p-4 md:p-8 rounded-3xl",
+          "w-[min(1280px,calc(100vw-2rem))]"
         )}
       >
         <DialogHeader className="px-0">
@@ -214,7 +214,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
 
         {/* Sticky footer CTA */}
         <div className="sticky bottom-0 left-0 w-full bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
-          <div className="max-w-[960px] mx-auto flex items-center justify-between gap-4 p-4 md:p-6">
+          <div className="max-w-[1280px] mx-auto flex items-center justify-between gap-4 p-4 md:p-6">
             <div className="text-sm md:text-base font-semibold">
               {selectedId
                 ? `You’ve selected: ${
