@@ -80,25 +80,39 @@ export type SaviProfilePickerProps = {
   title?: string
 }
 
-const palette: Record<ProfileType, { bg: string; text: string; border: string }> = {
-  overview: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
-  population: { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200" },
-  topic: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
-}
-
-const tagClasses: Record<ProfileType, { container: string; label: string }> = {
+// Category styling tokens
+const styleByType: Record<
+  ProfileType,
+  { cardBg: string; border: string; ring: string; icon: string; tagBorder: string }
+> = {
   overview: {
-    container: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-    label: "Community",
+    cardBg: "bg-emerald-50",
+    border: "border-emerald-200",
+    ring: "ring-emerald-300",
+    icon: "text-emerald-700",
+    tagBorder: "border-emerald-200",
   },
   population: {
-    container: "bg-rose-50 text-rose-700 border border-rose-200",
-    label: "Population",
+    cardBg: "bg-rose-50",
+    border: "border-rose-200",
+    ring: "ring-rose-300",
+    icon: "text-rose-700",
+    tagBorder: "border-rose-200",
   },
   topic: {
-    container: "bg-amber-50 text-amber-700 border border-amber-200",
-    label: "Topic",
+    cardBg: "bg-amber-50",
+    border: "border-amber-200",
+    ring: "ring-amber-300",
+    icon: "text-amber-700",
+    tagBorder: "border-amber-200",
   },
+}
+
+// Tag labels (singular)
+const tagLabel: Record<ProfileType, string> = {
+  overview: "Community",
+  population: "Population",
+  topic: "Topic",
 }
 
 export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
@@ -205,24 +219,20 @@ function ProfileTile({
   onSelect: () => void
   className?: string
 }) {
-  const TagLabel = tagClasses[item.type].label
-  const tagClass = tagClasses[item.type].container
+  const styles = styleByType[item.type]
   const IconComponent = item.iconKey ? iconsMap[item.iconKey] : Grid2x2
 
-  // NEW: measure trigger width to cap tooltip width
+  // Measure trigger width for tooltip max width
   const triggerRef = React.useRef<HTMLDivElement>(null)
   const [triggerWidth, setTriggerWidth] = React.useState<number | null>(null)
 
   React.useEffect(() => {
     const el = triggerRef.current
     if (!el) return
-
     const measure = () => setTriggerWidth(el.getBoundingClientRect().width)
     measure()
-
     const ro = new ResizeObserver(measure)
     ro.observe(el)
-
     window.addEventListener("resize", measure)
     return () => {
       ro.disconnect()
@@ -237,53 +247,42 @@ function ProfileTile({
       aria-checked={selected}
       onClick={onSelect}
       className={cn(
-        "group relative w-full text-left outline-none",
-        "rounded-xl border transition-shadow min-h-[84px]",
-        selected
-          ? "bg-primary text-primary-foreground border-primary shadow-lg"
-          : "bg-card text-card-foreground border-border hover:shadow-md",
-        "focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60",
+        "group relative w-full text-left outline-none rounded-xl transition-shadow min-h-[84px]",
+        "border hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2",
+        styles.cardBg,
+        styles.border,
+        "text-black",
+        selected ? cn("ring-2", styles.ring) : "",
       )}
     >
+      {/* Tag: white bg, black text, border tinted to category */}
       <span
         className={cn(
-          "absolute left-2 top-2 z-[1] inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-          tagClass,
-          selected ? "bg-white/20 text-white border-white/30" : "",
+          "absolute left-2 top-2 z-[1] inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-white text-black border",
+          styles.tagBorder,
         )}
-        aria-label={`${TagLabel} tag`}
+        aria-label={`${tagLabel[item.type]} tag`}
       >
-        {TagLabel}
+        {tagLabel[item.type]}
       </span>
 
       <Card className="border-0 shadow-none bg-transparent">
         <CardContent className="p-3 md:p-4 flex flex-col items-center justify-center gap-2">
-          <div
-            className={cn(
-              "rounded-full p-3",
-              selected
-                ? "bg-primary-foreground/20 text-primary-foreground"
-                : cn(palette[item.type].bg, palette[item.type].text),
-            )}
-            aria-hidden="true"
-          >
+          {/* Icon: white circle background, colored icon */}
+          <div className={cn("rounded-full p-3 bg-white", styles.icon)} aria-hidden="true">
             <IconComponent className="h-10 w-10" />
           </div>
 
-          <div
-            className={cn(
-              "text-xs md:text-[13px] font-medium text-center leading-snug line-clamp-2",
-              selected ? "text-primary-foreground" : "",
-            )}
-          >
+          {/* Profile name: black text */}
+          <div className="text-xs md:text-[13px] font-medium text-center leading-snug line-clamp-2 text-black">
             {item.label}
           </div>
         </CardContent>
       </Card>
 
       {selected && (
-        <div className="absolute right-2 top-2 rounded-full bg-primary-foreground/20 p-1" aria-hidden="true">
-          <Check className="h-5 w-5 text-primary-foreground" />
+        <div className="absolute right-2 top-2 rounded-full bg-white p-1" aria-hidden="true">
+          <Check className={cn("h-5 w-5", styles.icon)} />
         </div>
       )}
     </button>
@@ -294,7 +293,6 @@ function ProfileTile({
       <div className={cn("relative", className)}>
         <Tooltip>
           <TooltipTrigger asChild>
-            {/* NEW: attach ref for width measurement */}
             <div ref={triggerRef} className="hidden md:block">
               {content}
             </div>
@@ -303,9 +301,8 @@ function ProfileTile({
             side="top"
             align="center"
             sideOffset={8}
-            avoidCollisions={true}
+            avoidCollisions
             collisionPadding={24}
-            // NEW: cap tooltip width to trigger width
             style={{ maxWidth: triggerWidth ? `${triggerWidth}px` : undefined }}
             className="break-words whitespace-normal text-sm leading-snug"
           >
