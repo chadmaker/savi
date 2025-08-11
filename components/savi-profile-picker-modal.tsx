@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Check, Info, LayoutGrid, Users, GraduationCap } from "lucide-react"
+import { Check, LayoutGrid, Users, GraduationCap } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
@@ -35,140 +35,95 @@ const iconFor = (icon?: SaviProfileItem["icon"], type?: ProfileType) => {
   return Users
 }
 
-const SectionHeader = ({
-  title,
-  helper,
-}: {
-  title: string
-  helper?: string
-}) => (
-  <div className="col-span-12 flex items-baseline justify-between">
-    <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
-    {helper ? (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <Info className="h-4 w-4" aria-hidden="true" />
-        <span>{helper}</span>
-      </div>
-    ) : null}
-  </div>
-)
+const tagClasses: Record<ProfileType, { container: string; text: string; label: string }> = {
+  overview: {
+    // Accessible green (good contrast with white)
+    container: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    text: "text-emerald-700",
+    label: "Overview",
+  },
+  population: {
+    // Accessible red/rose
+    container: "bg-rose-50 text-rose-700 border border-rose-200",
+    text: "text-rose-700",
+    label: "Population",
+  },
+  topic: {
+    // Accessible orange/amber
+    container: "bg-amber-50 text-amber-700 border border-amber-200",
+    text: "text-amber-700",
+    label: "Topic",
+  },
+}
 
 export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
   const { open, onOpenChange, items, defaultSelectedId, onConfirm, title = "Select a Profile" } = props
 
   const [selectedId, setSelectedId] = React.useState<string | undefined>(defaultSelectedId)
   const [query, setQuery] = React.useState("")
-  const [mobileTooltipId, setMobileTooltipId] = React.useState<string | null>(null)
 
   React.useEffect(() => {
-    if (open) {
-      const onEsc = (e: KeyboardEvent) => {
-        if (e.key === "Escape") onOpenChange(false)
-      }
-      window.addEventListener("keydown", onEsc)
-      return () => window.removeEventListener("keydown", onEsc)
+    if (!open) return
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onOpenChange(false)
     }
+    window.addEventListener("keydown", onEsc)
+    return () => window.removeEventListener("keydown", onEsc)
   }, [open, onOpenChange])
 
-  const overview = items.filter((i) => i.type === "overview")
-  const populations = items.filter((i) => i.type === "population")
-  const topics = items.filter((i) => i.type === "topic")
+  // Flatten all items; order: overview, populations, topics
+  const allItems = React.useMemo(() => {
+    const o = items.filter((i) => i.type === "overview")
+    const p = items.filter((i) => i.type === "population")
+    const t = items.filter((i) => i.type === "topic")
+    return [...o, ...p, ...t]
+  }, [items])
 
-  const filter = (list: SaviProfileItem[]) =>
-    list.filter((i) => {
-      if (!query) return true
-      const q = query.toLowerCase()
-      return (
+  const filtered = React.useMemo(() => {
+    if (!query) return allItems
+    const q = query.toLowerCase()
+    return allItems.filter(
+      (i) =>
         i.label.toLowerCase().includes(q) ||
         i.description?.toLowerCase().includes(q) ||
-        i.indicators?.some((d) => d.toLowerCase().includes(q))
-      )
-    })
+        i.indicators?.some((d) => d.toLowerCase().includes(q)),
+    )
+  }, [allItems, query])
 
-  const gridContainerClass = "grid grid-cols-12 gap-2 md:gap-3 w-full"
+  // Dense 12-col grid; 6 tiles/row on md+ (col-span-2)
+  const gridClass = "grid grid-cols-12 gap-2 md:gap-3 w-full"
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        aria-label={title}
-        className={cn(
-          // Centered modal, 1280px max content, internal padding 32 desktop / 16 mobile
-          "p-4 md:p-8 rounded-3xl",
-          "w-[90vw]",
-        )}
-      >
+      <DialogContent aria-label={title} className={cn("p-4 md:p-8 rounded-3xl w-[90vw]")}>
         <DialogHeader className="px-0">
           <DialogTitle className="text-2xl font-bold text-left">{title}</DialogTitle>
         </DialogHeader>
 
-        {/* 12-col grid wrapper with 80px side padding at 1440 container width.
-            Since this is a modal with max 960px, we simply ensure a 12-col grid inside. */}
-        <div className={cn(gridContainerClass, "mx-auto")}>
+        <div className={cn(gridClass, "mx-auto")}>
           {/* Search */}
           <div className="col-span-12">
-            <Input placeholder="Search profiles..." value={query} onChange={(e) => setQuery(e.target.value)} />
+            <Input
+              placeholder="Search profiles..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search profiles"
+            />
           </div>
 
-          {/* Sections in order */}
+          {/* All items as tiles, no section headers */}
+          {filtered.map((item) => (
+            <ProfileTile
+              key={item.id}
+              item={item}
+              selected={selectedId === item.id}
+              onSelect={() => setSelectedId(item.id)}
+              className="col-span-6 sm:col-span-4 md:col-span-2"
+            />
+          ))}
 
-          {/* 1) Overview – featured card spanning 4 columns */}
-          {filter(overview).length > 0 && (
-            <>
-              <SectionHeader title="Overview" />
-              {filter(overview).map((item) => (
-                <ProfileTile
-                  key={item.id}
-                  item={item}
-                  selected={selectedId === item.id}
-                  onSelect={() => {
-                    setSelectedId(item.id)
-                    setMobileTooltipId(mobileTooltipId === item.id ? null : item.id)
-                  }}
-                  className="col-span-6 sm:col-span-4 md:col-span-2"
-                  mobileTooltipOpen={mobileTooltipId === item.id}
-                />
-              ))}
-            </>
-          )}
-
-          {/* 2) Populations – tiles 4 cols wide */}
-          {filter(populations).length > 0 && (
-            <>
-              <SectionHeader title="Populations" helper="Profiles organized by demographic group." />
-              {filter(populations).map((item) => (
-                <ProfileTile
-                  key={item.id}
-                  item={item}
-                  selected={selectedId === item.id}
-                  onSelect={() => {
-                    setSelectedId(item.id)
-                    setMobileTooltipId(mobileTooltipId === item.id ? null : item.id)
-                  }}
-                  className="col-span-6 sm:col-span-4 md:col-span-2"
-                  mobileTooltipOpen={mobileTooltipId === item.id}
-                />
-              ))}
-            </>
-          )}
-
-          {/* 3) Topics – tiles 4 cols wide */}
-          {filter(topics).length > 0 && (
-            <>
-              <SectionHeader title="Topics" helper="Profiles organized by subject area." />
-              {filter(topics).map((item) => (
-                <ProfileTile
-                  key={item.id}
-                  item={item}
-                  selected={selectedId === item.id}
-                  onSelect={() => {
-                    setSelectedId(item.id)
-                    setMobileTooltipId(mobileTooltipId === item.id ? null : item.id)
-                  }}
-                  className="col-span-6 sm:col-span-4 md:col-span-2"
-                  mobileTooltipOpen={mobileTooltipId === item.id}
-                />
-              ))}
-            </>
+          {filtered.length === 0 && (
+            <div className="col-span-12 text-sm text-muted-foreground py-6">No profiles found.</div>
           )}
         </div>
 
@@ -203,15 +158,14 @@ function ProfileTile({
   selected,
   onSelect,
   className,
-  mobileTooltipOpen,
 }: {
   item: SaviProfileItem
   selected: boolean
   onSelect: () => void
   className?: string
-  mobileTooltipOpen?: boolean
 }) {
   const Icon = iconFor(item.icon, item.type)
+  const tag = tagClasses[item.type]
 
   const content = (
     <button
@@ -220,47 +174,46 @@ function ProfileTile({
       aria-checked={selected}
       onClick={onSelect}
       className={cn(
-        "group w-full text-left outline-none",
-        "rounded-xl border transition-shadow min-h-[72px]",
+        "group relative w-full text-left outline-none",
+        "rounded-xl border transition-shadow min-h-[84px]",
         selected
           ? "bg-primary text-primary-foreground border-primary shadow-lg"
           : "bg-card text-card-foreground border-border hover:shadow-md",
-        className,
+        "focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60",
       )}
     >
-      <Card className={cn("border-0 shadow-none bg-transparent")}>
-        <CardContent className="p-2.5 md:p-3 flex flex-col items-center justify-center gap-1.5">
+      {/* Category tag */}
+      <span
+        className={cn(
+          "absolute left-2 top-2 z-[1] inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+          tag.container,
+          selected ? "bg-white/20 text-white border-white/30" : "",
+        )}
+        aria-label={`${tag.label} tag`}
+      >
+        {tag.label}
+      </span>
+
+      <Card className="border-0 shadow-none bg-transparent">
+        <CardContent className="p-3 md:p-4 flex flex-col items-center justify-center gap-2">
           <div
             className={cn(
-              "rounded-full p-1",
+              "rounded-full p-1.5",
               selected ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground",
             )}
             aria-hidden="true"
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-5 w-5" />
           </div>
+
           <div
             className={cn(
-              "text-xs md:text-[13px] font-medium text-center leading-snug",
+              "text-xs md:text-[13px] font-medium text-center leading-snug line-clamp-2",
               selected ? "text-primary-foreground" : "",
             )}
           >
             {item.label}
           </div>
-
-          {/* Mobile tooltip (revealed on tap) */}
-          {mobileTooltipOpen && (
-            <div className="md:hidden mt-1.5 w-full rounded-md border bg-white p-2.5 text-xs text-muted-foreground">
-              {item.description && <p className="mb-2">{truncate(item.description, 80)}</p>}
-              {item.indicators && item.indicators.length > 0 && (
-                <ul className="list-disc pl-5 space-y-1">
-                  {item.indicators.slice(0, 3).map((ind) => (
-                    <li key={ind}>{ind}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
         </CardContent>
       </Card>
 
@@ -276,10 +229,8 @@ function ProfileTile({
   return (
     <TooltipProvider delayDuration={150}>
       <div className={cn("relative", className)}>
-        {/* Desktop tooltip (hover) */}
         <Tooltip>
           <TooltipTrigger asChild>
-            {/* Trigger is the card itself on desktop */}
             <div className="hidden md:block">{content}</div>
           </TooltipTrigger>
           <TooltipContent side="top" className="max-w-sm text-sm leading-snug">
@@ -296,7 +247,7 @@ function ProfileTile({
           </TooltipContent>
         </Tooltip>
 
-        {/* Mobile uses the normal content; desktop fallback (no tooltip wrapper) */}
+        {/* Mobile content (no hover) */}
         <div className="md:hidden">{content}</div>
       </div>
     </TooltipProvider>
