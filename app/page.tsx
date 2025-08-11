@@ -12,7 +12,7 @@ const data: SaviProfileItem[] = [
     label: "Community Profile",
     type: "overview",
     iconKey: "grid-2x2",
-    description: "Summary view bringing together people, place, and systems for the selected community.",
+    description: "Get a complete view of all the data for this community.",
     indicators: ["Population", "Economy", "Health"],
   },
 
