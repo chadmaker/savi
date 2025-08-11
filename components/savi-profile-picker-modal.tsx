@@ -11,7 +11,7 @@ import {
   BookOpen,
   Briefcase,
   Coins,
-  Grid2X2,
+  Grid2x2,
   GraduationCap,
   Handshake,
   HeartPulse,
@@ -27,6 +27,7 @@ import {
   UserRound,
   UsersRound,
   Utensils,
+  Wallet,
   Check,
 } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -34,15 +35,14 @@ import { cn } from "@/lib/utils"
 
 type ProfileType = "overview" | "population" | "topic"
 
-// Map of icon keys to Lucide components (unique per tile)
 const iconsMap = {
-  "grid-2x2": Grid2X2,
+  "grid-2x2": Grid2x2,
   users: Users,
   "user-circle": UserCircle,
   "user-round": UserRound,
   "users-round": UsersRound,
   briefcase: Briefcase,
-  wallet: Coins, // fallback; Wallet is also available, but Coins used elsewhere. Use 'wallet' key if you prefer Wallet icon.
+  wallet: Wallet,
   bike: Bike,
   lifebuoy: LifeBuoy,
   handshake: Handshake,
@@ -110,7 +110,6 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
     return () => window.removeEventListener("keydown", onEsc)
   }, [open, onOpenChange])
 
-  // Flatten: Overview -> Populations -> Topics
   const allItems = React.useMemo(() => {
     const o = items.filter((i) => i.type === "overview")
     const p = items.filter((i) => i.type === "population")
@@ -139,7 +138,6 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
         </DialogHeader>
 
         <div className={cn(gridClass, "mx-auto")}>
-          {/* Search */}
           <div className="col-span-12">
             <Input
               placeholder="Search profiles..."
@@ -149,7 +147,6 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
             />
           </div>
 
-          {/* All items as tiles with category tags */}
           {filtered.map((item) => (
             <ProfileTile
               key={item.id}
@@ -165,7 +162,6 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
           )}
         </div>
 
-        {/* Sticky footer CTA */}
         <div className="sticky bottom-0 left-0 w-full bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
           <div className="w-full mx-auto flex items-center justify-between gap-3 p-3 md:p-4">
             <div className="text-sm md:text-base font-semibold">
@@ -204,7 +200,7 @@ function ProfileTile({
 }) {
   const TagLabel = tagClasses[item.type].label
   const tagClass = tagClasses[item.type].container
-  const IconComponent = item.iconKey ? iconsMap[item.iconKey] : Grid2X2 // fallback
+  const IconComponent = item.iconKey ? iconsMap[item.iconKey] : Grid2x2
 
   const content = (
     <button
@@ -221,7 +217,6 @@ function ProfileTile({
         "focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60",
       )}
     >
-      {/* Category tag (Overview/Populations/Topics) */}
       <span
         className={cn(
           "absolute left-2 top-2 z-[1] inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
@@ -256,7 +251,6 @@ function ProfileTile({
         </CardContent>
       </Card>
 
-      {/* Checkmark for selected */}
       {selected && (
         <div className="absolute right-2 top-2 rounded-full bg-primary-foreground/20 p-1" aria-hidden="true">
           <Check className="h-5 w-5 text-primary-foreground" />
@@ -274,7 +268,7 @@ function ProfileTile({
           </TooltipTrigger>
           <TooltipContent side="top" className="max-w-sm text-sm leading-snug">
             <div className="flex flex-col gap-2">
-              {item.description && <p className="text-foreground">{truncate(item.description, 80)}</p>}
+              {item.description && <p className="text-foreground">{truncate(item.description, 120)}</p>}
               {item.indicators && item.indicators.length > 0 && (
                 <ul className="list-disc pl-5 space-y-1">
                   {item.indicators.slice(0, 3).map((ind) => (
