@@ -275,7 +275,14 @@ function ProfileTile({
           <TooltipTrigger asChild>
             <div className="hidden md:block">{content}</div>
           </TooltipTrigger>
-          <TooltipContent side="top" className="max-w-sm text-sm leading-snug">
+          <TooltipContent
+            side="top"
+            align="center"
+            sideOffset={8}
+            avoidCollisions={true}
+            collisionPadding={24}
+            className="max-w-[min(90vw,420px)] break-words whitespace-normal text-sm leading-snug"
+          >
             <div className="flex flex-col gap-2">
               {item.description && <p className="text-foreground">{truncate(item.description, 120)}</p>}
               {item.indicators && item.indicators.length > 0 && (
