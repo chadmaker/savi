@@ -80,6 +80,12 @@ export type SaviProfilePickerProps = {
   title?: string
 }
 
+const palette: Record<ProfileType, { bg: string; text: string; border: string }> = {
+  overview: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
+  population: { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200" },
+  topic: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
+}
+
 const tagClasses: Record<ProfileType, { container: string; label: string }> = {
   overview: {
     container: "bg-emerald-50 text-emerald-700 border border-emerald-200",
@@ -171,6 +177,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
             </div>
             <Button
               size="lg"
+              className="text-base"
               disabled={!selectedId}
               onClick={() => {
                 const sel = items.find((i) => i.id === selectedId)
@@ -232,12 +239,14 @@ function ProfileTile({
         <CardContent className="p-3 md:p-4 flex flex-col items-center justify-center gap-2">
           <div
             className={cn(
-              "rounded-full p-1.5",
-              selected ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground",
+              "rounded-full p-3",
+              selected
+                ? "bg-primary-foreground/20 text-primary-foreground"
+                : cn(palette[item.type].bg, palette[item.type].text),
             )}
             aria-hidden="true"
           >
-            <IconComponent className="h-5 w-5" />
+            <IconComponent className="h-10 w-10" />
           </div>
 
           <div

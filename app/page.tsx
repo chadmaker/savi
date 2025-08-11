@@ -209,7 +209,7 @@ export default function Page() {
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <Button
               variant="ghost"
-              className="text-blue-600 hover:text-blue-700 px-2 py-1 h-auto font-medium"
+              className="text-base text-blue-600 hover:text-blue-700 px-2 py-1 h-auto font-medium"
               onClick={() => setOpen(true)}
               aria-label="Open profile picker"
             >
@@ -226,7 +226,9 @@ export default function Page() {
             Open the modal to pick a profile and hover any tile for details.
           </p>
           <div className="mt-6">
-            <Button onClick={() => setOpen(true)}>Open Profile Picker</Button>
+            <Button className="text-base" onClick={() => setOpen(true)}>
+              Open Profile Picker
+            </Button>
           </div>
         </div>
       </div>
