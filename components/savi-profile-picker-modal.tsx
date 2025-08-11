@@ -5,11 +5,62 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Check, LayoutGrid, Users, GraduationCap } from "lucide-react"
+import {
+  Banknote,
+  Bike,
+  BookOpen,
+  Briefcase,
+  Coins,
+  Grid2X2,
+  GraduationCap,
+  Handshake,
+  HeartPulse,
+  Home,
+  Leaf,
+  LifeBuoy,
+  PieChart,
+  Scale,
+  ShieldCheck,
+  TrendingUp,
+  Users,
+  UserCircle,
+  UserRound,
+  UsersRound,
+  Utensils,
+  Check,
+} from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
 type ProfileType = "overview" | "population" | "topic"
+
+// Map of icon keys to Lucide components (unique per tile)
+const iconsMap = {
+  "grid-2x2": Grid2X2,
+  users: Users,
+  "user-circle": UserCircle,
+  "user-round": UserRound,
+  "users-round": UsersRound,
+  briefcase: Briefcase,
+  wallet: Coins, // fallback; Wallet is also available, but Coins used elsewhere. Use 'wallet' key if you prefer Wallet icon.
+  bike: Bike,
+  lifebuoy: LifeBuoy,
+  handshake: Handshake,
+  "shield-check": ShieldCheck,
+  "pie-chart": PieChart,
+  "book-open": BookOpen,
+  "trending-up": TrendingUp,
+  banknote: Banknote,
+  "graduation-cap": GraduationCap,
+  leaf: Leaf,
+  scale: Scale,
+  utensils: Utensils,
+  "heart-pulse": HeartPulse,
+  home: Home,
+  coins: Coins,
+} as const
+
+type IconKey = keyof typeof iconsMap
 
 export type SaviProfileItem = {
   id: string
@@ -17,7 +68,7 @@ export type SaviProfileItem = {
   type: ProfileType
   description?: string
   indicators?: string[]
-  icon?: "overview-icon" | "population-icon" | "education-icon"
+  iconKey?: IconKey
 }
 
 export type SaviProfilePickerProps = {
@@ -29,30 +80,18 @@ export type SaviProfilePickerProps = {
   title?: string
 }
 
-const iconFor = (icon?: SaviProfileItem["icon"], type?: ProfileType) => {
-  if (icon === "overview-icon" || type === "overview") return LayoutGrid
-  if (icon === "education-icon" || type === "topic") return GraduationCap
-  return Users
-}
-
-const tagClasses: Record<ProfileType, { container: string; text: string; label: string }> = {
+const tagClasses: Record<ProfileType, { container: string; label: string }> = {
   overview: {
-    // Accessible green (good contrast with white)
     container: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-    text: "text-emerald-700",
     label: "Overview",
   },
   population: {
-    // Accessible red/rose
     container: "bg-rose-50 text-rose-700 border border-rose-200",
-    text: "text-rose-700",
-    label: "Population",
+    label: "Populations",
   },
   topic: {
-    // Accessible orange/amber
     container: "bg-amber-50 text-amber-700 border border-amber-200",
-    text: "text-amber-700",
-    label: "Topic",
+    label: "Topics",
   },
 }
 
@@ -71,7 +110,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
     return () => window.removeEventListener("keydown", onEsc)
   }, [open, onOpenChange])
 
-  // Flatten all items; order: overview, populations, topics
+  // Flatten: Overview -> Populations -> Topics
   const allItems = React.useMemo(() => {
     const o = items.filter((i) => i.type === "overview")
     const p = items.filter((i) => i.type === "population")
@@ -90,7 +129,6 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
     )
   }, [allItems, query])
 
-  // Dense 12-col grid; 6 tiles/row on md+ (col-span-2)
   const gridClass = "grid grid-cols-12 gap-2 md:gap-3 w-full"
 
   return (
@@ -111,7 +149,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
             />
           </div>
 
-          {/* All items as tiles, no section headers */}
+          {/* All items as tiles with category tags */}
           {filtered.map((item) => (
             <ProfileTile
               key={item.id}
@@ -164,8 +202,9 @@ function ProfileTile({
   onSelect: () => void
   className?: string
 }) {
-  const Icon = iconFor(item.icon, item.type)
-  const tag = tagClasses[item.type]
+  const TagLabel = tagClasses[item.type].label
+  const tagClass = tagClasses[item.type].container
+  const IconComponent = item.iconKey ? iconsMap[item.iconKey] : Grid2X2 // fallback
 
   const content = (
     <button
@@ -182,16 +221,16 @@ function ProfileTile({
         "focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60",
       )}
     >
-      {/* Category tag */}
+      {/* Category tag (Overview/Populations/Topics) */}
       <span
         className={cn(
           "absolute left-2 top-2 z-[1] inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-          tag.container,
+          tagClass,
           selected ? "bg-white/20 text-white border-white/30" : "",
         )}
-        aria-label={`${tag.label} tag`}
+        aria-label={`${TagLabel} tag`}
       >
-        {tag.label}
+        {TagLabel}
       </span>
 
       <Card className="border-0 shadow-none bg-transparent">
@@ -203,7 +242,7 @@ function ProfileTile({
             )}
             aria-hidden="true"
           >
-            <Icon className="h-5 w-5" />
+            <IconComponent className="h-5 w-5" />
           </div>
 
           <div
@@ -247,7 +286,6 @@ function ProfileTile({
           </TooltipContent>
         </Tooltip>
 
-        {/* Mobile content (no hover) */}
         <div className="md:hidden">{content}</div>
       </div>
     </TooltipProvider>
