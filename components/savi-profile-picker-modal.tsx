@@ -209,6 +209,27 @@ function ProfileTile({
   const tagClass = tagClasses[item.type].container
   const IconComponent = item.iconKey ? iconsMap[item.iconKey] : Grid2x2
 
+  // NEW: measure trigger width to cap tooltip width
+  const triggerRef = React.useRef<HTMLDivElement>(null)
+  const [triggerWidth, setTriggerWidth] = React.useState<number | null>(null)
+
+  React.useEffect(() => {
+    const el = triggerRef.current
+    if (!el) return
+
+    const measure = () => setTriggerWidth(el.getBoundingClientRect().width)
+    measure()
+
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+
+    window.addEventListener("resize", measure)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener("resize", measure)
+    }
+  }, [])
+
   const content = (
     <button
       type="button"
@@ -273,7 +294,10 @@ function ProfileTile({
       <div className={cn("relative", className)}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="hidden md:block">{content}</div>
+            {/* NEW: attach ref for width measurement */}
+            <div ref={triggerRef} className="hidden md:block">
+              {content}
+            </div>
           </TooltipTrigger>
           <TooltipContent
             side="top"
@@ -281,7 +305,9 @@ function ProfileTile({
             sideOffset={8}
             avoidCollisions={true}
             collisionPadding={24}
-            className="max-w-[min(90vw,420px)] break-words whitespace-normal text-sm leading-snug"
+            // NEW: cap tooltip width to trigger width
+            style={{ maxWidth: triggerWidth ? `${triggerWidth}px` : undefined }}
+            className="break-words whitespace-normal text-sm leading-snug"
           >
             <div className="flex flex-col gap-2">
               {item.description && <p className="text-foreground">{truncate(item.description, 120)}</p>}
