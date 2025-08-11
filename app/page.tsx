@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { ChevronRight, Home, Share2 } from "lucide-react"
 
 const data: SaviProfileItem[] = [
-  // Overview
+  // Community (Overview)
   {
     id: "overview",
     label: "Overview",
@@ -16,7 +16,7 @@ const data: SaviProfileItem[] = [
     indicators: ["Population", "Economy", "Health"],
   },
 
-  // Populations (7) — descriptions taken or adapted from provided images
+  // Populations
   {
     id: "african-americans",
     label: "African Americans",
@@ -74,7 +74,7 @@ const data: SaviProfileItem[] = [
     indicators: ["Enrollment", "Family structure", "Health coverage"],
   },
 
-  // Topics (14) — descriptions matched to provided images
+  // Topics
   {
     id: "economic-mobility",
     label: "Economic Mobility",
@@ -191,43 +191,68 @@ const data: SaviProfileItem[] = [
   },
 ]
 
+// Badge styles to mirror modal tags
+const tagStyles: Record<SaviProfileItem["type"], { container: string; label: string }> = {
+  overview: { container: "bg-emerald-50 text-emerald-700 border border-emerald-200", label: "Community" },
+  population: { container: "bg-rose-50 text-rose-700 border border-rose-200", label: "Population" },
+  topic: { container: "bg-amber-50 text-amber-700 border border-amber-200", label: "Topic" },
+}
+
 export default function Page() {
   const [open, setOpen] = React.useState(false)
   const [selected, setSelected] = React.useState<SaviProfileItem | null>(data.find((d) => d.id === "education") ?? null)
 
+  const tag = selected ? tagStyles[selected.type] : null
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-[1440px] mx-auto px-5 md:px-20">
+        {/* Breadcrumb header */}
         <div className="flex items-center justify-between py-4">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" aria-label="Home">
               <Home className="h-5 w-5 text-gray-600" />
             </Button>
-            <button className="text-base font-semibold underline underline-offset-4">
-              {selected?.type === "population"
-                ? "Populations"
-                : selected?.type === "overview"
-                  ? "Overview"
-                  : "Profiles"}
-            </button>
+
+            {/* Always 'Profiles' */}
+            <Button
+              variant="ghost"
+              className="text-base font-semibold underline decoration-2 underline-offset-4 px-2 py-1 h-auto text-gray-900 hover:text-blue-700"
+              onClick={() => setOpen(true)}
+              aria-label="Open profile picker"
+            >
+              Profiles
+            </Button>
+
             <ChevronRight className="h-4 w-4 text-gray-400" />
+
+            {/* Profile name with tag at the end */}
             <Button
               variant="ghost"
               className="text-base text-blue-600 hover:text-blue-700 px-2 py-1 h-auto font-medium"
               onClick={() => setOpen(true)}
-              aria-label="Open profile picker"
+              aria-label="Change selected profile"
             >
               {selected?.label ?? "Select profile"}
+              {tag && (
+                <span
+                  className={`ml-2 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${tag.container}`}
+                >
+                  {tag.label}
+                </span>
+              )}
             </Button>
           </div>
+
           <Button variant="ghost" size="icon" aria-label="Share">
             <Share2 className="h-5 w-5 text-gray-600" />
           </Button>
         </div>
 
+        {/* Demo content */}
         <div className="py-12">
           <p className="text-sm text-muted-foreground">
-            Open the modal to pick a profile and hover any tile for details.
+            Open the modal to pick a profile. Breadcrumb shows Home › Profiles › Profile Name with its tag appended.
           </p>
           <div className="mt-6">
             <Button className="text-base" onClick={() => setOpen(true)}>
