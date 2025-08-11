@@ -9,7 +9,7 @@ const data: SaviProfileItem[] = [
   // Overview
   {
     id: "overview",
-    label: "Community Profile",
+    label: "Overview",
     type: "overview",
     iconKey: "grid-2x2",
     description: "Get a complete view of all the data for this community.",

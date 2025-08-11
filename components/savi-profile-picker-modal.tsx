@@ -89,15 +89,15 @@ const palette: Record<ProfileType, { bg: string; text: string; border: string }>
 const tagClasses: Record<ProfileType, { container: string; label: string }> = {
   overview: {
     container: "bg-emerald-50 text-emerald-700 border border-emerald-200",
-    label: "Overview",
+    label: "Community",
   },
   population: {
     container: "bg-rose-50 text-rose-700 border border-rose-200",
-    label: "Populations",
+    label: "Population",
   },
   topic: {
     container: "bg-amber-50 text-amber-700 border border-amber-200",
-    label: "Topics",
+    label: "Topic",
   },
 }
 
