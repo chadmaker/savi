@@ -204,7 +204,11 @@ export default function Page() {
               <Home className="h-5 w-5 text-gray-600" />
             </Button>
             <button className="text-base font-semibold underline underline-offset-4">
-              {selected?.type === "population" ? "Populations" : selected?.type === "overview" ? "Overview" : "Topics"}
+              {selected?.type === "population"
+                ? "Populations"
+                : selected?.type === "overview"
+                  ? "Overview"
+                  : "Profiles"}
             </button>
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <Button
