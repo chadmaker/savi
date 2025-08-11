@@ -85,7 +85,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
       )
     })
 
-  const gridContainerClass = "grid grid-cols-12 gap-3 md:gap-4 w-full"
+  const gridContainerClass = "grid grid-cols-12 gap-2 md:gap-3 w-full"
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -221,7 +221,7 @@ function ProfileTile({
       onClick={onSelect}
       className={cn(
         "group w-full text-left outline-none",
-        "rounded-xl border transition-shadow min-h-[88px]",
+        "rounded-xl border transition-shadow min-h-[72px]",
         selected
           ? "bg-primary text-primary-foreground border-primary shadow-lg"
           : "bg-card text-card-foreground border-border hover:shadow-md",
@@ -229,19 +229,19 @@ function ProfileTile({
       )}
     >
       <Card className={cn("border-0 shadow-none bg-transparent")}>
-        <CardContent className="p-3 md:p-4 flex flex-col items-center justify-center gap-2">
+        <CardContent className="p-2.5 md:p-3 flex flex-col items-center justify-center gap-1.5">
           <div
             className={cn(
-              "rounded-full p-1.5",
+              "rounded-full p-1",
               selected ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground",
             )}
             aria-hidden="true"
           >
-            <Icon className="h-5 w-5" />
+            <Icon className="h-4 w-4" />
           </div>
           <div
             className={cn(
-              "text-xs md:text-sm font-medium text-center leading-tight",
+              "text-xs md:text-[13px] font-medium text-center leading-snug",
               selected ? "text-primary-foreground" : "",
             )}
           >
