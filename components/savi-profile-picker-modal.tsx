@@ -3,20 +3,10 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Check, ChevronRight, Home, Info, LayoutGrid, Users, GraduationCap } from 'lucide-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Check, Info, LayoutGrid, Users, GraduationCap } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
 type ProfileType = "overview" | "population" | "topic"
@@ -41,7 +31,7 @@ export type SaviProfilePickerProps = {
 
 const iconFor = (icon?: SaviProfileItem["icon"], type?: ProfileType) => {
   if (icon === "overview-icon" || type === "overview") return LayoutGrid
-  if (icon === "education-icon" || (type === "topic")) return GraduationCap
+  if (icon === "education-icon" || type === "topic") return GraduationCap
   return Users
 }
 
@@ -64,22 +54,11 @@ const SectionHeader = ({
 )
 
 export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
-  const {
-    open,
-    onOpenChange,
-    items,
-    defaultSelectedId,
-    onConfirm,
-    title = "Select a Profile",
-  } = props
+  const { open, onOpenChange, items, defaultSelectedId, onConfirm, title = "Select a Profile" } = props
 
-  const [selectedId, setSelectedId] = React.useState<string | undefined>(
-    defaultSelectedId
-  )
+  const [selectedId, setSelectedId] = React.useState<string | undefined>(defaultSelectedId)
   const [query, setQuery] = React.useState("")
-  const [mobileTooltipId, setMobileTooltipId] = React.useState<string | null>(
-    null
-  )
+  const [mobileTooltipId, setMobileTooltipId] = React.useState<string | null>(null)
 
   React.useEffect(() => {
     if (open) {
@@ -106,8 +85,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
       )
     })
 
-  const gridContainerClass =
-    "grid grid-cols-12 gap-4 md:gap-6 max-w-[1280px] w-full"
+  const gridContainerClass = "grid grid-cols-12 gap-3 md:gap-4 w-full"
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -116,13 +94,11 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
         className={cn(
           // Centered modal, 1280px max content, internal padding 32 desktop / 16 mobile
           "p-4 md:p-8 rounded-3xl",
-          "w-[min(1280px,calc(100vw-2rem))]"
+          "w-[90vw]",
         )}
       >
         <DialogHeader className="px-0">
-          <DialogTitle className="text-2xl font-bold text-left">
-            {title}
-          </DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-left">{title}</DialogTitle>
         </DialogHeader>
 
         {/* 12-col grid wrapper with 80px side padding at 1440 container width.
@@ -130,11 +106,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
         <div className={cn(gridContainerClass, "mx-auto")}>
           {/* Search */}
           <div className="col-span-12">
-            <Input
-              placeholder="Search profiles..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+            <Input placeholder="Search profiles..." value={query} onChange={(e) => setQuery(e.target.value)} />
           </div>
 
           {/* Sections in order */}
@@ -150,11 +122,9 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
                   selected={selectedId === item.id}
                   onSelect={() => {
                     setSelectedId(item.id)
-                    setMobileTooltipId(
-                      mobileTooltipId === item.id ? null : item.id
-                    )
+                    setMobileTooltipId(mobileTooltipId === item.id ? null : item.id)
                   }}
-                  className="col-span-12 sm:col-span-6 md:col-span-4"
+                  className="col-span-6 sm:col-span-4 md:col-span-2"
                   mobileTooltipOpen={mobileTooltipId === item.id}
                 />
               ))}
@@ -164,10 +134,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
           {/* 2) Populations – tiles 4 cols wide */}
           {filter(populations).length > 0 && (
             <>
-              <SectionHeader
-                title="Populations"
-                helper="Profiles organized by demographic group."
-              />
+              <SectionHeader title="Populations" helper="Profiles organized by demographic group." />
               {filter(populations).map((item) => (
                 <ProfileTile
                   key={item.id}
@@ -175,11 +142,9 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
                   selected={selectedId === item.id}
                   onSelect={() => {
                     setSelectedId(item.id)
-                    setMobileTooltipId(
-                      mobileTooltipId === item.id ? null : item.id
-                    )
+                    setMobileTooltipId(mobileTooltipId === item.id ? null : item.id)
                   }}
-                  className="col-span-12 sm:col-span-6 md:col-span-4"
+                  className="col-span-6 sm:col-span-4 md:col-span-2"
                   mobileTooltipOpen={mobileTooltipId === item.id}
                 />
               ))}
@@ -189,10 +154,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
           {/* 3) Topics – tiles 4 cols wide */}
           {filter(topics).length > 0 && (
             <>
-              <SectionHeader
-                title="Topics"
-                helper="Profiles organized by subject area."
-              />
+              <SectionHeader title="Topics" helper="Profiles organized by subject area." />
               {filter(topics).map((item) => (
                 <ProfileTile
                   key={item.id}
@@ -200,11 +162,9 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
                   selected={selectedId === item.id}
                   onSelect={() => {
                     setSelectedId(item.id)
-                    setMobileTooltipId(
-                      mobileTooltipId === item.id ? null : item.id
-                    )
+                    setMobileTooltipId(mobileTooltipId === item.id ? null : item.id)
                   }}
-                  className="col-span-12 sm:col-span-6 md:col-span-4"
+                  className="col-span-6 sm:col-span-4 md:col-span-2"
                   mobileTooltipOpen={mobileTooltipId === item.id}
                 />
               ))}
@@ -214,12 +174,10 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
 
         {/* Sticky footer CTA */}
         <div className="sticky bottom-0 left-0 w-full bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.06)]">
-          <div className="max-w-[1280px] mx-auto flex items-center justify-between gap-4 p-4 md:p-6">
+          <div className="w-full mx-auto flex items-center justify-between gap-3 p-3 md:p-4">
             <div className="text-sm md:text-base font-semibold">
               {selectedId
-                ? `You’ve selected: ${
-                    items.find((i) => i.id === selectedId)?.label ?? ""
-                  }`
+                ? `You’ve selected: ${items.find((i) => i.id === selectedId)?.label ?? ""}`
                 : "Select a profile to continue"}
             </div>
             <Button
@@ -231,11 +189,7 @@ export default function SaviProfilePickerModal(props: SaviProfilePickerProps) {
                 onOpenChange(false)
               }}
             >
-              {selectedId
-                ? `View ${
-                    items.find((i) => i.id === selectedId)?.label ?? "Profile"
-                  }`
-                : "Continue"}
+              {selectedId ? `View ${items.find((i) => i.id === selectedId)?.label ?? "Profile"}` : "Continue"}
             </Button>
           </div>
         </div>
@@ -267,30 +221,28 @@ function ProfileTile({
       onClick={onSelect}
       className={cn(
         "group w-full text-left outline-none",
-        "rounded-xl border transition-shadow min-h-[140px]",
+        "rounded-xl border transition-shadow min-h-[88px]",
         selected
           ? "bg-primary text-primary-foreground border-primary shadow-lg"
           : "bg-card text-card-foreground border-border hover:shadow-md",
-        className
+        className,
       )}
     >
       <Card className={cn("border-0 shadow-none bg-transparent")}>
-        <CardContent className="p-4 md:p-6 flex flex-col items-center justify-center gap-3">
+        <CardContent className="p-3 md:p-4 flex flex-col items-center justify-center gap-2">
           <div
             className={cn(
-              "rounded-full p-2",
-              selected
-                ? "bg-primary-foreground/20 text-primary-foreground"
-                : "bg-muted text-muted-foreground"
+              "rounded-full p-1.5",
+              selected ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground",
             )}
             aria-hidden="true"
           >
-            <Icon className="h-6 w-6" />
+            <Icon className="h-5 w-5" />
           </div>
           <div
             className={cn(
-              "text-sm md:text-base font-medium text-center leading-tight",
-              selected ? "text-primary-foreground" : ""
+              "text-xs md:text-sm font-medium text-center leading-tight",
+              selected ? "text-primary-foreground" : "",
             )}
           >
             {item.label}
@@ -298,10 +250,8 @@ function ProfileTile({
 
           {/* Mobile tooltip (revealed on tap) */}
           {mobileTooltipOpen && (
-            <div className="md:hidden mt-2 w-full rounded-md border bg-white p-3 text-xs text-muted-foreground">
-              {item.description && (
-                <p className="mb-2">{truncate(item.description, 80)}</p>
-              )}
+            <div className="md:hidden mt-1.5 w-full rounded-md border bg-white p-2.5 text-xs text-muted-foreground">
+              {item.description && <p className="mb-2">{truncate(item.description, 80)}</p>}
               {item.indicators && item.indicators.length > 0 && (
                 <ul className="list-disc pl-5 space-y-1">
                   {item.indicators.slice(0, 3).map((ind) => (
@@ -316,10 +266,7 @@ function ProfileTile({
 
       {/* Checkmark for selected */}
       {selected && (
-        <div
-          className="absolute right-2 top-2 rounded-full bg-primary-foreground/20 p-1"
-          aria-hidden="true"
-        >
+        <div className="absolute right-2 top-2 rounded-full bg-primary-foreground/20 p-1" aria-hidden="true">
           <Check className="h-5 w-5 text-primary-foreground" />
         </div>
       )}
@@ -335,16 +282,9 @@ function ProfileTile({
             {/* Trigger is the card itself on desktop */}
             <div className="hidden md:block">{content}</div>
           </TooltipTrigger>
-          <TooltipContent
-            side="top"
-            className="max-w-sm text-sm leading-snug"
-          >
+          <TooltipContent side="top" className="max-w-sm text-sm leading-snug">
             <div className="flex flex-col gap-2">
-              {item.description && (
-                <p className="text-foreground">
-                  {truncate(item.description, 80)}
-                </p>
-              )}
+              {item.description && <p className="text-foreground">{truncate(item.description, 80)}</p>}
               {item.indicators && item.indicators.length > 0 && (
                 <ul className="list-disc pl-5 space-y-1">
                   {item.indicators.slice(0, 3).map((ind) => (
