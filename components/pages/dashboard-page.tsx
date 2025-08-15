@@ -19,6 +19,8 @@ import {
   Calendar,
   Clock,
   Filter,
+  Users,
+  ExternalLink,
 } from "lucide-react"
 
 interface DashboardPageProps {
@@ -42,6 +44,15 @@ interface ActivityItem {
   status?: string
 }
 
+interface Contributor {
+  id: string
+  name: string
+  status: "SAVI Moderator" | "Analyst" | "Community User"
+  projectsShared: number
+  avatar: string
+  profileUrl: string
+}
+
 export function DashboardPage({
   onNavigateToProjects,
   onCreateProject,
@@ -53,6 +64,7 @@ export function DashboardPage({
   const [isPlaying, setIsPlaying] = useState(false)
   const [activityFilter, setActivityFilter] = useState<ActivityType>("all")
   const [showAllActivity, setShowAllActivity] = useState(false)
+  const [showAllContributors, setShowAllContributors] = useState(false)
 
   const videoPlaylist = [
     { label: "Getting Started", videoId: "savi-welcome-intro", duration: "3:24" },
@@ -207,6 +219,103 @@ export function DashboardPage({
       tags: ["Transportation", "Equity", "Urban Planning"],
       starred: false,
     },
+    {
+      id: "4",
+      name: "Environmental Health Assessment",
+      summary: "Comprehensive study of air quality and environmental factors affecting community health",
+      author: "Dr. James Wilson",
+      lastModified: "5 days ago",
+      visibility: "Public",
+      tags: ["Environment", "Health", "Policy"],
+      starred: true,
+    },
+    {
+      id: "5",
+      name: "Economic Development Impact",
+      summary: "Measuring the effects of recent development projects on local business and employment",
+      author: "Maria Garcia",
+      lastModified: "1 week ago",
+      visibility: "Community",
+      tags: ["Economics", "Development", "Employment"],
+      starred: false,
+    },
+    {
+      id: "6",
+      name: "Youth Programs Effectiveness",
+      summary: "Evaluating the impact of community youth programs on educational and social outcomes",
+      author: "Robert Kim",
+      lastModified: "4 days ago",
+      visibility: "Public",
+      tags: ["Youth", "Education", "Community"],
+      starred: false,
+    },
+  ]
+
+  const topContributors: Contributor[] = [
+    {
+      id: "1",
+      name: "Dr. Sarah Johnson",
+      status: "SAVI Moderator",
+      projectsShared: 24,
+      avatar: "/placeholder-user.jpg",
+      profileUrl: "/profile/sarah-johnson",
+    },
+    {
+      id: "2",
+      name: "Michael Chen",
+      status: "Analyst",
+      projectsShared: 18,
+      avatar: "/placeholder-user.jpg",
+      profileUrl: "/profile/michael-chen",
+    },
+    {
+      id: "3",
+      name: "Lisa Rodriguez",
+      status: "Community User",
+      projectsShared: 15,
+      avatar: "/placeholder-user.jpg",
+      profileUrl: "/profile/lisa-rodriguez",
+    },
+    {
+      id: "4",
+      name: "Dr. James Wilson",
+      status: "Analyst",
+      projectsShared: 12,
+      avatar: "/placeholder-user.jpg",
+      profileUrl: "/profile/james-wilson",
+    },
+    {
+      id: "5",
+      name: "Maria Garcia",
+      status: "Community User",
+      projectsShared: 11,
+      avatar: "/placeholder-user.jpg",
+      profileUrl: "/profile/maria-garcia",
+    },
+    {
+      id: "6",
+      name: "Robert Kim",
+      status: "Community User",
+      projectsShared: 9,
+      avatar: "/placeholder-user.jpg",
+      profileUrl: "/profile/robert-kim",
+    },
+    {
+      id: "7",
+      name: "Dr. Amanda Foster",
+      status: "SAVI Moderator",
+      projectsShared: 8,
+      avatar: "/placeholder-user.jpg",
+      profileUrl: "/profile/amanda-foster",
+    },
+    {
+      id: "8",
+      name: "David Thompson",
+      status: "Analyst",
+      projectsShared: 7,
+      avatar: "/placeholder-user.jpg",
+      profileUrl: "/profile/david-thompson",
+    },
   ]
 
   const handleVideoPlay = () => {
@@ -250,9 +359,23 @@ export function DashboardPage({
     return `${diffInWeeks}w ago`
   }
 
+  const getStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case "SAVI Moderator":
+        return "bg-purple-100 text-purple-800 border-purple-200"
+      case "Analyst":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      case "Community User":
+        return "bg-green-100 text-green-800 border-green-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
+    }
+  }
+
   const filteredActivity = allActivity.filter((item) => activityFilter === "all" || item.type === activityFilter)
 
-  const displayedActivity = showAllActivity ? filteredActivity : filteredActivity.slice(0, 10)
+  const displayedActivity = showAllActivity ? filteredActivity : filteredActivity.slice(0, 6)
+  const displayedContributors = showAllContributors ? topContributors : topContributors.slice(0, 6)
 
   return (
     <div className="max-w-7xl mx-auto px-6 space-y-8">
@@ -317,6 +440,74 @@ export function DashboardPage({
           </div>
         </CardContent>
       </Card>
+
+      {/* Featured Community Projects */}
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-semibold text-gray-900">Featured Community Projects</h2>
+            <p className="text-gray-600 mt-1">Explore projects shared by the SAVI community.</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {communityProjects.map((project) => (
+            <Card key={project.id} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg font-semibold text-gray-900 mb-2">{project.name}</CardTitle>
+                    <CardDescription className="text-sm text-gray-600 line-clamp-2">{project.summary}</CardDescription>
+                  </div>
+                  <Button variant="ghost" size="icon" className="text-gray-400 hover:text-yellow-500">
+                    <Star className={`h-4 w-4 ${project.starred ? "fill-current text-yellow-500" : ""}`} />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-wrap gap-1">
+                  {project.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div className="flex items-center space-x-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={`/placeholder-user.jpg`} />
+                      <AvatarFallback className="text-xs">
+                        {project.author
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>{project.author}</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-1">
+                      <Badge variant={project.visibility === "Public" ? "default" : "secondary"} className="text-xs">
+                        {project.visibility}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="h-3 w-3" />
+                      <span>{project.lastModified}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  View Project
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
 
       {/* Recent Activity Section */}
       <div>
@@ -393,7 +584,7 @@ export function DashboardPage({
           ))}
         </div>
 
-        {!showAllActivity && filteredActivity.length > 10 && (
+        {!showAllActivity && filteredActivity.length > 6 && (
           <div className="text-center mt-6">
             <Button
               variant="outline"
@@ -418,72 +609,80 @@ export function DashboardPage({
         )}
       </div>
 
-      {/* Featured Community Projects */}
+      {/* Top Contributors Section */}
       <div>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900">Featured Community Projects</h2>
-            <p className="text-gray-600 mt-1">Explore projects shared by the SAVI community.</p>
+            <h2 className="text-2xl font-semibold text-gray-900">Top Contributors</h2>
+            <p className="text-gray-600 mt-1">Active community members sharing valuable insights and projects.</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {communityProjects.map((project) => (
-            <Card key={project.id} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg font-semibold text-gray-900 mb-2">{project.name}</CardTitle>
-                    <CardDescription className="text-sm text-gray-600 line-clamp-2">{project.summary}</CardDescription>
-                  </div>
-                  <Button variant="ghost" size="icon" className="text-gray-400 hover:text-yellow-500">
-                    <Star className={`h-4 w-4 ${project.starred ? "fill-current text-yellow-500" : ""}`} />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex flex-wrap gap-1">
-                  {project.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      {tag}
+          {displayedContributors.map((contributor) => (
+            <Card key={contributor.id} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-start space-x-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={contributor.avatar || "/placeholder.svg"} />
+                    <AvatarFallback className="text-sm">
+                      {contributor.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 truncate">{contributor.name}</h3>
+                    <Badge className={`text-xs mt-1 ${getStatusBadgeColor(contributor.status)}`}>
+                      {contributor.status}
                     </Badge>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <div className="flex items-center space-x-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={`/placeholder-user.jpg`} />
-                      <AvatarFallback className="text-xs">
-                        {project.author
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>{project.author}</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-1">
-                      <Badge variant={project.visibility === "Public" ? "default" : "secondary"} className="text-xs">
-                        {project.visibility}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Calendar className="h-3 w-3" />
-                      <span>{project.lastModified}</span>
+                    <div className="mt-3 space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600">Projects Shared</span>
+                        <span className="font-medium text-gray-900">{contributor.projectsShared}</span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full border-gray-300 bg-transparent text-blue-600 hover:bg-blue-50"
+                        onClick={() => window.open(contributor.profileUrl, "_blank")}
+                      >
+                        <Users className="h-3 w-3 mr-2" />
+                        View Profile
+                        <ExternalLink className="h-3 w-3 ml-2" />
+                      </Button>
                     </div>
                   </div>
                 </div>
-
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                  View Project
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
               </CardContent>
             </Card>
           ))}
         </div>
+
+        {!showAllContributors && topContributors.length > 6 && (
+          <div className="text-center mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowAllContributors(true)}
+              className="border-gray-300 bg-transparent"
+            >
+              Show More Contributors ({topContributors.length - 6} more)
+            </Button>
+          </div>
+        )}
+
+        {showAllContributors && (
+          <div className="text-center mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setShowAllContributors(false)}
+              className="border-gray-300 bg-transparent"
+            >
+              Show Less
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )
